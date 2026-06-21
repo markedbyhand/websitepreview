@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product — Marked By Hand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+  .pdp{display:grid;grid-template-columns:1.05fr .95fr;gap:34px;align-items:start;padding-top:14px}
+  @media(max-width:880px){.pdp{grid-template-columns:1fr;gap:22px}}
+  .pdp-media{position:sticky;top:84px}
+  .pdp-hero{aspect-ratio:1/1;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .pdp-thumbs{display:flex;gap:10px;margin-top:10px}
+  .pdp-thumbs .t{flex:1;aspect-ratio:1/1;border:1px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;opacity:.6}
+  .pdp-thumbs .t[aria-current="true"]{opacity:1;border-color:var(--amber)}
+  .opt-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .opt{background:var(--panel);border:1px solid var(--line);color:var(--bone);font-size:13px;padding:9px 13px;border-radius:9px;cursor:pointer;font-family:var(--mono)}
+  .opt[aria-pressed="true"]{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber) inset}
+  .price-big{font-family:var(--mono);font-weight:700;font-size:34px;color:var(--amber);letter-spacing:-1px}
+  .qtyrow{display:flex;align-items:center;gap:8px;max-width:160px}
+  .qtyrow button{width:42px;height:42px;border-radius:9px;background:var(--panel);border:1px solid var(--line);color:var(--bone);font-size:20px;font-family:var(--mono)}
+  .qtyrow input{text-align:center}
+  .handoff{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .spec .li{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line);font-family:var(--mono);font-size:13px}
+  .spec .li span:first-child{color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="wrap">
+  <p class="crumb"><a href="index.html">Home</a> / <a href="shop.html">Shop</a> / <span id="crumbName">Product</span></p>
+
+  <section class="section tight pdp">
+    <div class="pdp-media">
+      <div class="pdp-hero"><div class="ph acrylic" id="heroPh"><div class="glyph" id="heroGlyph" style="font-size:30px">⟡ NAME</div></div></div>
+      <div class="pdp-thumbs">
+        <div class="t" aria-current="true"><div class="ph acrylic"></div></div>
+        <div class="t"><div class="ph slate"></div></div>
+        <div class="t"><div class="ph bamboo"></div></div>
+        <div class="t"><div class="ph wood"></div></div>
+      </div>
+    </div>
+
+    <div>
+      <span class="pill live"><span class="dot"></span>made to order</span>
+      <h1 id="pName" style="font-size:clamp(24px,3.6vw,32px);margin:12px 0 6px;letter-spacing:-.4px">Edge-lit name night light</h1>
+      <p class="mono" id="pMeta" style="color:var(--muted);font-size:13px;margin:0 0 16px">Acrylic · personalised · LED base included</p>
+      <div class="price-big" id="pPrice">$34.00</div>
+      <p class="mono" style="color:var(--cyan);font-size:12px;margin:4px 0 22px">in stock · ships in 2–4 days</p>
+
+      <p style="color:#cabeac;margin:0 0 22px" id="pDesc">A laser-cut acrylic panel engraved with the name of your choice, lit from the base by a warm or colour-changing LED. The light catches the engraved edges so the name glows. Lovely on a bedside table or shelf.</p>
+
+      <div class="field"><label>Size</label>
+        <div class="opt-row" id="optSize">
+          <button class="opt" aria-pressed="true">Small · 120mm</button>
+          <button class="opt">Medium · 180mm</button>
+          <button class="opt">Large · 240mm</button>
+        </div>
+      </div>
+      <div class="field"><label>LED base</label>
+        <div class="opt-row" id="optBase">
+          <button class="opt" aria-pressed="true">Warm white</button>
+          <button class="opt">Colour-changing + remote</button>
+        </div>
+      </div>
+      <div class="field"><label>Name / text to engrave</label>
+        <input type="text" id="nameField" placeholder="e.g. Zekie" maxlength="18">
+      </div>
+
+      <div class="field"><label>Quantity</label>
+        <div class="qtyrow">
+          <button id="minus" aria-label="Decrease">–</button>
+          <input type="number" id="qty" value="1" min="1">
+          <button id="plus" aria-label="Increase">+</button>
+        </div>
+      </div>
+
+      <a class="btn block" href="#" id="addBtn">Add to cart · <span id="btnPrice">$34.00</span></a>
+      <p class="mono center" style="color:var(--muted);font-size:11px;margin:10px 0 0" id="addStat"></p>
+
+      <div class="handoff">
+        <a class="btn ghost" href="engrave-preview.html">Preview it on the product</a>
+        <a class="btn ghost" href="quote.html">Got your own design? Quote it</a>
+      </div>
+
+      <div class="panel" style="margin-top:24px">
+        <h2 class="lab">Specs</h2>
+        <div class="spec">
+          <div class="li"><span>Material</span><span>Cast acrylic, 3–5mm</span></div>
+          <div class="li"><span>Engraving</span><span>CO₂ laser, edge-lit</span></div>
+          <div class="li"><span>Base</span><span>USB / battery LED</span></div>
+          <div class="li"><span>Made in</span><span>Sydney, by hand</span></div>
+          <div class="li" style="border-bottom:none"><span>Care</span><span>Wipe with a dry cloth</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+<script src="site.js"></script>
+<script>
+/* read ?id= and swap basic copy so the page feels live per product.
+   Shopify will populate this properly later — structure stays. */
+const CATALOG = {
+  'name-nightlight':{name:'Edge-lit name night light',meta:'Acrylic · personalised · LED base included',price:34,mat:'acrylic',glyph:'⟡ NAME'},
+  'bamboo-board':{name:'Engraved bamboo serving board',meta:'Bamboo · monogram · food-safe oil finish',price:42,mat:'bamboo',glyph:'◳ BOARD'},
+  'slate-coaster':{name:'Slate coaster set (4)',meta:'Natural slate · custom text',price:28,mat:'slate',glyph:'▦ ×4'},
+  'timber-sign':{name:'Custom timber sign',meta:'Birch ply · cut + engrave',price:55,mat:'wood',glyph:'▭ SIGN'},
+};
+const id = new URLSearchParams(location.search).get('id');
+const p = CATALOG[id] || CATALOG['name-nightlight'];
+document.getElementById('pName').textContent = p.name;
+document.getElementById('crumbName').textContent = p.name;
+document.getElementById('pMeta').textContent = p.meta;
+document.getElementById('pPrice').textContent = '$'+p.price.toFixed(2);
+document.getElementById('btnPrice').textContent = '$'+p.price.toFixed(2);
+document.getElementById('heroPh').className = 'ph '+p.mat;
+document.getElementById('heroGlyph').textContent = p.glyph;
+document.title = p.name + ' — Marked By Hand';
+
+/* option toggles */
+function bindToggle(box){
+  box.addEventListener('click',e=>{
+    const b=e.target.closest('.opt'); if(!b) return;
+    box.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true');
+  });
+}
+bindToggle(document.getElementById('optSize'));
+bindToggle(document.getElementById('optBase'));
+
+/* live engraving preview into the glyph */
+document.getElementById('nameField').addEventListener('input',e=>{
+  const v=e.target.value.trim();
+  document.getElementById('heroGlyph').textContent = v ? '⟡ '+v.toUpperCase() : p.glyph;
+});
+
+/* qty */
+const qty=document.getElementById('qty');
+document.getElementById('plus').onclick=()=>{qty.value=(+qty.value||1)+1;updateBtn();};
+document.getElementById('minus').onclick=()=>{qty.value=Math.max(1,(+qty.value||1)-1);updateBtn();};
+qty.oninput=updateBtn;
+function updateBtn(){
+  const n=Math.max(1,+qty.value||1);
+  document.getElementById('btnPrice').textContent='$'+(p.price*n).toFixed(2);
+}
+
+/* thumbs */
+document.querySelectorAll('.pdp-thumbs .t').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.pdp-thumbs .t').forEach(x=>x.setAttribute('aria-current','false'));
+    t.setAttribute('aria-current','true');
+    const cls=t.querySelector('.ph').className;
+    document.getElementById('heroPh').className=cls;
+  });
+});
+
+/* add to cart stub */
+document.getElementById('addBtn').addEventListener('click',e=>{
+  e.preventDefault();
+  if(window.MBH) window.MBH.addToCart();
+  document.getElementById('addStat').textContent='Added — Shopify checkout wires in here after July 1.';
+});
+</script>
+</body>
+</html>

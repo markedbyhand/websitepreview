@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop — Marked By Hand</title>
+<meta name="description" content="Personalised laser-cut and engraved gifts, homewares and night lights, made to order in Sydney.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="wrap">
+  <p class="crumb"><a href="index.html">Home</a> / Shop</p>
+
+  <section class="section tight" style="padding-top:22px">
+    <p class="eyebrow">// Made to order · cut &amp; engraved in Sydney</p>
+    <h1 style="font-size:clamp(28px,4.4vw,42px);margin:6px 0 10px;letter-spacing:-.6px">Shop</h1>
+    <p class="lede" style="max-width:560px;color:#cabeac">Every item here is personalised before it ships. Pick a product, add your name or text, and we'll preview it back to you. Bringing your own design? <a href="quote.html">Get an instant quote</a> instead.</p>
+
+    <div class="notice warn" style="margin-top:18px">// Sample catalogue. Once hosting is live after July 1, this grid is replaced by the Shopify product feed — the card layout stays the same.</div>
+
+    <!-- category filter -->
+    <div class="tabs" id="cats" style="margin-top:26px">
+      <button data-cat="all" aria-selected="true">All</button>
+      <button data-cat="gifts">Personalised gifts</button>
+      <button data-cat="homewares">Homewares</button>
+      <button data-cat="nightlights">Night lights</button>
+      <button data-cat="signage">Signage</button>
+    </div>
+
+    <div class="pgrid" id="grid"></div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+<script src="site.js"></script>
+<script>
+const PRODUCTS = [
+  { id:'name-nightlight', name:'Edge-lit name night light', meta:'Acrylic · personalised', price:'34.00', from:true, mat:'acrylic', glyph:'⟡ NAME', cat:'nightlights', tag:'best' },
+  { id:'star-nightlight', name:'Star &amp; name night light', meta:'Acrylic · LED base', price:'38.00', from:true, mat:'acrylic', glyph:'✦ STAR', cat:'nightlights' },
+  { id:'bamboo-board',    name:'Engraved bamboo serving board', meta:'Bamboo · monogram', price:'42.00', from:true, mat:'bamboo', glyph:'◳ BOARD', cat:'homewares' },
+  { id:'slate-coaster',   name:'Slate coaster set (4)', meta:'Slate · custom text', price:'28.00', from:false, mat:'slate', glyph:'▦ ×4', cat:'homewares' },
+  { id:'acrylic-keytag',  name:'Acrylic key tag', meta:'Acrylic · cut to shape', price:'9.50', from:true, mat:'acrylic', glyph:'⬡ TAG', cat:'gifts' },
+  { id:'cake-topper',     name:'Acrylic cake topper', meta:'Acrylic · any name', price:'18.00', from:true, mat:'acrylic', glyph:'✦ TOPPER', cat:'gifts', tag:'best' },
+  { id:'timber-sign',     name:'Custom timber sign', meta:'Ply · cut + engrave', price:'55.00', from:true, mat:'wood', glyph:'▭ SIGN', cat:'signage' },
+  { id:'house-number',    name:'Modern house number', meta:'Acrylic · weatherproof', price:'32.00', from:true, mat:'acrylic', glyph:'№ 12', cat:'signage' },
+  { id:'pet-tag',         name:'Engraved pet tag', meta:'Bamboo · two-sided', price:'14.00', from:false, mat:'bamboo', glyph:'⬡ PET', cat:'gifts' },
+  { id:'plant-marker',    name:'Herb &amp; plant markers (6)', meta:'Bamboo · set', price:'22.00', from:false, mat:'bamboo', glyph:'❦ ×6', cat:'homewares' },
+  { id:'desk-name',       name:'Desk name plate', meta:'Slate + acrylic', price:'29.00', from:true, mat:'slate', glyph:'▭ NAME', cat:'gifts' },
+  { id:'wedding-board',   name:'Wedding welcome board', meta:'Ply · large format', price:'95.00', from:true, mat:'wood', glyph:'❀ WED', cat:'signage' },
+];
+
+function card(p){
+  return `<a class="pcard" href="product.html?id=${p.id}">
+    <div class="pthumb"><div class="ph ${p.mat}"><div class="glyph">${p.glyph}</div></div>
+      ${p.tag==='best'?'<span class="pill live tag"><span class="dot"></span>best-seller</span>':''}</div>
+    <div class="pbody">
+      <p class="pname">${p.name}</p>
+      <p class="pmeta">${p.meta}</p>
+      <div class="prow"><span class="price">${p.from?'<small>from </small>':''}$${p.price}</span>
+        <span class="mono" style="font-size:11px;color:var(--cyan)">Personalise ›</span></div>
+    </div>
+  </a>`;
+}
+const grid = document.getElementById('grid');
+function render(cat){
+  const items = cat==='all' ? PRODUCTS : PRODUCTS.filter(p=>p.cat===cat);
+  grid.innerHTML = items.map(card).join('');
+}
+render(location.hash ? location.hash.slice(1) : 'all');
+
+document.getElementById('cats').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  document.querySelectorAll('#cats button').forEach(x=>x.setAttribute('aria-selected','false'));
+  b.setAttribute('aria-selected','true');
+  render(b.dataset.cat);
+});
+</script>
+</body>
+</html>

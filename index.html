@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marked By Hand — Custom laser-cut &amp; engraved gifts, Sydney</title>
+<meta name="description" content="A Sydney home workshop making personalised laser-cut and engraved gifts. Upload a drawing, get an instant price, and we make it on a CO₂ laser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main>
+  <!-- ===================== HERO ===================== -->
+  <section class="wrap hero">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">// Custom laser studio · Sydney</p>
+        <h1>Your idea,<br>measured and made.<br><span class="ghost">Down to the millimetre.</span></h1>
+        <p class="lede">We turn your drawing, photo or a few words into something cut and engraved on a CO₂ laser — names, gifts, signage, homewares. Preview it, see the price before you commit, then we make it by hand.</p>
+        <div class="hero-cta">
+          <a class="btn lg" href="quote.html">Start a custom quote
+            <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a class="btn ghost lg" href="shop.html">Shop ready-made</a>
+        </div>
+        <div class="hero-trust">
+          <div><b>0,1mm</b>cut tolerance</div>
+          <div><b>2–4 day</b>typical turnaround</div>
+          <div><b>Aus-wide</b>tracked postage</div>
+        </div>
+      </div>
+
+      <!-- laser-bed hero visual -->
+      <div class="hero-bed bed-bg" id="heroBed" aria-label="Laser bed tracing a design">
+        <span class="corner tl">BED 0,0</span>
+        <span class="corner tr" id="bedDim">300 × 400 mm</span>
+        <span class="corner bl">CO₂ · 60W</span>
+        <svg class="bedsvg" viewBox="0 0 400 320" preserveAspectRatio="xMidYMid meet" id="bedSvg">
+          <!-- engraved wordmark path traced by the laser -->
+          <g fill="none" stroke="rgba(237,230,218,.18)" stroke-width="2">
+            <path id="trace" d="M60 200
+              C60 120 90 90 130 90 C170 90 180 130 150 150 C120 170 130 210 170 210
+              M200 210 L200 90 L250 150 L300 90 L300 210
+              M335 90 L335 210" />
+          </g>
+          <!-- amber laser-cut overlay revealed as the head moves -->
+          <path id="cut" d="M60 200
+              C60 120 90 90 130 90 C170 90 180 130 150 150 C120 170 130 210 170 210
+              M200 210 L200 90 L250 150 L300 90 L300 210
+              M335 90 L335 210"
+              fill="none" stroke="var(--amber)" stroke-width="2.4"
+              stroke-linecap="round" stroke-linejoin="round"
+              filter="url(#glow)"/>
+          <circle id="head" class="laserdot" r="3.4" cx="60" cy="200"/>
+          <defs>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="2.2" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+        </svg>
+        <div class="hero-readout">
+          <div class="rd"><div class="k">Material</div><div class="v" id="rdMat">Clear acrylic 3mm</div></div>
+          <div class="rd"><div class="k">Cut length</div><div class="v" id="rdLen">428 mm</div></div>
+          <div class="rd"><div class="k">Est. price</div><div class="v" style="color:var(--amber)" id="rdPrice">$24.50</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PIPELINE (signature) ===================== -->
+  <section class="wrap section tight">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">// How a custom order works</p>
+        <h2>Three steps from idea to doormat</h2>
+      </div>
+      <p>No three-day email chains. Each step has its own tool — use them in order, or jump straight to a quote.</p>
+    </div>
+    <div class="pipe">
+      <div class="pstep">
+        <span class="pn">STEP 01</span>
+        <h3>Preview</h3>
+        <p>Build the design and see exactly how it'll look — a name in edge-lit acrylic, or your text laid over the real product.</p>
+        <span class="ptool">tool: night-light-builder · engraving-previewer</span>
+        <a class="btn ghost" href="night-light.html">Open the builder</a>
+        <div class="arrow"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="pstep">
+        <span class="pn">STEP 02</span>
+        <h3>Price</h3>
+        <p>Drop your DXF into the quote engine. It measures size, cut length and engrave area, then prices it from a live rate card.</p>
+        <span class="ptool">tool: instant-quote-engine</span>
+        <a class="btn ghost" href="quote.html">Get an instant price</a>
+        <div class="arrow"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="pstep">
+        <span class="pn">STEP 03</span>
+        <h3>Order</h3>
+        <p>Happy with the preview and price? Confirm the order. We cut it, check it by eye, photograph it and post it tracked.</p>
+        <span class="ptool">checkout · made by hand · posted</span>
+        <a class="btn" href="shop.html">Start an order</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FEATURED PRODUCTS ===================== -->
+  <section class="wrap section">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">// Ready to personalise</p>
+        <h2>Best-sellers</h2>
+      </div>
+      <a class="btn ghost" href="shop.html">View all products</a>
+    </div>
+    <div class="pgrid" id="featured"><!-- injected --></div>
+  </section>
+
+  <!-- ===================== TOOLS SHOWCASE ===================== -->
+  <section class="bed-bg" style="border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+    <div class="wrap section">
+      <div class="sec-head">
+        <div>
+          <p class="eyebrow">// The workshop tools</p>
+          <h2>Built in-house, free to play with</h2>
+        </div>
+        <p>We make our own tools so quoting and previewing is instant. They run right in your browser — nothing to install.</p>
+      </div>
+      <div class="pgrid" id="tools"><!-- injected --></div>
+    </div>
+  </section>
+
+  <!-- ===================== STORY BAND ===================== -->
+  <section class="wrap section">
+    <div class="hero-grid">
+      <div class="hero-bed bed-bg" style="aspect-ratio:4/3;min-height:240px">
+        <span class="corner tl">SYDNEY · NSW</span>
+        <span class="corner br">HOME WORKSHOP</span>
+        <div class="ph slate" style="position:absolute;inset:0;opacity:.6"></div>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;text-align:center;padding:24px">
+          <span class="mark" style="width:46px;height:46px"></span>
+          <div class="mono" style="color:var(--muted);font-size:12px">Tim cuts &amp; engraves · Kannika styles, shoots &amp; ships</div>
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow">// Who's behind it</p>
+        <h2 style="font-size:clamp(24px,3.4vw,34px);margin:6px 0 14px;letter-spacing:-.4px">Two people, one laser, a lot of care</h2>
+        <p style="color:#cabeac;font-size:16px;margin:0 0 14px">Marked By Hand is a husband-and-wife studio run out of a home workshop in Sydney. Tim runs the design and the CO₂ laser; Kannika handles styling, photography and getting your order packed and posted.</p>
+        <p style="color:#cabeac;font-size:16px;margin:0 0 22px">Because it's just us, every piece gets looked at by a human before it goes in the box. If something isn't right, it doesn't ship.</p>
+        <a class="btn ghost" href="about.html">Read our story</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== GALLERY STRIP ===================== -->
+  <section class="wrap section tight">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">// Out of the workshop</p>
+        <h2>Recent makes</h2>
+      </div>
+      <a class="btn ghost" href="shop.html">Shop these</a>
+    </div>
+    <div class="pgrid" style="grid-template-columns:repeat(auto-fill,minmax(170px,1fr))" id="gallery"><!-- injected --></div>
+  </section>
+
+  <!-- ===================== CTA BAND ===================== -->
+  <section class="wrap section">
+    <div class="panel bed-bg center" style="padding:46px 24px">
+      <p class="eyebrow center" style="text-align:center">// Got a file or just an idea?</p>
+      <h2 style="font-size:clamp(24px,4vw,38px);margin:6px 0 12px;letter-spacing:-.5px">Let's see what it costs.</h2>
+      <p style="color:#cabeac;max-width:520px;margin:0 auto 24px">Send through a DXF for an instant price, or tell us what you're imagining and we'll work it out with you.</p>
+      <div class="hero-cta" style="justify-content:center">
+        <a class="btn lg" href="quote.html">Instant quote</a>
+        <a class="btn ghost lg" href="contact.html">Talk to a human</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="site.js"></script>
+<script>
+/* ---- hero laser trace animation (reduced-motion safe) ---- */
+(function () {
+  const cut = document.getElementById('cut');
+  const head = document.getElementById('head');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!cut || !head) return;
+  const len = cut.getTotalLength();
+  cut.style.strokeDasharray = len;
+  if (reduce) { cut.style.strokeDashoffset = 0; return; }
+  cut.style.strokeDashoffset = len;
+  let t = 0;
+  function frame() {
+    t += 0.0045;
+    if (t > 1.18) t = -0.05;          // brief pause then re-trace
+    const p = Math.max(0, Math.min(1, t));
+    cut.style.strokeDashoffset = len * (1 - p);
+    const pt = cut.getPointAtLength(len * p);
+    head.setAttribute('cx', pt.x);
+    head.setAttribute('cy', pt.y);
+    head.style.opacity = (p > 0 && p < 1) ? 1 : 0;
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ---- sample product data (Shopify will replace this feed later) ---- */
+const PRODUCTS = [
+  { id:'name-nightlight', name:'Edge-lit name night light', meta:'Acrylic · personalised', price:'34.00', from:true, mat:'acrylic', glyph:'⟡ NAME', tag:'best' },
+  { id:'bamboo-board',    name:'Engraved bamboo serving board', meta:'Bamboo · monogram', price:'42.00', from:true, mat:'bamboo', glyph:'◳ BOARD' },
+  { id:'slate-coaster',   name:'Slate coaster set (4)', meta:'Slate · custom text', price:'28.00', from:false, mat:'slate', glyph:'▦ ×4' },
+  { id:'acrylic-keytag',  name:'Acrylic key tag', meta:'Acrylic · cut to shape', price:'9.50', from:true, mat:'acrylic', glyph:'⬡ TAG' },
+  { id:'timber-sign',     name:'Custom timber sign', meta:'Ply · cut + engrave', price:'55.00', from:true, mat:'wood', glyph:'▭ SIGN' },
+  { id:'cake-topper',     name:'Acrylic cake topper', meta:'Acrylic · any name', price:'18.00', from:true, mat:'acrylic', glyph:'✦ TOPPER' },
+];
+
+function priceLine(p){
+  return `<span class="price">${p.from?'<small>from </small>':''}$${p.price}</span>`;
+}
+function card(p){
+  return `<a class="pcard" href="product.html?id=${p.id}">
+    <div class="pthumb"><div class="ph ${p.mat}"><div class="glyph">${p.glyph}</div></div>
+      ${p.tag==='best'?'<span class="pill live tag"><span class="dot"></span>best-seller</span>':''}</div>
+    <div class="pbody">
+      <p class="pname">${p.name}</p>
+      <p class="pmeta">${p.meta}</p>
+      <div class="prow">${priceLine(p)}<span class="mono" style="font-size:11px;color:var(--cyan)">Personalise ›</span></div>
+    </div>
+  </a>`;
+}
+document.getElementById('featured').innerHTML = PRODUCTS.slice(0,4).map(card).join('');
+
+/* gallery uses lighter tiles */
+const GAL = [
+  {mat:'acrylic',glyph:'"Zekie"'},{mat:'bamboo',glyph:'Wedding board'},
+  {mat:'slate',glyph:'House no. 12'},{mat:'wood',glyph:'Cafe sign'},
+  {mat:'acrylic',glyph:'Star night light'},
+];
+document.getElementById('gallery').innerHTML = GAL.map(g=>
+  `<div class="pcard"><div class="pthumb"><div class="ph ${g.mat}"><div class="glyph">${g.glyph}</div></div></div></div>`
+).join('');
+
+/* tools showcase (pulls from the same list site.js uses) */
+const TOOLCARDS = (window.MBH && window.MBH.tools) || [];
+const tStatus = {live:'Live',beta:'Beta',soon:'Coming soon'};
+document.getElementById('tools').innerHTML = TOOLCARDS.map(t=>`
+  <a class="pcard" href="${t.href}">
+    <div class="pthumb bed-bg" style="aspect-ratio:16/10">
+      <div class="glyph" style="font-size:26px">${t.icon==='tag'?'⟦$⟧':t.icon==='bulb'?'☼':'◉'}</div>
+    </div>
+    <div class="pbody">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <p class="pname">${t.label}</p>
+        <span class="pill ${t.status}"><span class="dot"></span>${tStatus[t.status]}</span>
+      </div>
+      <p class="pmeta" style="margin-top:5px;line-height:1.5">${t.desc}</p>
+      <div class="prow"><span class="mono" style="font-size:11px;color:var(--cyan)">Open tool ›</span></div>
+    </div>
+  </a>`).join('');
+</script>
+</body>
+</html>

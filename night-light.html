@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Night Light DXF Builder — Marked By Hand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Baloo+2:wght@700&family=Pacifico&family=Caveat:wght@700&family=Poppins:wght@600&family=Bebas+Neue&family=Lobster&family=Bangers&family=Luckiest+Guy&family=Righteous&family=Permanent+Marker&family=Satisfy&family=Sigmar+One&family=Chewy&family=Monoton&family=Bungee&family=Shrikhand&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14171c;--panel:#1b1f26;--panel-2:#222732;--line:#2e3540;--ink:#e9ecf1;--muted:#8b93a1;
+    --amber:#e0a24a;--amber-soft:#3a2f1d;--led:#9fe8ff;--cut:#ff7a59;--radius:14px;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px clamp(14px,3vw,30px) 60px}
+  header{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin:6px 0 4px}
+  header h1{font-size:20px;letter-spacing:-.01em;margin:0;font-weight:650}
+  header .tag{font-family:var(--mono);font-size:11px;color:var(--amber);border:1px solid var(--amber-soft);
+    background:var(--amber-soft);padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.08em}
+  header p{color:var(--muted);margin:2px 0 18px;font-size:13.5px;width:100%}
+  .grid{display:grid;grid-template-columns:330px 1fr;gap:16px;align-items:start}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}.preview-col{position:static!important}}
+  .preview-col{position:sticky;top:10px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:13px;margin-bottom:10px}
+  .card:last-child{margin-bottom:0}
+  .card h2{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 12px;font-weight:600}
+  .field{margin-bottom:10px}.field:last-child{margin-bottom:0}
+  label.lab{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:var(--muted);margin-bottom:6px}
+  label.lab b{color:var(--ink);font-family:var(--mono);font-weight:500;font-size:12px}
+  input[type=range]{width:100%;accent-color:var(--amber);height:22px}
+  input[type=text],select{width:100%;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+    border-radius:9px;padding:9px 10px;font:inherit;font-size:14px}
+  select{appearance:none;cursor:pointer}
+  .row{display:flex;gap:8px}.row>*{flex:1}
+  .drop{border:1.5px dashed var(--line);border-radius:11px;padding:20px 14px;text-align:center;cursor:pointer;
+    transition:.15s;color:var(--muted);font-size:13.5px;background:var(--panel-2)}
+  .drop:hover,.drop.over{border-color:var(--amber);background:#20242c;color:var(--ink)}.drop b{color:var(--amber)}
+  .seg{display:flex;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
+  .seg button{flex:1;background:transparent;border:0;color:var(--muted);padding:7px 4px;border-radius:7px;font:inherit;font-size:12.5px;cursor:pointer}
+  .seg button.on{background:var(--amber);color:#14110a;font-weight:600}
+  .toggle{display:flex;align-items:center;gap:9px;cursor:pointer;font-size:13.5px;color:var(--ink);user-select:none}
+  .toggle input{accent-color:var(--amber);width:16px;height:16px}
+  .stagebar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap}
+  #stagebox{width:100%;aspect-ratio:4/3;border-radius:12px;overflow:hidden;touch-action:none}
+  #stagebox svg{width:100%;height:100%;display:block}
+  [data-drag]{cursor:grab}[data-drag]:active{cursor:grabbing}
+  .stage-blue{background:linear-gradient(0deg,rgba(255,255,255,.02) 1px,transparent 1px) 0 0/24px 24px,
+    linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px) 0 0/24px 24px,#10141a}
+  .stage-lit{background:radial-gradient(120% 90% at 50% 120%,#0a2230 0%,#070b10 70%)}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+  .stat{background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:9px 11px}
+  .stat .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+  .stat .v{font-family:var(--mono);font-size:15px;margin-top:2px}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--amber);color:#14110a;
+    border:0;border-radius:10px;padding:12px;font:inherit;font-weight:650;font-size:14.5px;cursor:pointer;margin-top:12px}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:500;margin-top:8px;padding:9px}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+  .legend{display:flex;gap:14px;font-size:11.5px;color:var(--muted);font-family:var(--mono);margin-top:10px}
+  .legend i{display:inline-block;width:18px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px}
+  .empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:13.5px;text-align:center;padding:30px}
+  .hide{display:none}
+  .warn{margin:0 0 10px;padding:9px 12px;border-radius:9px;font-size:12.5px;line-height:1.45;
+    background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.4);color:#ffb3b3}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Night Light DXF Builder</h1>
+    <span class="tag">Marked By Hand · phase 1</span>
+    <p>Drop clean cartoon or line art for the engrave, add a name, choose how the panel is cut, then export a layered DXF to quote and run. Drag the artwork or name in the preview — they snap to centre.</p>
+  </header>
+
+  <div class="grid">
+    <!-- ===== CONTROLS ===== -->
+    <div>
+      <div class="card">
+        <h2>1 · Artwork (engrave)</h2>
+        <div class="field">
+          <div class="drop" id="drop">Drop image or <b>browse</b><br><span style="font-size:11.5px">PNG / JPG · line art or cartoon</span></div>
+          <input type="file" id="file" accept="image/*" hidden>
+        </div>
+        <div class="field"><label class="lab">Ink threshold <b id="thOut">128</b></label><input type="range" id="th" min="20" max="240" value="128"></div>
+        <div class="field"><label class="toggle"><input type="checkbox" id="inv"> Invert (light on dark)</label></div>
+        <div class="field"><label class="lab">Remove specks <b id="spOut">6 px</b></label><input type="range" id="sp" min="0" max="40" value="6"></div>
+        <div class="field"><label class="lab">Line smoothing <b id="smOut">1.0</b></label><input type="range" id="sm" min="0" max="40" value="10"></div>
+        <div class="field"><label class="lab">Image size <b id="isOut">100%</b></label><input type="range" id="is" min="40" max="180" value="100"></div>
+      </div>
+
+      <div class="card">
+        <h2>2 · Name (engrave)</h2>
+        <div class="field"><input type="text" id="name" placeholder="e.g. Zekie" maxlength="18"></div>
+        <div class="field"><select id="font">
+          <option value="Fredoka">Fredoka — rounded</option>
+          <option value="Baloo 2">Baloo 2 — chunky</option>
+          <option value="Poppins">Poppins — clean sans</option>
+          <option value="Bangers">Bangers — comic</option>
+          <option value="Luckiest Guy">Luckiest Guy — cartoon</option>
+          <option value="Chewy">Chewy — bubbly</option>
+          <option value="Righteous">Righteous — retro</option>
+          <option value="Bungee">Bungee — bold display</option>
+          <option value="Sigmar One">Sigmar One — heavy</option>
+          <option value="Bebas Neue">Bebas Neue — tall caps</option>
+          <option value="Monoton">Monoton — neon</option>
+          <option value="Press Start 2P">Press Start 2P — pixel</option>
+          <option value="Pacifico">Pacifico — script</option>
+          <option value="Satisfy">Satisfy — flowing script</option>
+          <option value="Lobster">Lobster — retro script</option>
+          <option value="Shrikhand">Shrikhand — funky</option>
+          <option value="Permanent Marker">Permanent Marker — marker</option>
+          <option value="Caveat">Caveat — handwritten</option>
+        </select></div>
+        <div class="field"><label class="lab">Name size <b id="nsOut">28%</b></label><input type="range" id="ns" min="8" max="65" value="28"></div>
+        <div class="field"><label class="lab">Arch / curve <b id="arOut">0</b></label><input type="range" id="ar" min="0" max="100" value="0"></div>
+        <div class="field"><label class="lab">Rotate name <b id="nameRotOut">0°</b></label><input type="range" id="nameRot" min="-90" max="90" value="0"></div>
+        <button class="btn ghost" id="centerName">Re-centre name under art</button>
+      </div>
+
+      <div class="card">
+        <h2>Decorations (engrave)</h2>
+        <div class="field"><label class="toggle"><input type="checkbox" id="decorOn"> Sprinkle clip-art</label></div>
+        <p class="hint" style="margin:-2px 0 8px;font-size:11.5px;opacity:.7">Generic-shape cuts only · stays inside the cut, never overlaps</p>
+        <div id="decorCtl" class="hide">
+          <div class="field"><select id="decorType">
+            <option value="stars">Stars &amp; sparkles</option>
+            <option value="space">Space (stars, moons, suns)</option>
+            <option value="cute">Cute (hearts, flowers)</option>
+            <option value="mixed">Mixed</option>
+          </select></div>
+          <div class="field"><label class="lab">Count <b id="decorCountOut">14</b></label><input type="range" id="decorCount" min="0" max="60" value="14"></div>
+          <div class="field"><label class="lab">Size <b id="decorSizeOut">50%</b></label><input type="range" id="decorSize" min="15" max="120" value="50"></div>
+          <div class="field"><label class="lab">Spread <b id="decorSpreadOut">40%</b></label><input type="range" id="decorSpread" min="5" max="90" value="40"></div>
+          <button class="btn ghost" id="decorShuffle">↻ Shuffle</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>3 · Cut outline</h2>
+        <div class="field"><div class="seg" id="cutSeg">
+          <button data-cut="around" class="on">Around shape</button>
+          <button data-cut="shape">Generic shape</button>
+        </div></div>
+
+        <div id="aroundCtl">
+          <div class="field"><label class="lab">Gap from art <b id="gapOut">24 px</b></label><input type="range" id="gap" min="20" max="60" value="24"></div>
+          <div class="field"><label class="lab">Edge smoothing <b id="csOut">2</b></label><input type="range" id="cs" min="0" max="4" value="2" step="1"></div>
+          <div class="field"><label class="toggle"><input type="checkbox" id="flatBase" checked> Flat nameplate base (holds the name)</label></div>
+          <div class="field"><label class="lab">Light bridge (fill thin necks) <b id="bridgeOut">0</b></label><input type="range" id="bridge" min="0" max="50" value="0"></div>
+        </div>
+
+        <div id="shapeCtl" class="hide">
+          <div class="field"><select id="shape">
+            <option value="circle">Circle / ellipse</option>
+            <option value="round">Rounded rectangle</option>
+            <option value="rect">Rectangle</option>
+            <option value="arch">Arch (rounded top)</option>
+          </select></div>
+          <div class="field"><label class="lab">Shape padding <b id="mgOut">10%</b></label><input type="range" id="mg" min="0" max="40" value="10"></div>
+        </div>
+
+        <div class="field" style="margin-top:14px"><label class="toggle"><input type="checkbox" id="tab" checked> Base tab for light stand</label></div>
+        <div class="field"><label class="lab">Tab width <b id="tabWOut">70 mm</b></label><input type="range" id="tabW" min="20" max="100" value="70" step="1"></div>
+        <div class="field"><label class="lab">Tab height <b id="tabHOut">17 mm</b></label><input type="range" id="tabH" min="6" max="30" value="17" step="1"></div>
+        <div class="field"><label class="lab">Tab position L–R <b id="tabOffOut">0 mm</b></label><input type="range" id="tabOff" min="-60" max="60" value="0" step="1"></div>
+        <div class="field"><label class="lab">Panel width <b id="twOut">150 mm</b></label><input type="range" id="tw" min="60" max="180" value="150" step="5"></div>
+        <div class="field"><label class="toggle"><input type="checkbox" id="mir"> Mirror X for back-engraving</label></div>
+        <button class="btn" id="export" disabled>Download DXF</button>
+        <div class="hint">Two DXF layers: <b style="color:var(--cut)">CUT</b> and <b style="color:var(--led)">ENGRAVE</b>, exported in millimetres for LightBurn or your quote tool.</div>
+      </div>
+    </div>
+
+    <!-- ===== PREVIEW ===== -->
+    <div class="preview-col">
+      <div class="card">
+        <div class="stagebar">
+          <h2 style="margin:0">Preview</h2>
+          <div style="display:flex;align-items:center;gap:12px">
+            <label class="toggle" style="font-size:12.5px;white-space:nowrap"><input type="checkbox" id="snapOn" checked> Snap to centre</label>
+            <div class="seg" id="modeSeg" style="max-width:200px">
+              <button data-mode="blue" class="on">Blueprint</button>
+              <button data-mode="lit">Lit</button>
+            </div>
+          </div>
+        </div>
+        <div id="warn" class="warn hide"></div>
+        <div id="stagebox" class="stage-blue"><div class="empty">Drop an image here, or use the box top-left, to begin.</div></div>
+        <div class="legend">
+          <span><i style="background:var(--led)"></i>Engrave</span>
+          <span><i style="background:var(--cut)"></i>Cut</span>
+          <span style="color:#5a6472">drag art / name · snaps to centre</span>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="k">Engrave paths</div><div class="v" id="sPaths">—</div></div>
+          <div class="stat"><div class="k">Total nodes</div><div class="v" id="sNodes">—</div></div>
+          <div class="stat"><div class="k">Panel size</div><div class="v" id="sSize">—</div></div>
+          <div class="stat"><div class="k">Engrave line ≈</div><div class="v" id="sLen">—</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const off=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c;};
+const TRACE_MAX=640;
+
+/* ---------------- geometry / tracer (validated) ---------------- */
+function cellSegments(c0,c1,c2,c3,x,y){const T=[x+0.5,y],R=[x+1,y+0.5],B=[x+0.5,y+1],L=[x,y+0.5];
+ switch(c0+2*c1+4*c2+8*c3){case 1:return[[L,T]];case 2:return[[T,R]];case 3:return[[L,R]];case 4:return[[R,B]];
+ case 5:return[[L,T],[R,B]];case 6:return[[T,B]];case 7:return[[B,L]];case 8:return[[B,L]];case 9:return[[T,B]];
+ case 10:return[[T,R],[B,L]];case 11:return[[R,B]];case 12:return[[L,R]];case 13:return[[T,R]];case 14:return[[L,T]];default:return[];}}
+const pk=p=>Math.round(p[0]*2)+'_'+Math.round(p[1]*2);
+function traceGrid(grid,w,h){const at=(x,y)=>(x<0||y<0||x>=w||y>=h)?0:grid[y*w+x];const nodes=new Map(),edges=[];
+ const node=p=>{const k=pk(p);let n=nodes.get(k);if(!n){n={pt:p,e:[]};nodes.set(k,n);}return k;};
+ for(let y=-1;y<h;y++)for(let x=-1;x<w;x++){for(const[a,b]of cellSegments(at(x,y),at(x+1,y),at(x+1,y+1),at(x,y+1),x,y)){
+   const ka=node(a),kb=node(b),i=edges.length;edges.push({a:ka,b:kb,u:0});nodes.get(ka).e.push(i);nodes.get(kb).e.push(i);}}
+ const loops=[];for(let i=0;i<edges.length;i++){if(edges[i].u)continue;const lp=[];let ce=i,ck=edges[i].a;
+  while(ce!==-1&&!edges[ce].u){edges[ce].u=1;const e=edges[ce];const nk=e.a===ck?e.b:e.a;lp.push(nodes.get(nk).pt);ck=nk;
+   let nx=-1;for(const ei of nodes.get(ck).e)if(!edges[ei].u){nx=ei;break;}ce=nx;}
+  if(lp.length>=3)loops.push(lp);}return loops;}
+function dp(pts,eps){if(pts.length<3||eps<=0)return pts;const keep=new Array(pts.length).fill(false);keep[0]=keep[pts.length-1]=true;
+ const st=[[0,pts.length-1]];while(st.length){const[s,e]=st.pop();let dm=0,idx=-1;const[x1,y1]=pts[s],[x2,y2]=pts[e],dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy)||1;
+ for(let i=s+1;i<e;i++){const[px,py]=pts[i];const d=Math.abs(dx*(y1-py)-dy*(x1-px))/L;if(d>dm){dm=d;idx=i;}}
+ if(dm>eps&&idx!==-1){keep[idx]=true;st.push([s,idx],[idx,e]);}}return pts.filter((_,i)=>keep[i]);}
+function chaikin(pts,iter){let p=pts;for(let k=0;k<iter;k++){const q=[],n=p.length;
+  for(let i=0;i<n;i++){const a=p[i],b=p[(i+1)%n];q.push([a[0]*.75+b[0]*.25,a[1]*.75+b[1]*.25]);q.push([a[0]*.25+b[0]*.75,a[1]*.25+b[1]*.75]);}p=q;}return p;}
+const bbox=ls=>{let a=1e9,b=1e9,c=-1e9,d=-1e9;for(const lp of ls)for(const[x,y]of lp){if(x<a)a=x;if(y<b)b=y;if(x>c)c=x;if(y>d)d=y;}return[a,b,c,d];};
+const area=lp=>{const[a,b,c,d]=bbox([lp]);return(c-a)*(d-b);};
+const llen=lp=>{let s=0;for(let i=1;i<lp.length;i++)s+=Math.hypot(lp[i][0]-lp[i-1][0],lp[i][1]-lp[i-1][1]);return s;};
+
+/* ---------------- state ---------------- */
+let srcImg=null;
+let imgLoops=null,imgW=0,imgH=0,imgScale=1,imgPos={x:0,y:0};
+let nameLoops=[],nameW=0,nameH=0,namePos={x:0,y:0},namePlaced=false;
+let stageW=0,stageH=0;
+let aroundLoop=null;                 // cached offset cut (stage coords)
+let aroundConnected=true;            // does the name join the artwork into one piece?
+let result=null;                     // {engImg,engName,engrave,cut,content}
+let cutMode='around', mode='blue';
+let snapX=null,snapY=null;
+let decorLoops=[], decorSeed=1234, lastVB=null, pan=null;
+
+const fontWeight=f=>({'Fredoka':'600','Poppins':'600','Baloo 2':'700','Caveat':'700'})[f]||'400';
+function ensureStage(){ if(!stageW){stageW=720;stageH=920;} }
+
+/* ---------- decorations (clip-art sprinkles) ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function decorShape(type){
+  const P=[],push=(r,a)=>P.push([Math.cos(a)*r,Math.sin(a)*r]);
+  if(type==='star'){for(let i=0;i<10;i++)push(i%2?0.42:1,-Math.PI/2+i*Math.PI/5);}
+  else if(type==='sparkle'){for(let i=0;i<8;i++)push(i%2?0.2:1,-Math.PI/2+i*Math.PI/4);}
+  else if(type==='sun'){for(let i=0;i<24;i++)push(i%2?0.62:1,i*Math.PI/12);}
+  else if(type==='dot'){for(let i=0;i<18;i++)push(1,i*Math.PI/9);}
+  else if(type==='heart'){for(let i=0;i<=24;i++){const t=Math.PI-i*2*Math.PI/24,xx=16*Math.pow(Math.sin(t),3),yy=13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);P.push([xx/17,-yy/17]);}}
+  else if(type==='moon'){for(let i=0;i<=16;i++){const a=-Math.PI/2+i*Math.PI/16;P.push([Math.cos(a),Math.sin(a)]);}for(let i=16;i>=0;i--){const a=-Math.PI/2+i*Math.PI/16;P.push([Math.cos(a)*0.92+0.45,Math.sin(a)*0.92]);}}
+  else if(type==='flower'){for(let i=0;i<60;i++){const a=i/60*2*Math.PI,r=0.55+0.45*Math.abs(Math.cos(2.5*a));push(r,a);}}
+  return P;
+}
+const DECOR_SETS={stars:['star','sparkle'],space:['star','sparkle','sun','moon'],cute:['heart','flower','star'],mixed:['star','sparkle','sun','moon','heart','dot']};
+function pointInPoly(x,y,poly){let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i][0],yi=poly[i][1],xj=poly[j][0],yj=poly[j][1];if(((yi>y)!=(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))inside=!inside;}return inside;}
+/* fill decorations evenly INSIDE the cut polygon, clear of the art/name and of each other */
+function fillDecor(poly, content){
+  const rnd=mulberry32(decorSeed), set=DECOR_SETS[$('decorType').value]||DECOR_SETS.stars;
+  const count=+$('decorCount').value, baseSz=(+$('decorSize').value/100)*Math.min(stageW,stageH)*0.09, spread=+$('decorSpread').value/100;
+  const pb=bbox([poly]), inset=baseSz*1.25, clear=baseSz*0.7+spread*Math.min(stageW,stageH)*0.22;
+  const ex=[content[0]-clear,content[1]-clear,content[2]+clear,content[3]+clear];
+  const placed=[]; let tries=0, max=count*50;
+  while(placed.length<count && tries<max){
+    tries++;
+    const px=pb[0]+inset+rnd()*(pb[2]-pb[0]-2*inset), py=pb[1]+inset+rnd()*(pb[3]-pb[1]-2*inset);
+    const sz=baseSz*(0.7+rnd()*0.7), r=sz*1.15;
+    if(px>ex[0]&&px<ex[2]&&py>ex[1]&&py<ex[3])continue;                                   // clear of art/name
+    if(!pointInPoly(px,py,poly)||!pointInPoly(px-r,py,poly)||!pointInPoly(px+r,py,poly)||!pointInPoly(px,py-r,poly)||!pointInPoly(px,py+r,poly))continue; // fully inside cut
+    let bad=false;for(const q of placed)if(Math.hypot(px-q.x,py-q.y)<r+q.r+baseSz*0.3){bad=true;break;}
+    if(bad)continue;                                                                       // no overlap
+    placed.push({x:px,y:py,r,sz,type:set[(rnd()*set.length)|0],rot:rnd()*2*Math.PI});
+  }
+  return placed.map(d=>{const co=Math.cos(d.rot),si=Math.sin(d.rot);
+    return decorShape(d.type).map(([x,y])=>[d.x+(x*co-y*si)*d.sz, d.y+(x*si+y*co)*d.sz]);});
+}
+
+/* ---------------- trace uploaded image ---------------- */
+function traceImage(){
+  if(!srcImg)return;
+  const inv=$('inv').checked,th=+$('th').value,speck=+$('sp').value,smooth=+$('sm').value/10;
+  const sc=Math.min(1,TRACE_MAX/Math.max(srcImg.width,srcImg.height));
+  const gw=Math.max(8,Math.round(srcImg.width*sc)),gh=Math.max(8,Math.round(srcImg.height*sc));
+  const c=off(gw,gh),x=c.getContext('2d',{willReadFrequently:true});
+  x.fillStyle='#fff';x.fillRect(0,0,gw,gh);x.drawImage(srcImg,0,0,gw,gh);
+  const d=x.getImageData(0,0,gw,gh).data,grid=new Uint8Array(gw*gh);
+  for(let i=0;i<gw*gh;i++){const a=d[i*4+3],lum=a<20?255:0.299*d[i*4]+0.587*d[i*4+1]+0.114*d[i*4+2];grid[i]=(inv?lum>th:lum<th)?1:0;}
+  let loops=[];for(let lp of traceGrid(grid,gw,gh)){const[a,b,cc,dd]=bbox([lp]);if(Math.max(cc-a,dd-b)<speck)continue;lp=dp(lp,smooth);if(lp.length>=3)loops.push(lp);}
+  imgLoops=loops;imgW=gw;imgH=gh;
+  stageW=Math.round(gw*1.6);stageH=Math.round(gh*1.7);
+  imgScale=+$('is').value/100;
+  imgPos={x:(stageW-gw*imgScale)/2,y:(stageH-gh*imgScale)/2-gh*0.12};
+  namePlaced=false;
+  traceName();        // re-place name relative to new image, then compose
+}
+
+/* ---------------- trace name ---------------- */
+let nameJob=0;
+const imgToGrid=(im,w,h)=>{const d=im.data,g=new Uint8Array(w*h);for(let i=0;i<w*h;i++)g[i]=d[i*4]<128?1:0;return g;};
+async function traceName(){
+  ensureStage();
+  const txt=$('name').value.trim();
+  if(!txt){nameLoops=[];nameW=nameH=0;afterName();return;}
+  const family=$('font').value,wt=fontWeight(family),job=++nameJob;
+  const archAmt=+$('ar').value/100, fsR=110;          // fixed raster size, scaled to stage later
+  try{await document.fonts.load(`${wt} ${fsR}px "${family}"`);}catch(e){}
+  if(job!==nameJob)return;
+  const fontStr=`${wt} ${fsR}px "${family}"`;
+  const m=off(10,10).getContext('2d');m.font=fontStr;
+  let grid,W,H;
+  if(archAmt<=0.001){
+    const pad=Math.round(fsR*0.4);W=Math.ceil(m.measureText(txt).width)+pad*2;H=Math.ceil(fsR*1.6)+pad*2;
+    const c=off(W,H),x=c.getContext('2d',{willReadFrequently:true});
+    x.fillStyle='#fff';x.fillRect(0,0,W,H);x.fillStyle='#000';x.textAlign='center';x.textBaseline='middle';x.font=fontStr;
+    x.fillText(txt,W/2,H/2);grid=imgToGrid(x.getImageData(0,0,W,H),W,H);
+  }else{
+    const total=Math.max(1,m.measureText(txt).width),span=0.3+archAmt*1.7,R=total/span,sag=R*(1-Math.cos(span/2));
+    W=Math.ceil(total+fsR*1.6);H=Math.ceil(sag+fsR*1.95);
+    const c=off(W,H),x=c.getContext('2d',{willReadFrequently:true});
+    x.fillStyle='#fff';x.fillRect(0,0,W,H);x.fillStyle='#000';x.textAlign='center';x.textBaseline='middle';x.font=fontStr;
+    x.translate(W/2,R+fsR*0.98);x.rotate(-span/2);     // pivot below canvas, sweep over the top
+    for(const ch of txt){const cw=m.measureText(ch).width;x.rotate((cw/2)/R);x.save();x.translate(0,-R);x.fillText(ch,0,0);x.restore();x.rotate((cw/2)/R);}
+    grid=imgToGrid(x.getImageData(0,0,W,H),W,H);
+  }
+  let loops=traceGrid(grid,W,H).map(lp=>dp(lp,0.7)).filter(lp=>lp.length>=3);
+  if(loops.length){const[a,b,c2,d2]=bbox(loops),ref=imgLoops?imgW*imgScale:stageW,scl=(ref*(+$('ns').value/100))/fsR;
+    loops=loops.map(lp=>lp.map(p=>[(p[0]-a)*scl,(p[1]-b)*scl]));nameW=(c2-a)*scl;nameH=(d2-b)*scl;
+    const rot=(+$('nameRot').value)*Math.PI/180;
+    if(rot){const ccx=nameW/2,ccy=nameH/2,co=Math.cos(rot),si=Math.sin(rot);
+      loops=loops.map(lp=>lp.map(([x,y])=>{const dx=x-ccx,dy=y-ccy;return[ccx+dx*co-dy*si,ccy+dx*si+dy*co];}));
+      const[na,nb,nc,nd]=bbox(loops);loops=loops.map(lp=>lp.map(p=>[p[0]-na,p[1]-nb]));nameW=nc-na;nameH=nd-nb;}
+  }
+  else{nameW=nameH=0;}
+  nameLoops=loops;afterName();
+}
+function afterName(){
+  if(!namePlaced&&nameW){
+    if(imgLoops)namePos={x:imgPos.x+(imgW*imgScale-nameW)/2,y:imgPos.y+imgH*imgScale*0.99};
+    else namePos={x:(stageW-nameW)/2,y:(stageH-nameH)/2};
+    namePlaced=true;
+  }
+  compose(true);
+}
+
+/* ---------------- compose ---------------- */
+function compose(recomputeCut){
+  const engImg=imgLoops?imgLoops.map(lp=>lp.map(p=>[imgPos.x+p[0]*imgScale,imgPos.y+p[1]*imgScale])):[];
+  const engName=nameLoops.map(lp=>lp.map(p=>[namePos.x+p[0],namePos.y+p[1]]));
+  const core=engImg.concat(engName);
+  if(!core.length){result=null;render();stats();$('warn').className='warn hide';$('export').disabled=true;return;}
+  const content=bbox(core);
+  let cut=[], engDecor=[];
+  if(cutMode==='shape'){
+    // shape centres horizontally on the stage and hugs the content vertically, so you can slide
+    // the image/name left or right within the cut instead of the shape always re-centring on it
+    const scx=stageW/2, hw=Math.max(content[2]-scx, scx-content[0]);
+    const sbox=[scx-hw, content[1], scx+hw, content[3]];
+    cut=[shapeCut(sbox)];
+    if($('decorOn').checked) engDecor = (drag||pan) ? decorLoops : fillDecor(cut[0], content);
+  }else{
+    if(recomputeCut||!aroundLoop){aroundLoop=computeAround(engImg, engName);}
+    if(aroundLoop)cut=[aroundLoop];
+  }
+  decorLoops=engDecor;
+  const engrave=core.concat(engDecor);
+  result={engImg,engName,engDecor,engrave,cut,content};
+  render();stats();
+  const disc = cutMode==='around' && engName.length>0 && !!imgLoops && !aroundConnected;
+  const warn=$('warn');
+  if(disc){warn.className='warn';warn.textContent='⚠ The name isn’t joined to the artwork — move it closer (or raise the gap / light bridge) so the cut is one piece. Export is disabled until it connects.';}
+  else{warn.className='warn hide';warn.textContent='';}
+  $('export').disabled = engrave.length===0 || disc;
+}
+
+/* ---------------- generic shape cut ---------------- */
+function shapeCut(content){
+  const[a,b,c,d]=content,w=c-a,h=d-b,pad=(+$('mg').value/100)*Math.max(w,h);
+  const x=a-pad,y=b-pad,pw=w+2*pad,ph=h+2*pad,type=$('shape').value;
+  const tab=$('tab').checked, mmpx=pw/(+$('tw').value);
+  const tw=Math.min((+$('tabW').value)*mmpx,pw-8), th=Math.max(6,(+$('tabH').value)*mmpx), cx=x+pw/2+(+$('tabOff').value)*mmpx;
+  const p=[],K=10;
+  const arc=(cx2,cy,r,a0,a1)=>{for(let i=0;i<=K;i++){const t=a0+(a1-a0)*i/K;p.push([cx2+Math.cos(t)*r,cy+Math.sin(t)*r]);}};
+  if(type==='circle'){
+    // superellipse that sits `pad` from the art on the sides and just clears the (empty) bbox corners — hugs instead of ballooning
+    const ccx=a+w/2, ccy=b+h/2, rx=w/2+pad, ry=h/2+pad, rw=(w/2)/rx, rh=(h/2)/ry;
+    let nE=2.4,lo=2,hi=18;for(let it=0;it<30;it++){const mid=(lo+hi)/2;(Math.pow(rw,mid)+Math.pow(rh,mid)>0.82)?(lo=mid):(hi=mid);}nE=Math.min(18,Math.max(2.4,hi));
+    const ex=2/nE, N=140;
+    const SE=t=>[ccx+rx*Math.sign(Math.cos(t))*Math.pow(Math.abs(Math.cos(t)),ex),
+                 ccy+ry*Math.sign(Math.sin(t))*Math.pow(Math.abs(Math.sin(t)),ex)];
+    if(tab){
+      const v=Math.min(0.999,Math.pow((tw/2)/rx,nE/2)), thR=Math.acos(v), thL=Math.PI-thR;
+      const start=thR,end=thL-2*Math.PI;                     // long way over the top
+      for(let i=0;i<=N;i++)p.push(SE(start+(end-start)*i/N));
+      const bwc=tw;p.push([ccx-bwc/2,ccy+ry+th],[ccx+bwc/2,ccy+ry+th]); // square tab
+    }else{
+      for(let i=0;i<N;i++)p.push(SE((i/N)*2*Math.PI));
+    }
+    return p;
+  }
+  if(type==='rect'){
+    p.push([x,y],[x+pw,y],[x+pw,y+ph]);
+  }else if(type==='round'){
+    const r=Math.min(pw,ph)*0.08;
+    arc(x+r,y+r,r,Math.PI,1.5*Math.PI);arc(x+pw-r,y+r,r,1.5*Math.PI,2*Math.PI);arc(x+pw-r,y+ph-r,r,0,0.5*Math.PI);
+  }else{ // arch / rounded top: straight sides + a shallow dome that clears the top by ~the padding
+    const domeRy=Math.max(pad*1.4, pw*0.12), domeRx=pw/2, M=26;
+    p.push([x,y+ph],[x,y]);
+    for(let i=0;i<=M;i++){const t=Math.PI-i*Math.PI/M;p.push([x+domeRx+domeRx*Math.cos(t), y-domeRy*Math.sin(t)]);}
+    p.push([x+pw,y+ph]);
+  }
+  if(tab){const bw=tw;p.push([cx+tw/2,y+ph],[cx+bw/2,y+ph+th],[cx-bw/2,y+ph+th],[cx-tw/2,y+ph]);}
+  if(type==='round'){const r=Math.min(pw,ph)*0.08;arc(x+r,y+ph-r,r,0.5*Math.PI,Math.PI);}
+  else{p.push([x,y+ph]);}
+  return p;
+}
+
+/* chamfer distance transform: distance of each cell to the nearest cell equal to `src` */
+function chamferDT(grid,W,H,src){
+  const INF=1e9,d=new Float32Array(W*H);for(let i=0;i<W*H;i++)d[i]=(grid[i]===src)?0:INF;
+  const A=1,B=1.4142;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=y*W+x;let v=d[i];
+    if(x>0)v=Math.min(v,d[i-1]+A);if(y>0)v=Math.min(v,d[i-W]+A);
+    if(x>0&&y>0)v=Math.min(v,d[i-W-1]+B);if(x<W-1&&y>0)v=Math.min(v,d[i-W+1]+B);d[i]=v;}
+  for(let y=H-1;y>=0;y--)for(let x=W-1;x>=0;x--){const i=y*W+x;let v=d[i];
+    if(x<W-1)v=Math.min(v,d[i+1]+A);if(y<H-1)v=Math.min(v,d[i+W]+A);
+    if(x<W-1&&y<H-1)v=Math.min(v,d[i+W+1]+B);if(x>0&&y<H-1)v=Math.min(v,d[i+W-1]+B);d[i]=v;}
+  return d;
+}
+
+/* weld a crisp tab onto a smooth loop. PRIMARY: anchor on the tab's vertical sides (keeps the
+   body shape, works on bumpy bottoms like names). FALLBACK: if the base is narrower than the tab,
+   weld to a horizontal line and bridge out. Always one connected loop, tab stays sharp. */
+function spliceTab(loop, cx, tw, tabH, taper){
+  const n=loop.length, xL=cx-tw/2, xR=cx+tw/2, bw=tw*taper;
+  const lowCross=xv=>{let best=null;for(let i=0;i<n;i++){const a=loop[i],b=loop[(i+1)%n];
+    if((a[0]-xv)*(b[0]-xv)<0){const t=(xv-a[0])/(b[0]-a[0]);const y=a[1]+t*(b[1]-a[1]);if(!best||y>best.y)best={i,y};}}return best;};
+  const arc=(from,to)=>{const r=[];let i=from%n;for(let g=0;g<=n;g++){r.push(loop[i]);if(i===to)break;i=(i+1)%n;}return r;};
+  const avgY=a=>a.length?a.reduce((s,p)=>s+p[1],0)/a.length:1e9;
+  const cL=lowCross(xL), cR=lowCross(xR);
+  if(cL&&cR){
+    const baseY=Math.max(cL.y,cR.y), PL=[xL,cL.y], PR=[xR,cR.y];
+    const a1=arc((cR.i+1)%n,cL.i), a2=arc((cL.i+1)%n,cR.i), bL=[cx-bw/2,baseY+tabH], bR=[cx+bw/2,baseY+tabH];
+    return {loop:(avgY(a1)>avgY(a2)) ? [PL,...a2,PR,bR,bL] : [PR,...a1,PL,bL,bR], ok:true};
+  }
+  // narrow-base fallback
+  let baseY=-1e9,xb=cx,topY=1e9;for(const p of loop){if(p[1]>baseY){baseY=p[1];xb=p[0];}if(p[1]<topY)topY=p[1];}
+  const weldY=baseY-Math.max(3,(baseY-topY)*0.04);
+  const cr=[];for(let i=0;i<n;i++){const a=loop[i],b=loop[(i+1)%n];
+    if((a[1]-weldY)*(b[1]-weldY)<0){const t=(weldY-a[1])/(b[1]-a[1]);cr.push({i,x:a[0]+t*(b[0]-a[0])});}}
+  if(cr.length<2)return{loop,ok:false};
+  let L=null,R=null;for(const c of cr){if(c.x<=xb){if(!L||c.x>L.x)L=c;}else{if(!R||c.x<R.x)R=c;}}
+  if(!L||!R)return{loop,ok:false};
+  const PL=[L.x,weldY],PR=[R.x,weldY],a1=arc((L.i+1)%n,R.i),a2=arc((R.i+1)%n,L.i);
+  const tTL=[cx-tw/2,weldY],tTR=[cx+tw/2,weldY],bL=[cx-bw/2,baseY+tabH],bR=[cx+bw/2,baseY+tabH];
+  return {loop:(avgY(a1)>avgY(a2))?[PL,...a2,PR,tTR,bR,bL,tTL]:[PR,...a1,PL,tTL,bL,bR,tTR], ok:true};
+}
+
+/* ---------------- around-shape offset cut (raster morphology) ---------------- */
+function computeAround(engImg, engName){
+  const flat=$('flatBase').checked, gap=+$('gap').value, smooth=+$('cs').value, bridge=+$('bridge').value;
+  const hasArt=!!(engImg&&engImg.length), hasName=!!(engName&&engName.length);
+  if(!hasArt&&!hasName)return null;
+  const artBox=hasArt?bbox(engImg):null, nb=hasName?bbox(engName):null;
+  const nameLow=hasName&&hasArt&&((nb[1]+nb[3])/2>(artBox[1]+artBox[3])/2);
+  const usePlate=flat&&nameLow;
+  const engForSil = usePlate ? engImg : (engImg||[]).concat(engName||[]);
+  if(!engForSil.length)return null;
+
+  // padded raster on the CONTENT box (guarantees a white border -> no hard-edge breakage)
+  const sb=bbox(engForSil), padU=gap+bridge+14;
+  const ox=sb[0]-padU, oy=sb[1]-padU, sw=(sb[2]-sb[0])+2*padU, sh=(sb[3]-sb[1])+2*padU;
+  const sc=Math.min(1, 520/Math.max(sw,sh)), W=Math.max(8,Math.ceil(sw*sc)), H=Math.max(8,Math.ceil(sh*sc));
+  const SX=x=>(x-ox)*sc, SY=y=>(y-oy)*sc;
+  const c=off(W,H),x=c.getContext('2d',{willReadFrequently:true});
+  x.fillStyle='#fff';x.fillRect(0,0,W,H);x.fillStyle='#000';x.beginPath();
+  for(const lp of engForSil){x.moveTo(SX(lp[0][0]),SY(lp[0][1]));for(let i=1;i<lp.length;i++)x.lineTo(SX(lp[i][0]),SY(lp[i][1]));x.closePath();}
+  x.fill('evenodd');
+  const d=x.getImageData(0,0,W,H).data,ink=new Uint8Array(W*H);
+  for(let i=0;i<W*H;i++)ink[i]=d[i*4]<128?1:0;
+  const inkc=new Uint8Array(W*H);
+  for(let y=0;y<H;y++)for(let xx=0;xx<W;xx++){let v=0;for(let dy=-1;dy<=1&&!v;dy++)for(let dx=-1;dx<=1;dx++){const nx=xx+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<W&&ny<H&&ink[ny*W+nx]){v=1;break;}}inkc[y*W+xx]=v;}
+  const out=new Uint8Array(W*H),st=[];
+  for(let xx=0;xx<W;xx++){st.push(xx);st.push((H-1)*W+xx);}for(let y=0;y<H;y++){st.push(y*W);st.push(y*W+W-1);}
+  while(st.length){const i=st.pop();if(out[i]||inkc[i])continue;out[i]=1;const xx=i%W,y=(i/W)|0;
+    if(xx>0)st.push(i-1);if(xx<W-1)st.push(i+1);if(y>0)st.push(i-W);if(y<H-1)st.push(i+W);}
+  const sil=new Uint8Array(W*H);for(let i=0;i<W*H;i++)sil[i]=out[i]?0:1;
+  const dist=chamferDT(sil,W,H,1), gpx=gap*sc, dil=new Uint8Array(W*H);
+  for(let i=0;i<W*H;i++)dil[i]=dist[i]<=gpx?1:0;
+
+  if(usePlate){
+    const pad=gpx*0.8;
+    const plL=Math.max(0,Math.round(SX(nb[0])-pad)),plR=Math.min(W,Math.round(SX(nb[2])+pad));
+    const plT=Math.max(0,Math.round(SY(nb[1])-pad)),plB=Math.min(H,Math.round(SY(nb[3])+pad));
+    for(let y=plT;y<plB;y++)for(let xx=plL;xx<plR;xx++)dil[y*W+xx]=1;
+  }
+  if(bridge>0){
+    const r=bridge*sc, dD=chamferDT(dil,W,H,1), tmp=new Uint8Array(W*H);
+    for(let i=0;i<W*H;i++)tmp[i]=dD[i]<=r?1:0;
+    const dE=chamferDT(tmp,W,H,0);
+    for(let i=0;i<W*H;i++)dil[i]=dE[i]>r?1:0;
+  }
+
+  aroundConnected=true;
+  if(hasArt && hasName){
+    const ap=engImg[0][0], np=engName[0][0];
+    const ai=Math.max(0,Math.min(H-1,Math.round(SY(ap[1]))))*W+Math.max(0,Math.min(W-1,Math.round(SX(ap[0]))));
+    const ni=Math.max(0,Math.min(H-1,Math.round(SY(np[1]))))*W+Math.max(0,Math.min(W-1,Math.round(SX(np[0]))));
+    if(dil[ai]&&dil[ni]){
+      const seen=new Uint8Array(W*H),stk=[ai];seen[ai]=1;let hit=false;
+      while(stk.length){const i=stk.pop();if(i===ni){hit=true;break;}const xx=i%W,y=(i/W)|0;
+        if(xx>0&&!seen[i-1]&&dil[i-1]){seen[i-1]=1;stk.push(i-1);}
+        if(xx<W-1&&!seen[i+1]&&dil[i+1]){seen[i+1]=1;stk.push(i+1);}
+        if(y>0&&!seen[i-W]&&dil[i-W]){seen[i-W]=1;stk.push(i-W);}
+        if(y<H-1&&!seen[i+W]&&dil[i+W]){seen[i+W]=1;stk.push(i+W);}}
+      aroundConnected=hit;
+    } else aroundConnected=false;
+  }
+
+  // trace + smooth the BODY (no tab yet), back to stage coords
+  let loops=traceGrid(dil,W,H);if(!loops.length)return null;
+  loops.sort((p,q)=>area(q)-area(p));
+  let cut=dp(loops[0],2.2).map(p=>[p[0]/sc+ox, p[1]/sc+oy]);
+  if(smooth>0)cut=chaikin(cut,smooth);
+  // splice a CRISP tab on (smoothing already done -> tab stays sharp)
+  if($('tab').checked){
+    const cb=bbox([cut]), mmpx=(cb[2]-cb[0])/(+$('tw').value);
+    const cx=(cb[0]+cb[2])/2 + (+$('tabOff').value)*mmpx;
+    const r=spliceTab(cut, cx, (+$('tabW').value)*mmpx, (+$('tabH').value)*mmpx, 1.0);
+    if(r.ok)cut=r.loop;
+  }
+  return cut;
+}
+
+/* ---------------- render ---------------- */
+function render(){
+  const box=$('stagebox');box.className=mode==='lit'?'stage-lit':'stage-blue';
+  if(!result||!result.engrave.length){box.innerHTML='<div class="empty">Drop an image, or type a name, to begin.</div>';return;}
+  const path=lp=>'M'+lp.map(p=>p[0].toFixed(2)+','+p[1].toFixed(2)).join('L')+'Z';
+  const gb=ls=>{const[a,b,c,d]=bbox(ls);return`<rect x="${a}" y="${b}" width="${c-a}" height="${d-b}" fill="none" pointer-events="all"/>`;};
+  let s='';
+  const engStroke=mode==='lit'?'#dff6ff':'#9fe8ff';
+  if(mode==='lit'&&result.cut.length)s+=`<path d="${path(result.cut[0])}" fill="rgba(159,232,255,.05)" stroke="rgba(159,232,255,.25)" stroke-width="1.2"/>`;
+  if(mode!=='lit')for(const c of result.cut)s+=`<path d="${path(c)}" fill="none" stroke="#ff7a59" stroke-width="1.6" stroke-dasharray="6 4"/>`;
+  const open=mode==='lit'?`<g filter="url(#glow)" fill="none" stroke="${engStroke}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">`:`<g fill="none" stroke="${engStroke}" stroke-width="1.1" stroke-linejoin="round">`;
+  // decorations (engrave, not individually draggable)
+  if(result.engDecor&&result.engDecor.length){s+=open;for(const lp of result.engDecor)s+=`<path d="${path(lp)}"/>`;s+=`</g>`;}
+  if(result.engImg.length){s+=`<g data-drag="img">`+gb(result.engImg)+open;for(const lp of result.engImg)s+=`<path d="${path(lp)}"/>`;s+=`</g></g>`;}
+  if(result.engName.length){s+=`<g data-drag="name">`+gb(result.engName)+open;for(const lp of result.engName)s+=`<path d="${path(lp)}"/>`;s+=`</g></g>`;}
+  // dynamic viewBox: frame everything; frozen while dragging/panning so the mapping stays stable
+  let vb0;
+  if((drag||pan)&&lastVB){vb0=lastVB;}
+  else{const all=result.cut.concat(result.engrave),[bx0,by0,bx1,by1]=bbox(all);
+    const px=(bx1-bx0)*0.05+10, py=(by1-by0)*0.05+10;
+    vb0=[bx0-px,by0-py,(bx1-bx0)+2*px,(by1-by0)+2*py];lastVB=vb0;}
+  if(snapX!=null)s+=`<line x1="${snapX}" y1="${vb0[1]}" x2="${snapX}" y2="${vb0[1]+vb0[3]}" stroke="#e0a24a" stroke-width="1" stroke-dasharray="4 5" opacity=".8"/>`;
+  if(snapY!=null)s+=`<line x1="${vb0[0]}" y1="${snapY}" x2="${vb0[0]+vb0[2]}" y2="${snapY}" stroke="#e0a24a" stroke-width="1" stroke-dasharray="4 5" opacity=".8"/>`;
+  box.innerHTML=`<svg viewBox="${vb0[0].toFixed(1)} ${vb0[1].toFixed(1)} ${vb0[2].toFixed(1)} ${vb0[3].toFixed(1)}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">`+
+    `<defs><filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`+s+`</svg>`;
+}
+
+/* ---------------- stats ---------------- */
+function stats(){
+  if(!result||!result.engrave.length){['sPaths','sNodes','sSize','sLen'].forEach(i=>$(i).textContent='—');return;}
+  const paths=result.engrave.length,nodes=result.engrave.reduce((s,l)=>s+l.length,0)+result.cut.reduce((s,l)=>s+l.length,0);
+  const ext=result.cut.length?bbox(result.cut):result.content,targetW=+$('tw').value,mmpp=targetW/(ext[2]-ext[0]);
+  let eng=0;for(const lp of result.engrave)eng+=llen(lp);eng*=mmpp;
+  $('sPaths').textContent=paths;$('sNodes').textContent=nodes;
+  const hmm=Math.round((ext[3]-ext[1])*mmpp);
+  $('sSize').textContent=targetW+'×'+hmm+' mm';
+  const over=(targetW>170||hmm>220);
+  $('sSize').style.color = over?'#ffb3b3':'';
+  $('sSize').title = over?'Exceeds ~170×220 mm envelope':'';
+  $('sLen').textContent=(eng/1000).toFixed(1)+' m';
+}
+
+/* ---------------- DXF export ---------------- */
+function toDXF(){
+  const ext=result.cut.length?bbox(result.cut):result.content,s=(+$('tw').value)/(ext[2]-ext[0]),mir=$('mir').checked;
+  const X=x=>((mir?(ext[2]-x):(x-ext[0]))*s).toFixed(3),Y=y=>((ext[3]-y)*s).toFixed(3);
+  let e='';const poly=(lp,layer)=>{e+=`0\nLWPOLYLINE\n8\n${layer}\n90\n${lp.length}\n70\n1\n43\n0\n`;for(const p of lp)e+=`10\n${X(p[0])}\n20\n${Y(p[1])}\n`;};
+  for(const c of result.cut)poly(c,'CUT');for(const lp of result.engrave)poly(lp,'ENGRAVE');
+  return `0\nSECTION\n2\nHEADER\n9\n$INSUNITS\n70\n4\n0\nENDSEC\n0\nSECTION\n2\nTABLES\n0\nTABLE\n2\nLAYER\n70\n2\n`+
+    `0\nLAYER\n2\nCUT\n70\n0\n62\n1\n6\nCONTINUOUS\n0\nLAYER\n2\nENGRAVE\n70\n0\n62\n5\n6\nCONTINUOUS\n0\nENDTAB\n0\nENDSEC\n`+
+    `0\nSECTION\n2\nENTITIES\n${e}0\nENDSEC\n0\nEOF\n`;
+}
+function download(){const blob=new Blob([toDXF()],{type:'application/dxf'}),u=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=u;a.download=(($('name').value.trim()||'nightlight').replace(/[^a-z0-9]/gi,'_').toLowerCase())+'_nightlight.dxf';a.click();URL.revokeObjectURL(u);}
+
+/* ---------------- dragging + snapping ---------------- */
+function svgPt(cx,cy){const svg=$('stagebox').querySelector('svg');if(!svg)return null;const m=svg.getScreenCTM();if(!m)return null;
+  const p=new DOMPoint(cx,cy).matrixTransform(m.inverse());return{x:p.x,y:p.y};}
+let drag=null,dragRAF=null;
+function applySnap(what){
+  snapX=snapY=null;
+  if(!$('snapOn').checked)return;
+  const T=stageW*0.018;
+  if(what==='img'){
+    const cx=imgPos.x+imgW*imgScale/2;if(Math.abs(cx-stageW/2)<T){imgPos.x+=stageW/2-cx;snapX=stageW/2;}
+    const cy=imgPos.y+imgH*imgScale/2;if(Math.abs(cy-stageH/2)<T){imgPos.y+=stageH/2-cy;snapY=stageH/2;}
+  }else{
+    const cx=namePos.x+nameW/2;
+    if(imgLoops){const imgCx=imgPos.x+imgW*imgScale/2;if(Math.abs(cx-imgCx)<T){namePos.x+=imgCx-cx;snapX=imgCx;}}
+    else if(Math.abs(cx-stageW/2)<T){namePos.x+=stageW/2-cx;snapX=stageW/2;}
+  }
+}
+$('stagebox').addEventListener('pointerdown',e=>{
+  const p=svgPt(e.clientX,e.clientY);if(!p)return;
+  const g=e.target.closest('[data-drag]');
+  if(g){const what=g.getAttribute('data-drag'),pos=what==='img'?imgPos:namePos;drag={what,dx:p.x-pos.x,dy:p.y-pos.y};e.preventDefault();return;}
+  if(result&&result.engrave.length){pan={x:p.x,y:p.y};e.preventDefault();}   // empty area -> pan all
+});
+window.addEventListener('pointermove',e=>{
+  const p=svgPt(e.clientX,e.clientY);if(!p)return;
+  if(drag){const pos=drag.what==='img'?imgPos:namePos;pos.x=p.x-drag.dx;pos.y=p.y-drag.dy;applySnap(drag.what);
+    if(!dragRAF)dragRAF=requestAnimationFrame(()=>{dragRAF=null;compose(false);});return;}
+  if(pan){const ddx=p.x-pan.x,ddy=p.y-pan.y;pan.x=p.x;pan.y=p.y;
+    imgPos.x+=ddx;imgPos.y+=ddy;namePos.x+=ddx;namePos.y+=ddy;
+    if(!dragRAF)dragRAF=requestAnimationFrame(()=>{dragRAF=null;compose(false);});}
+});
+window.addEventListener('pointerup',()=>{
+  if(drag){drag=null;snapX=snapY=null;compose(true);}
+  else if(pan){pan=null;compose(true);}
+});
+
+/* ---------------- wiring ---------------- */
+function loadFile(f){if(!f||!f.type.startsWith('image/'))return;const img=new Image();img.onload=()=>{srcImg=img;traceImage();};img.src=URL.createObjectURL(f);}
+$('file').addEventListener('change',e=>loadFile(e.target.files[0]));
+const drop=$('drop');drop.addEventListener('click',()=>$('file').click());
+['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
+drop.addEventListener('drop',e=>loadFile(e.dataTransfer.files[0]));
+// also allow dropping onto the big preview box
+const sbox=$('stagebox');
+['dragover','dragenter'].forEach(ev=>sbox.addEventListener(ev,e=>{e.preventDefault();sbox.style.outline='2px dashed var(--amber)';}));
+['dragleave','drop'].forEach(ev=>sbox.addEventListener(ev,e=>{e.preventDefault();sbox.style.outline='';}));
+sbox.addEventListener('drop',e=>{if(e.dataTransfer.files&&e.dataTransfer.files.length)loadFile(e.dataTransfer.files[0]);});
+
+const reImage=['th','inv','sp','sm','is'], reName=['name','font','ns','ar','nameRot'], reCut=['gap','cs','shape','mg','tab','tabW','tabH','tabOff','flatBase','bridge'], reCompose=['tw'];
+let t1,t2;
+function out(){$('thOut').textContent=$('th').value;$('spOut').textContent=$('sp').value+' px';$('smOut').textContent=(+$('sm').value/10).toFixed(1);
+  $('isOut').textContent=$('is').value+'%';$('nsOut').textContent=$('ns').value+'%';$('gapOut').textContent=$('gap').value+' px';
+  $('csOut').textContent=$('cs').value;$('mgOut').textContent=$('mg').value+'%';$('twOut').textContent=$('tw').value+' mm';$('arOut').textContent=$('ar').value;
+  $('tabWOut').textContent=$('tabW').value+' mm';$('tabHOut').textContent=$('tabH').value+' mm';
+  $('tabOffOut').textContent=$('tabOff').value+' mm';$('bridgeOut').textContent=$('bridge').value;
+  $('nameRotOut').textContent=$('nameRot').value+'\u00b0';
+  $('decorCountOut').textContent=$('decorCount').value;$('decorSizeOut').textContent=$('decorSize').value+'%';$('decorSpreadOut').textContent=$('decorSpread').value+'%';}
+reImage.forEach(id=>$(id).addEventListener('input',()=>{out();clearTimeout(t1);t1=setTimeout(traceImage,120);}));
+reName.forEach(id=>$(id).addEventListener('input',()=>{out();clearTimeout(t2);t2=setTimeout(traceName,150);}));
+reCut.forEach(id=>$(id).addEventListener('input',()=>{out();if(id==='shape')return compose(false);compose(cutMode==='around');}));
+reCompose.forEach(id=>$(id).addEventListener('input',()=>{out();stats();}));
+// decorations
+const reDecor=['decorType','decorCount','decorSize','decorSpread'];
+let t3;
+reDecor.forEach(id=>$(id).addEventListener('input',()=>{out();clearTimeout(t3);t3=setTimeout(()=>compose(false),100);}));
+$('decorOn').addEventListener('change',()=>{$('decorCtl').classList.toggle('hide',!$('decorOn').checked);compose(false);});
+$('decorShuffle').addEventListener('click',()=>{decorSeed=(Math.random()*1e9)|0;compose(false);});
+$('centerName').addEventListener('click',()=>{if(nameW){if(imgLoops)namePos={x:imgPos.x+(imgW*imgScale-nameW)/2,y:imgPos.y+imgH*imgScale*0.99};else namePos={x:(stageW-nameW)/2,y:(stageH-nameH)/2};compose(cutMode==='around');}});
+$('export').addEventListener('click',download);
+
+document.querySelectorAll('#modeSeg button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#modeSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');mode=b.dataset.mode;render();}));
+document.querySelectorAll('#cutSeg button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#cutSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');cutMode=b.dataset.cut;
+  $('aroundCtl').classList.toggle('hide',cutMode!=='around');$('shapeCtl').classList.toggle('hide',cutMode!=='shape');
+  compose(true);}));
+out();
+</script>
+</body>
+</html>

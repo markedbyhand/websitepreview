@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Marked By Hand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="wrap">
+  <p class="crumb"><a href="index.html">Home</a> / Contact</p>
+
+  <section class="section tight" style="padding-top:22px">
+    <div class="hero-grid" style="align-items:start">
+      <div>
+        <p class="eyebrow">// Say hello</p>
+        <h1 style="font-size:clamp(28px,4.4vw,42px);margin:6px 0 12px;letter-spacing:-.6px">Get in touch</h1>
+        <p style="color:#cabeac;font-size:16px;max-width:460px">Questions about a custom piece, a bulk order, or a design you've got in mind? Send a message and we'll get back to you, usually within a day.</p>
+
+        <div class="panel" style="margin-top:22px">
+          <h2 class="lab">Other ways</h2>
+          <div class="spec" style="font-family:var(--mono);font-size:13px">
+            <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line)"><span style="color:var(--muted)">Email</span><a href="mailto:hello@markedbyhand.com.au">hello@markedbyhand.com.au</a></div>
+            <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line)"><span style="color:var(--muted)">Instagram</span><a href="#">@markedbyhand</a></div>
+            <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line)"><span style="color:var(--muted)">Based in</span><span>Sydney, NSW</span></div>
+            <div style="display:flex;justify-content:space-between;padding:9px 0"><span style="color:var(--muted)">Turnaround</span><span>Replies within ~1 day</span></div>
+          </div>
+        </div>
+
+        <div class="notice" style="margin-top:16px">// Designing something specific? The <a href="quote.html">instant quote tool</a> gives you a price in seconds — quicker than the form.</div>
+      </div>
+
+      <div class="panel">
+        <h2 class="lab">Send a message</h2>
+        <div class="field"><label for="cn">Your name</label><input type="text" id="cn"></div>
+        <div class="field"><label for="ce">Email</label><input type="email" id="ce"></div>
+        <div class="field"><label for="ct">What's it about?</label>
+          <select id="ct">
+            <option>A custom order</option>
+            <option>An existing order</option>
+            <option>Bulk / wholesale</option>
+            <option>Something else</option>
+          </select>
+        </div>
+        <div class="field"><label for="cm">Message</label><textarea id="cm" placeholder="Tell us what you're after — size, material, names, dates…"></textarea></div>
+        <button class="btn block" id="send">Send message</button>
+        <p class="formstat" id="stat"></p>
+        <p class="mono" style="color:var(--faint);font-size:11px;margin-top:6px">// Form is a front-end stub. After hosting goes live it posts to email / a serverless handler.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+<script src="site.js"></script>
+<script>
+document.getElementById('send').addEventListener('click',()=>{
+  const n=document.getElementById('cn').value.trim();
+  const e=document.getElementById('ce').value.trim();
+  const m=document.getElementById('cm').value.trim();
+  const s=document.getElementById('stat');
+  if(!n||!e||!m){ s.className='formstat err'; s.textContent='Add your name, email and a message.'; return; }
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){ s.className='formstat err'; s.textContent='That email doesn\u2019t look right.'; return; }
+  s.className='formstat ok'; s.textContent='Thanks '+n+' — this is a demo, but the real form would be on its way now.';
+});
+</script>
+</body>
+</html>

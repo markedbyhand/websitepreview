@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ — Marked By Hand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="wrap">
+  <p class="crumb"><a href="index.html">Home</a> / FAQ</p>
+
+  <section class="section tight" style="padding-top:22px;max-width:760px">
+    <p class="eyebrow">// Good to know</p>
+    <h1 style="font-size:clamp(28px,4.4vw,42px);margin:6px 0 24px;letter-spacing:-.6px">Frequently asked</h1>
+
+    <div class="faq" id="faq"></div>
+
+    <div class="panel bed-bg center" style="margin-top:28px;padding:34px 24px">
+      <h2 style="margin:0 0 8px;font-size:22px">Still have a question?</h2>
+      <p style="color:#cabeac;margin:0 0 18px">We're happy to help work out the details.</p>
+      <a class="btn" href="contact.html">Contact us</a>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+<script src="site.js"></script>
+<script>
+const FAQ = [
+  ['Can you make something from my own design?','Yes — that\u2019s our favourite kind of order. Upload a DXF to the instant quote tool for a price on the spot, or send a sketch / photo through the contact form and we\u2019ll help turn it into a file.'],
+  ['What materials can you cut and engrave?','Cast acrylic (clear and colours), bamboo, birch ply and natural slate are our regulars. Ask us if you have something specific in mind — the CO\u2082 laser handles most non-metal materials.'],
+  ['How long does an order take?','Most personalised orders are made and posted within 2\u20134 business days. Larger or bulk jobs may take a little longer — we\u2019ll always give you a timeframe up front.'],
+  ['How much is postage?','Tracked postage is calculated at checkout based on size and where it\u2019s going. Small items ship as a large letter where possible to keep it cheap.'],
+  ['Can I see it before it\u2019s made?','Yes. Use the engraving previewer to see your text on the product, or the night-light builder to preview a name design. For custom files we send a proof before cutting.'],
+  ['Do you do bulk or wholesale?','We do — wedding favours, corporate gifts, market stock. Get in touch with quantities and we\u2019ll sort pricing.'],
+  ['What if something arrives damaged or wrong?','Tell us within 7 days with a photo and we\u2019ll remake or refund it. Personalised items can\u2019t be returned for change of mind, but a mistake on our end is on us.'],
+];
+document.getElementById('faq').innerHTML = FAQ.map(([q,a])=>`
+  <details>
+    <summary>${q}<svg class="fchev" width="18" height="18" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></summary>
+    <div class="fa-body">${a}</div>
+  </details>`).join('');
+</script>
+</body>
+</html>

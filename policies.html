@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Policies — Marked By Hand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div id="site-header"></div>
+
+<main class="wrap">
+  <p class="crumb"><a href="index.html">Home</a> / Policies</p>
+
+  <section class="section tight" style="padding-top:22px;max-width:780px">
+    <p class="eyebrow">// The fine print, in plain words</p>
+    <h1 style="font-size:clamp(28px,4.4vw,42px);margin:6px 0 8px;letter-spacing:-.6px">Policies</h1>
+    <p class="notice warn" style="margin:14px 0 0">// Placeholder copy for layout. Replace with your final wording before launch — this isn't legal advice.</p>
+
+    <div class="tabs" id="tabs" style="margin-top:26px">
+      <button data-pane="shipping" aria-selected="true">Shipping</button>
+      <button data-pane="returns">Returns</button>
+      <button data-pane="privacy">Privacy</button>
+      <button data-pane="terms">Terms</button>
+    </div>
+
+    <div class="prose">
+      <div class="tabpane show" id="shipping">
+        <h2 id="shipping-h">Shipping</h2>
+        <p>We post Australia-wide with tracking. Most orders are made and dispatched within 2–4 business days; you'll get a tracking number by email when it ships.</p>
+        <h3>Rates</h3>
+        <p>Postage is calculated at checkout by size and destination. Smaller items ship as a tracked large letter where they fit, to keep costs down.</p>
+        <h3>Pickup</h3>
+        <p>Local pickup in Sydney can be arranged for some orders — get in touch before ordering.</p>
+      </div>
+
+      <div class="tabpane" id="returns">
+        <h2>Returns &amp; remakes</h2>
+        <p>Because most items are personalised and made to order, we can't accept change-of-mind returns on custom pieces.</p>
+        <h3>If something's wrong</h3>
+        <p>If your order arrives damaged, faulty, or different to what was confirmed, contact us within 7 days with a photo and we'll remake or refund it. Our mistakes are on us.</p>
+        <h3>Proofs</h3>
+        <p>For custom files we send a proof before cutting. Once you approve a proof, that's what we make — so give names, spelling and dates a careful check.</p>
+      </div>
+
+      <div class="tabpane" id="privacy">
+        <h2>Privacy</h2>
+        <p>We collect only what we need to make and post your order — your name, contact details, shipping address and order notes.</p>
+        <p>We don't sell your information. Payment is handled by our checkout provider; we never see your full card details. Order data is kept only as long as needed for records and tax.</p>
+        <p>Want your details removed after an order's complete? Just ask.</p>
+      </div>
+
+      <div class="tabpane" id="terms">
+        <h2>Terms of sale</h2>
+        <p>Placing an order is an offer to buy, which we accept when we confirm and begin making it. Prices are in AUD and include GST where applicable.</p>
+        <p>Custom and personalised items are made to your supplied details and approved proof. We're not able to remake at our cost for errors in details you supplied and approved.</p>
+        <p>Designs we create for a custom job remain our work; you're free to use the finished product as you like.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+<script src="site.js"></script>
+<script>
+const tabs=document.getElementById('tabs');
+function show(id){
+  document.querySelectorAll('.tabpane').forEach(p=>p.classList.toggle('show',p.id===id));
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected', b.dataset.pane===id?'true':'false'));
+}
+tabs.addEventListener('click',e=>{const b=e.target.closest('button');if(b)show(b.dataset.pane);});
+if(location.hash){const id=location.hash.slice(1);if(document.getElementById(id))show(id);}
+</script>
+</body>
+</html>
