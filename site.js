@@ -26,6 +26,7 @@
     { label: "Night light builder", href: "night-light.html", desc: "Turn line-art + a name into a layered DXF", status: "live", icon: "bulb" },
     { label: "Engraving previewer", href: "engrave-preview.html", desc: "See your text on the product before you order", status: "beta", icon: "eye" },
     { label: "3D Printing Quote", href: "print-quote.html", desc: "We do 3D printing", status: "beta", icon: "eye" }, 
+    { label: "Owner Tools", href: "owner.html", desc: "SHH Secret", status: "beta", icon: "eye" }, 
   ];
 
   const SOCIAL = [
