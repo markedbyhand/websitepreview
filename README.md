@@ -1,52 +1,29 @@
-# Marked By Hand — site structure
+# Marked By Hand — site + brand
 
-Workshop Dark theme, shared across every page. Built as static HTML so it works
-now and drops cleanly behind Shopify / a backend after July 1.
+## Theme
+The site now uses **Mocha Mousse** (warm light theme) — `theme.css`.
+- `theme.css`           ← active theme (Mocha Mousse, light)
+- `theme-dark-backup.css` ← the original Workshop Dark, if you ever want it back
+- `palette-explorer.html` ← try all 20 palettes live; "Copy theme.css variables"
+   pastes a new :root block over theme.css. (Mocha note: light themes also need
+   the dark-mode rules adjusted — theme.css already handles that for light.)
 
-## Files
-```
-theme.css        ← the whole design system. Edit tokens here, all pages restyle.
-site.js          ← header + footer + nav. Edit links ONCE here, all pages update.
-index.html       ← home page (the finished one)
-shop.html        ← product grid + category filter   (sample data → Shopify feed)
-product.html     ← single product + personalise hand-off (reads ?id=)
-cart.html        ← cart/checkout slot (Shopify mounts here)
-about.html       ← story
-contact.html     ← contact form stub
-faq.html         ← accordion
-policies.html    ← shipping / returns / privacy / terms (tabs)
-```
+Edit links sitewide in `site.js` (NAV / TOOLS / SOCIAL).
 
-Your tool files sit alongside these and are linked from the nav:
-`quote.html`, `night-light.html`, `engrave-preview.html`
-(rename the links in site.js → TOOLS if your filenames differ).
+## Pages
+index · shop · product · cart · about · contact · faq · policies
+Tool links point at quote.html / night-light.html / engrave-preview.html.
 
-## The page template — 3 lines to adopt it anywhere
-To put any page (including your existing tools) into the site shell:
+## Brand
+`logos.html` — 6 logo directions. Each shows the icon at favicon sizes (16/24/32),
+a browser-tab mock, the full wordmark lockup, and a dark version. Pick a number and
+I'll refine it and export real files (SVG / PNG / favicon .ico) + drop it into the
+header in place of the CSS `.mark` square.
 
-```html
-<head>
-  ...your fonts...
-  <link rel="stylesheet" href="theme.css">     <!-- 1 -->
-</head>
-<body>
-  <div id="site-header"></div>                  <!-- 2 -->
-     ...page content...
-  <div id="site-footer"></div>                  <!-- 2 -->
-  <script src="site.js"></script>               <!-- 3 -->
-</body>
-```
-
-Your quote tool already uses the exact same CSS variables, so linking theme.css
-won't change its look — it just lets you delete the duplicated :root block and
-share one source of truth.
-
-## Where the funnel lives
-preview → price → order is the "pipeline" section on the home page, each step
-linking to the matching tool. product.html also hands off to the engraving
-previewer and the quote tool. Keep that wording consistent as you build out.
-
-## Editing nav / footer
-All navigation, the tools dropdown, and footer columns are arrays at the top of
-site.js (NAV, TOOLS, SOCIAL). Change them there once.
-```
+Quick read on the six:
+1. Engraved Tile · M  — evolves your current mark (icon-best)
+2. Spark Plate        — your ⟡ glyph, knocked out (icon-best)
+3. Origin 0,0         — laser-bed registration mark (icon-best, faint tiny)
+4. Monoline M         — modern/airy (lockup-best)
+5. Cut Blank          — "made to order" (lockup-best)
+6. Cut Tag            — from your key-tag product (icon-best)

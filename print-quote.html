@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Print — Instant Quote · Marked By Hand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F5EFE7; --panel:#FCF8F2; --panel-2:#EAE0D4; --line:#D9CCBA;
+    --ink:#3B2F26; --lede:#5C4F44; --muted:#8E7D6B; --faint:#A99A88;
+    --amber:#A47864; --amber-soft:#8A5E4C; --btn-ink:#FFF7F0; --acc:#7A9A8B; --acc-ink:#0F241D;
+    --ok:#5E8C6A; --warn:#C8892F; --radius:14px;
+    --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+    --sans:'Space Grotesk',system-ui,-apple-system,sans-serif;
+    --brand:'Bricolage Grotesque','Space Grotesk',sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45}
+  .wrap{max-width:1180px;margin:0 auto;padding:18px clamp(14px,3vw,28px) 60px}
+  a{color:var(--amber-soft)}
+  .home-brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);margin:2px 0 10px}
+  .home-brand svg{width:26px;height:26px;display:block;flex:none}
+  .home-brand b{font-family:var(--brand);font-weight:700;font-size:15px}
+  .home-brand small{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-left:3px}
+  header h1{font-family:var(--brand);font-size:20px;margin:0;font-weight:700;display:inline-block}
+  header .tag{font-family:var(--mono);font-size:11px;color:var(--amber);border:1px solid var(--panel-2);background:var(--panel-2);padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.08em;margin-left:10px}
+  header p{color:var(--lede);margin:6px 0 16px;font-size:13.5px;max-width:680px}
+
+  .adv-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+  .adv-bar .advlab{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  body:not(.adv-on) .adv{display:none!important}
+
+  .grid{display:grid;grid-template-columns:332px 1fr;gap:16px;align-items:start}
+  @media(max-width:880px){.grid{grid-template-columns:1fr}.preview-col{position:static!important}}
+  .preview-col{position:sticky;top:10px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:10px;box-shadow:0 5px 14px rgba(59,47,38,.04)}
+  .card h2{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 12px;font-weight:600}
+  .field{margin-bottom:11px}.field:last-child{margin-bottom:0}
+  label.lab{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:var(--muted);margin-bottom:6px}
+  label.lab b{color:var(--ink);font-family:var(--mono);font-weight:500;font-size:12px}
+  input[type=range]{width:100%;accent-color:var(--amber);height:22px}
+  input[type=text],input[type=number],input[type=email],select{width:100%;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:9px 10px;font:inherit;font-size:14px;font-family:var(--mono)}
+  select{font-family:var(--sans);cursor:pointer}
+  .row{display:flex;gap:8px}.row>*{flex:1}
+  .drop{border:1.5px dashed var(--line);border-radius:11px;padding:22px 14px;text-align:center;cursor:pointer;transition:.15s;color:var(--muted);font-size:13.5px;background:var(--panel-2)}
+  .drop:hover,.drop.over{border-color:var(--amber);background:#F3E9DE;color:var(--ink)}.drop b{color:var(--amber)}
+  .seg{display:flex;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
+  .seg button{flex:1;background:transparent;border:0;color:var(--muted);padding:7px 4px;border-radius:7px;font:inherit;font-size:12.5px;cursor:pointer}
+  .seg button.on{background:var(--amber);color:var(--btn-ink);font-weight:600}
+  .toggle{display:flex;align-items:center;gap:9px;cursor:pointer;font-size:13.5px;color:var(--ink);user-select:none}
+  .toggle input{accent-color:var(--amber);width:16px;height:16px}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--amber);color:var(--btn-ink);border:0;border-radius:10px;padding:12px;font:inherit;font-weight:650;font-size:14.5px;cursor:pointer;margin-top:10px}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:500;margin-top:8px;padding:9px}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+  .swatches{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
+  .sw{width:26px;height:26px;border-radius:7px;border:2px solid transparent;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+  .sw.on{border-color:var(--amber)}
+  .pricerow{display:flex;justify-content:space-between;align-items:center;margin:8px 0 2px}
+  .pricerow .pl{font-size:13px;color:var(--muted)}
+  .pricerow .pv{font-family:var(--mono);font-weight:700;font-size:24px;color:var(--amber)}
+
+  /* preview */
+  #stage{width:100%;aspect-ratio:4/3;border-radius:12px;overflow:hidden;position:relative;
+    background:radial-gradient(120% 100% at 50% 0%,#FBF6EE,#EFE5D6);border:1px solid var(--line)}
+  #stage canvas{display:block;width:100%;height:100%}
+  .stage-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13.5px;text-align:center;padding:30px}
+  .fitbadge{position:absolute;top:10px;left:10px;font-family:var(--mono);font-size:11px;padding:5px 9px;border-radius:7px;background:rgba(252,248,242,.9);border:1px solid var(--line);color:var(--ok)}
+  .fitbadge.over{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+  .spinhint{position:absolute;bottom:10px;left:10px;font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+  .stat{background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:9px 11px}
+  .stat .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+  .stat .v{font-family:var(--mono);font-size:15px;margin-top:2px}
+  .brk{margin-top:12px}
+  .brk .li{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line);font-family:var(--mono);font-size:12.5px}
+  .brk .li:last-child{border-bottom:none}
+  .brk .li .k{color:var(--muted)}
+  .est{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+  .est .pv{font-family:var(--mono);font-weight:700;font-size:26px;color:var(--amber)}
+  .sendstat{font-family:var(--mono);font-size:11px;text-align:center;margin-top:6px;min-height:1em}
+  .sendstat.ok{color:var(--ok)}.sendstat.err{color:var(--warn)}
+  .minirow{display:flex;gap:6px}
+  .minirow button{flex:1;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 4px;font:inherit;font-size:12px;cursor:pointer}
+  .minirow button:hover{border-color:var(--amber)}
+  .leadline{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:9px}
+  .bulk{margin-top:10px;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .bulk .bhdr{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:6px 10px;background:var(--panel-2)}
+  .bulk .brow{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;padding:6px 10px;border-top:1px solid var(--line)}
+  .bulk .brow.on{background:color-mix(in srgb,var(--amber) 12%,var(--panel));color:var(--ink);font-weight:600}
+  .warn{margin:0 0 10px;padding:9px 12px;border-radius:9px;font-size:12.5px;background:color-mix(in srgb,var(--warn) 13%,var(--panel));border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);color:#8a5a16}
+  .contact-wrap{margin-top:10px;display:flex;flex-direction:column;gap:7px}
+  .contact-wrap input{background:var(--panel-2)}
+  .sent-box{display:none;background:color-mix(in srgb,var(--ok) 8%,var(--panel));border:1px solid color-mix(in srgb,var(--ok) 35%,transparent);border-radius:10px;padding:14px;margin-top:10px;font-size:13px}
+  .sent-box b{color:var(--ok)}
+  .sent-box pre{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:pre-wrap;margin:8px 0 0;background:var(--panel-2);padding:10px;border-radius:8px;border:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="index.html" class="home-brand">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="7" y="7" width="50" height="50" rx="13" fill="none" stroke="#A47864" stroke-width="2.5"/><path d="M18 28 V18 H28" fill="none" stroke="#A47864" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 30 V34 M40 46 V50 M30 40 H34 M46 40 H50" fill="none" stroke="#A47864" stroke-width="1.8" stroke-linecap="round"/><path d="M40 33 L42.24 37.76 L47 40 L42.24 42.24 L40 47 L37.76 42.24 L33 40 L37.76 37.76 Z" fill="#7A9A8B"/></svg>
+      <span><b>Marked By Hand</b> <small>home</small></span>
+    </a>
+    <div><h1>3D Print · Instant Quote</h1><span class="tag">Bambu A1 · PLA · alpha</span></div>
+    <p>Drop an STL — we render it on the build plate, check it fits, and estimate filament weight, print time and price. Everything's a fast ballpark; we confirm exact figures when we slice it.</p>
+  </header>
+
+  <div class="adv-bar">
+    <span class="advlab">View</span>
+    <div class="seg" id="viewSeg" style="max-width:230px">
+      <button data-v="simple" class="on">Simple</button>
+      <button data-v="adv">Advanced</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- ===== CONTROLS ===== -->
+    <div>
+      <div class="card">
+        <h2>1 · Model</h2>
+        <div class="field">
+          <div class="drop" id="drop">Drop an <b>STL</b> or <b>browse</b><br><span style="font-size:11.5px">binary or ASCII · millimetres</span></div>
+          <input type="file" id="file" accept=".stl,model/stl" hidden>
+        </div>
+        <button class="btn ghost" id="sample">Try a sample model</button>
+        <div class="warn" id="unitWarn" style="display:none"></div>
+      </div>
+
+      <div class="card">
+        <h2>2 · Material &amp; colour</h2>
+        <div class="field">
+          <select id="material"></select>
+        </div>
+        <div class="field">
+          <label class="lab">Colour <b id="colName">—</b></label>
+          <div class="swatches" id="swatches"></div>
+        </div>
+      </div>
+
+      <div class="card" id="orientCard" style="display:none">
+        <h2>Fit &amp; orientation</h2>
+        <div class="hint" id="fitMsg" style="margin-top:0;margin-bottom:11px"></div>
+        <div class="field"><label class="lab">Which face on the bed · rotate 90°</label>
+          <div class="minirow"><button id="rotX">Tip</button><button id="rotY">Spin</button><button id="rotZ">Roll</button><button id="rotR">Reset</button></div>
+        </div>
+        <div class="field"><label class="lab">Scale <b id="scaleOut">100%</b></label>
+          <div class="row"><input type="number" id="scaleVal" value="100" min="1" step="1">
+            <button class="btn ghost" id="fitBtn" style="margin-top:0;white-space:nowrap">Scale to fit</button></div>
+        </div>
+      </div>
+
+      <div class="card adv">
+        <h2>3 · Print settings</h2>
+        <div class="field"><label class="lab">Infill <b id="infillOut">15%</b></label><input type="range" id="infill" min="0" max="100" value="15"></div>
+        <div class="field"><label class="lab">Layer height <b id="layerOut">0.20 mm</b></label><input type="range" id="layer" min="8" max="32" value="20" step="2"></div>
+        <div class="field"><label class="toggle"><input type="checkbox" id="supports"> Needs supports</label></div>
+        <div class="field"><label class="lab">Quality / speed <b id="speedOut">Standard</b></label>
+          <div class="seg" id="speedSeg"><button data-s="draft">Draft</button><button data-s="std" class="on">Standard</button><button data-s="fine">Fine</button></div>
+        </div>
+      </div>
+
+      <div class="card" id="orderCard">
+        <h2>4 · Order</h2>
+        <div class="field"><label class="lab">Turnaround</label>
+          <select id="priority">
+            <option value="std">Standard · 3–5 business days</option>
+            <option value="express">Express · 2 days</option>
+            <option value="rush">Rush · next day</option>
+          </select></div>
+        <div class="field"><label class="lab">What is it for?</label>
+          <select id="useCase">
+            <option>Display / decorative</option><option>Prototype / test fit</option>
+            <option>Functional part</option><option>Replacement part</option><option>Not sure</option>
+          </select></div>
+        <div class="field"><label class="lab">Quantity</label><input type="number" id="qty" min="1" value="1"></div>
+        <div class="pricerow"><span class="pl">Price each · inc GST</span><span class="pv" id="priceEach">$—</span></div>
+        <label class="toggle" style="margin:2px 0 4px;font-size:12.5px"><input type="checkbox" id="suit"> I confirm this part suits my intended use.</label>
+        <div class="contact-wrap" id="contactWrap" style="display:none">
+          <input type="text" id="sendName" placeholder="Your name">
+          <input type="email" id="sendEmail" placeholder="Your email (so we can reply)">
+        </div>
+        <button class="btn" id="send" disabled>Send for review</button>
+        <div class="sendstat" id="sendstat"></div>
+        <div class="hint">We print to your file and selected options; final suitability is yours to confirm. Every order gets a free file and production review before printing — we flag anything and confirm the exact price.</div>
+        <div class="sent-box" id="sent"><b>Quote received.</b> We'll review the details and be in touch within one business day.<pre id="sentText"></pre></div>
+      </div>
+    </div>
+
+    <!-- ===== PREVIEW ===== -->
+    <div class="preview-col">
+      <div class="card">
+        <h2 style="margin-bottom:10px">Preview</h2>
+        <div id="stage">
+          <div class="stage-empty" id="stageEmpty">Drop an STL, or tap "Try a sample model", to see it on the build plate.</div>
+          <div class="fitbadge" id="fitBadge" style="display:none"></div>
+          <div class="spinhint" id="spinHint" style="display:none">drag to rotate · scroll to zoom</div>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="k">Size · W×D×H</div><div class="v" id="sSize">—</div></div>
+          <div class="stat"><div class="k">Solid volume</div><div class="v" id="sVol">—</div></div>
+          <div class="stat"><div class="k">Est. weight</div><div class="v" id="sWeight">—</div></div>
+          <div class="stat"><div class="k">Est. print time</div><div class="v" id="sTime">—</div></div>
+        </div>
+        <div class="brk" id="brk"></div>
+        <div class="est"><span class="mono" style="color:var(--muted);font-size:13px">Total · inc GST (×<span id="estQty">1</span>)</span><span class="pv" id="priceTotal">$—</span></div>
+        <div class="leadline" id="leadLine"></div>
+        <div class="bulk" id="bulk"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="three.min.js"></script>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+
+/* ================= CONFIG defaults (overwritten by print-quote-config.json) ================= */
+let CONFIG={
+  build:{x:256,y:256,z:256},
+  print:{wallThk:0.9,wastePct:4,throughput:11,setupMin:8},
+  supports:{surchargePct:15},
+  priority:{
+    std:{mult:1.00,label:"Standard · 3–5 business days"},
+    express:{mult:1.30,label:"Express +30% · 2 days"},
+    rush:{mult:1.60,label:"Rush +60% · next day"}
+  },
+  speed:{draft:1.6,std:1.0,fine:0.62},
+  pricing:{machinePerHour:1.5,setup:3,min:8,margin:1.6,safetyPct:10,voldisc:2,voldiscMax:35},
+  gst:{enabled:true,rate:10},
+  business:{formUrl:"",formKey:""},
+  materials:[
+    {name:"PLA",colour:"Galaxy Black",hex:"#1b1b20",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Jade White",hex:"#f1ede4",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Bambu Green",hex:"#10a64a",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Sunflower",hex:"#f4c20d",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Pumpkin Orange",hex:"#ff6a13",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Scarlet Red",hex:"#c8102e",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Cobalt Blue",hex:"#0057b8",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Ash Grey",hex:"#8a8d8f",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Matte Charcoal",hex:"#36383b",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Gold Silk",hex:"#c9a227",pricePerKg:28,density:1.24,inStock:true}
+  ]
+};
+
+function applyConfig(j){
+  if(j.build)CONFIG.build=j.build;
+  if(j.print)CONFIG.print=j.print;
+  if(j.supports)CONFIG.supports=j.supports;
+  if(j.priority)CONFIG.priority=j.priority;
+  if(j.speed)CONFIG.speed=j.speed;
+  if(j.pricing)CONFIG.pricing=j.pricing;
+  if(j.gst)CONFIG.gst=j.gst;
+  if(j.business)CONFIG.business=j.business;
+  if(j.materials&&j.materials.length)CONFIG.materials=j.materials;
+  buildMaterialUI();
+  if(MODEL)updateAll();
+}
+
+/* ================= Material UI (driven by CONFIG.materials) ================= */
+let CURMAT=null; // currently selected material entry {name,colour,hex,pricePerKg,density}
+let CURMATERIALNAME='';
+
+function buildMaterialUI(){
+  const types=[...new Set(CONFIG.materials.filter(m=>m.inStock!==false).map(m=>m.name))];
+  const sel=$('material');
+  const prev=sel.value;
+  sel.innerHTML=types.map(t=>`<option value="${t}">${t}</option>`).join('');
+  if(types.includes(prev))sel.value=prev;
+  CURMATERIALNAME=sel.value||types[0]||'';
+  buildSwatches();
+}
+
+function buildSwatches(){
+  const sw=$('swatches');sw.innerHTML='';
+  const mats=CONFIG.materials.filter(m=>m.name===CURMATERIALNAME&&m.inStock!==false);
+  mats.forEach((m,i)=>{
+    const d=document.createElement('div');d.className='sw'+(i===0?' on':'');
+    d.style.background=m.hex;d.title=m.colour;
+    d.onclick=()=>{
+      document.querySelectorAll('.sw').forEach(x=>x.classList.remove('on'));d.classList.add('on');
+      CURMAT=m;$('colName').textContent=m.colour;
+      if(VIEWER)VIEWER.setColour(m.hex);if(MODEL)updateAll();
+    };
+    sw.appendChild(d);
+  });
+  CURMAT=mats[0]||null;
+  if(CURMAT){$('colName').textContent=CURMAT.colour;if(VIEWER&&MODEL)VIEWER.setColour(CURMAT.hex);}
+  else{$('colName').textContent='—';}
+}
+
+$('material').addEventListener('change',()=>{CURMATERIALNAME=$('material').value;buildSwatches();if(MODEL)updateAll();});
+
+/* ================= STL parsing + geometry ================= */
+function parseSTL(buffer){
+  const dv=new DataView(buffer);
+  if(buffer.byteLength>=84){
+    const tri=dv.getUint32(80,true);
+    if(84+tri*50===buffer.byteLength)return parseBinary(dv,tri);
+  }
+  const text=new TextDecoder().decode(new Uint8Array(buffer.slice(0,Math.min(buffer.byteLength,1024))));
+  if(/^\s*solid/.test(text)&&/facet|vertex/i.test(new TextDecoder().decode(new Uint8Array(buffer)).slice(0,5000)))
+    return parseAscii(new TextDecoder().decode(new Uint8Array(buffer)));
+  if(buffer.byteLength>=84)return parseBinary(dv,dv.getUint32(80,true));
+  throw new Error('Unrecognised STL');
+}
+function parseBinary(dv,tri){
+  const pos=new Float32Array(tri*9);let o=84,p=0;
+  for(let i=0;i<tri;i++){o+=12;for(let v=0;v<3;v++){pos[p++]=dv.getFloat32(o,true);pos[p++]=dv.getFloat32(o+4,true);pos[p++]=dv.getFloat32(o+8,true);o+=12;}o+=2;}
+  return pos;
+}
+function parseAscii(text){
+  const verts=[],re=/vertex\s+(-?[\d.eE+-]+)\s+(-?[\d.eE+-]+)\s+(-?[\d.eE+-]+)/g;let m;
+  while((m=re.exec(text)))verts.push(+m[1],+m[2],+m[3]);
+  return new Float32Array(verts);
+}
+function analyse(pos){
+  let vol=0,area=0,minx=1e9,miny=1e9,minz=1e9,maxx=-1e9,maxy=-1e9,maxz=-1e9;
+  for(let i=0;i<pos.length;i+=9){
+    const ax=pos[i],ay=pos[i+1],az=pos[i+2],bx=pos[i+3],by=pos[i+4],bz=pos[i+5],cx=pos[i+6],cy=pos[i+7],cz=pos[i+8];
+    vol+=(ax*(by*cz-bz*cy)-ay*(bx*cz-bz*cx)+az*(bx*cy-by*cx))/6;
+    {const ux=bx-ax,uy=by-ay,uz=bz-az,vx=cx-ax,vy=cy-ay,vz=cz-az,cxx=uy*vz-uz*vy,cyy=uz*vx-ux*vz,czz=ux*vy-uy*vx;area+=0.5*Math.sqrt(cxx*cxx+cyy*cyy+czz*czz);}
+    for(const[x,y,z]of[[ax,ay,az],[bx,by,bz],[cx,cy,cz]]){
+      if(x<minx)minx=x;if(y<miny)miny=y;if(z<minz)minz=z;
+      if(x>maxx)maxx=x;if(y>maxy)maxy=y;if(z>maxz)maxz=z;
+    }
+  }
+  return{volMM3:Math.abs(vol),areaMM2:area,size:{x:maxx-minx,y:maxy-miny,z:maxz-minz},min:{x:minx,y:miny,z:minz},tris:pos.length/9};
+}
+
+/* ================= Pricing ================= */
+function compute(){
+  if(!MODEL||!CURMAT)return null;
+  const A=MODEL.info,P=CONFIG.print,F=CURMAT,PR=CONFIG.pricing;
+  const s=MODEL.scale||1,size=MODEL.size||A.size;
+  const infill=(+$('infill').value)/100;
+  const solid_cm3=(A.volMM3*s*s*s)/1000;
+  let shell_cm3=Math.min(solid_cm3,(A.areaMM2||0)*s*s*P.wallThk/1000);
+  const interior=Math.max(0,solid_cm3-shell_cm3);
+  let mat_cm3=(shell_cm3+interior*infill)*(1+P.wastePct/100);
+  const supportsOn=$('supports').checked;
+  if(supportsOn)mat_cm3*=(1+CONFIG.supports.surchargePct/100);
+  const weight=mat_cm3*F.density;
+  const speedMult=CONFIG.speed[CURSPEED]||1;
+  const eff_through=Math.max(0.5,P.throughput*speedMult);
+  const time_h=((mat_cm3*1000)/eff_through+P.setupMin*60)/3600;
+  const matCost=weight/1000*F.pricePerKg;
+  const machCost=time_h*PR.machinePerHour;
+  const pr=CONFIG.priority[$('priority').value]||CONFIG.priority.std;
+  const perPart=PR.setup+matCost+machCost;
+  const baseEach=Math.max(PR.min,perPart*PR.margin)*(1+PR.safetyPct/100)*pr.mult;
+  const unitAt=q=>baseEach*(1-Math.min(PR.voldiscMax,Math.max(0,q-1)*PR.voldisc)/100);
+  const qty=Math.max(1,parseInt($('qty').value,10)||1);
+  const eachEx=unitAt(qty),exGst=eachEx*qty;
+  const gst=CONFIG.gst.enabled?exGst*CONFIG.gst.rate/100:0;
+  const total=exGst+gst,eachInc=eachEx*(CONFIG.gst.enabled?1+CONFIG.gst.rate/100:1);
+  const fits=size.x<=CONFIG.build.x&&size.y<=CONFIG.build.y&&size.z<=CONFIG.build.z;
+  return{solid_cm3,shell_cm3,mat_cm3,weight,time_h,matCost,machCost,perPart,baseEach,eachEx,eachInc,exGst,gst,total,qty,supportsOn,fits,size,A,pr,unitAt};
+}
+function fmtTime(h){const m=Math.round(h*60);if(m<60)return m+' min';return Math.floor(m/60)+'h '+(m%60)+'m';}
+
+function setSend(en){
+  $('send').disabled=!en;
+  $('contactWrap').style.display=en?'flex':'none';
+  if(!en){$('sendstat').textContent='';$('sendstat').className='sendstat';}
+}
+
+function updateAll(){
+  const r=compute();
+  if(!r){['sSize','sVol','sWeight','sTime'].forEach(i=>$(i).textContent='—');$('priceEach').textContent='$—';$('priceTotal').textContent='$—';$('brk').innerHTML='';setSend(false);return;}
+  $('sSize').textContent=`${r.size.x.toFixed(0)}×${r.size.z.toFixed(0)}×${r.size.y.toFixed(0)} mm`;
+  $('sVol').textContent=r.solid_cm3.toFixed(1)+' cm³';
+  $('sWeight').textContent=r.weight.toFixed(0)+' g';
+  $('sTime').textContent='≈ '+fmtTime(r.time_h);
+  $('priceEach').textContent='$'+r.eachInc.toFixed(2);
+  $('priceTotal').textContent='$'+r.total.toFixed(2);
+  $('estQty').textContent=r.qty;
+  const bulkDisc=(1-r.eachEx/r.baseEach)*100;
+  $('brk').innerHTML=[
+    ['Setup','$'+CONFIG.pricing.setup.toFixed(2)],
+    ['Filament · '+r.weight.toFixed(0)+'g','$'+r.matCost.toFixed(2)],
+    ['Machine · '+fmtTime(r.time_h),'$'+r.machCost.toFixed(2)],
+    r.supportsOn?['Supports','+'+CONFIG.supports.surchargePct+'%']:null,
+    r.pr.mult>1?['Turnaround','+'+Math.round((r.pr.mult-1)*100)+'%']:null,
+    ['Margin ×'+CONFIG.pricing.margin+(bulkDisc>0.5?' · −'+bulkDisc.toFixed(0)+'% bulk':''),''],
+    ['Subtotal (ex GST)','$'+r.exGst.toFixed(2)],
+    CONFIG.gst.enabled?['GST '+CONFIG.gst.rate+'%','$'+r.gst.toFixed(2)]:null
+  ].filter(Boolean).map(x=>`<div class="li"><span class="k">${x[0]}</span><span>${x[1]}</span></div>`).join('');
+  const breaks=[1,5,10,25];
+  $('bulk').innerHTML='<div class="bhdr">Per part'+(CONFIG.gst.enabled?' · inc GST':'')+'</div>'+breaks.map(q=>{
+    const u=r.unitAt(q)*(CONFIG.gst.enabled?1+CONFIG.gst.rate/100:1);
+    return '<div class="brow'+(q===r.qty?' on':'')+'"><span>'+q+(q>1?'+':'')+'</span><span>$'+u.toFixed(2)+'</span></div>';
+  }).join('');
+  const days=r.pr.label||'3–5 business days';
+  $('leadLine').textContent='Est. lead time: '+days;
+  const fb=$('fitBadge');fb.style.display='block';
+  if(r.fits){fb.className='fitbadge';fb.textContent='✓ fits bed ('+CONFIG.build.x+'mm)';}
+  else{fb.className='fitbadge over';fb.textContent='⚠ exceeds the '+CONFIG.build.x+'mm bed';}
+  const fm=$('fitMsg');if(fm){fm.textContent=r.fits?'Fits the bed. Use the buttons to choose which face sits down.':'⚠ Too big for the bed — tap "Scale to fit", or lower the scale.';fm.style.color=r.fits?'var(--muted)':'#b23a3a';}
+  setSend($('suit').checked&&r.fits);
+  if(VIEWER)VIEWER.setOverflow(!r.fits);
+}
+
+/* ================= 3D viewer ================= */
+let VIEWER=null,MODEL=null,CURSPEED='std';
+let ORIENT=null,SCALE=1;
+function defaultOrient(){return new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),-Math.PI/2);}
+function makeViewer(){
+  if(typeof THREE==='undefined')return null;
+  const stage=$('stage');const w=stage.clientWidth||640,h=stage.clientHeight||480;
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(38,w/h,1,5000);
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(w,h);
+  stage.appendChild(renderer.domElement);
+  scene.add(new THREE.AmbientLight(0xffffff,0.62));
+  const key=new THREE.DirectionalLight(0xfff1e0,0.95);key.position.set(120,200,140);scene.add(key);
+  const fill=new THREE.DirectionalLight(0x9fb8c0,0.4);fill.position.set(-150,80,-120);scene.add(fill);
+  const root=new THREE.Group();scene.add(root);
+  const plate=new THREE.GridHelper(CONFIG.build.x,16,0xb9a890,0xd9ccba);plate.position.set(0,0,0);root.add(plate);
+  const volGeo=new THREE.BoxGeometry(CONFIG.build.x,CONFIG.build.z,CONFIG.build.y);
+  const volEdges=new THREE.LineSegments(new THREE.EdgesGeometry(volGeo),new THREE.LineBasicMaterial({color:0xd9ccba}));
+  volEdges.position.set(0,CONFIG.build.z/2,0);root.add(volEdges);
+  let mesh=null;
+  const mat=new THREE.MeshStandardMaterial({color:new THREE.Color(CURMAT?CURMAT.hex:'#1b1b20'),roughness:.62,metalness:.04});
+  let theta=0.7,phi=1.05,radius=CONFIG.build.x*1.7,target=new THREE.Vector3(0,40,0);
+  function applyCam(){camera.position.set(target.x+radius*Math.sin(phi)*Math.cos(theta),target.y+radius*Math.cos(phi),target.z+radius*Math.sin(phi)*Math.sin(theta));camera.lookAt(target);}
+  applyCam();
+  let drag=false,lx=0,ly=0;
+  const el=renderer.domElement;
+  el.addEventListener('pointerdown',e=>{drag=true;lx=e.clientX;ly=e.clientY;el.setPointerCapture(e.pointerId);});
+  el.addEventListener('pointermove',e=>{if(!drag)return;theta-=(e.clientX-lx)*0.01;phi=Math.max(0.15,Math.min(1.5,phi-(e.clientY-ly)*0.01));lx=e.clientX;ly=e.clientY;applyCam();});
+  el.addEventListener('pointerup',()=>drag=false);
+  el.addEventListener('wheel',e=>{e.preventDefault();radius=Math.max(60,Math.min(2500,radius*(1+Math.sign(e.deltaY)*0.1)));applyCam();},{passive:false});
+  window.addEventListener('resize',()=>{const W=stage.clientWidth,H=stage.clientHeight;renderer.setSize(W,H);camera.aspect=W/H;camera.updateProjectionMatrix();});
+  (function loop(){requestAnimationFrame(loop);renderer.render(scene,camera);})();
+  return{
+    rebuild(rawPos,quat,scale){
+      if(mesh){root.remove(mesh);mesh.geometry.dispose();}
+      const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(rawPos.slice(),3));
+      const m=new THREE.Matrix4().makeRotationFromQuaternion(quat||new THREE.Quaternion());
+      m.scale(new THREE.Vector3(scale,scale,scale));g.applyMatrix4(m);
+      g.computeBoundingBox();let bb=g.boundingBox;
+      g.translate(-(bb.min.x+bb.max.x)/2,-bb.min.y,-(bb.min.z+bb.max.z)/2);
+      g.computeVertexNormals();mesh=new THREE.Mesh(g,mat);root.add(mesh);
+      g.computeBoundingBox();bb=g.boundingBox;
+      const size={x:bb.max.x-bb.min.x,y:bb.max.y-bb.min.y,z:bb.max.z-bb.min.z};
+      target.set(0,size.y*0.45,0);radius=Math.max(size.x,size.y,size.z,60)*2.1;applyCam();return size;
+    },
+    setColour(hex){mat.color=new THREE.Color(hex);},
+    setOverflow(o){mat.color=new THREE.Color(o?'#c25e6e':(CURMAT&&CURMAT.hex)||'#888888');}
+  };
+}
+
+/* ================= Loading ================= */
+function ingest(pos){
+  const info=analyse(pos);
+  MODEL={pos,info,size:info.size,scale:1};
+  SCALE=1;$('scaleVal').value=100;$('scaleOut').textContent='100%';
+  if(typeof THREE!=='undefined')ORIENT=defaultOrient();
+  $('stageEmpty').style.display='none';$('spinHint').style.display='block';$('orientCard').style.display='block';
+  if(!VIEWER)VIEWER=makeViewer();
+  if(VIEWER){const sz=VIEWER.rebuild(pos,ORIENT,SCALE);if(sz)MODEL.size=sz;}
+  else MODEL.size=info.size;
+  const uw=$('unitWarn');
+  if(info.size.x<3&&info.size.y<3&&info.size.z<3){uw.style.display='block';uw.innerHTML='This looks very small ('+info.size.x.toFixed(2)+'mm) — units may be cm/inch. Use Scale below if needed.';}
+  else uw.style.display='none';
+  updateAll();
+}
+function applyTransform(){
+  if(!MODEL)return;MODEL.scale=SCALE;
+  if(VIEWER){const sz=VIEWER.rebuild(MODEL.pos,ORIENT,SCALE);if(sz)MODEL.size=sz;}
+  else MODEL.size={x:MODEL.info.size.x*SCALE,y:MODEL.info.size.y*SCALE,z:MODEL.info.size.z*SCALE};
+  updateAll();
+}
+function rotate90(axisStr){
+  if(typeof THREE==='undefined'||!ORIENT)return;
+  const a={x:[1,0,0],y:[0,1,0],z:[0,0,1]}[axisStr];
+  const q=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(a[0],a[1],a[2]),Math.PI/2);
+  ORIENT.premultiply(q);applyTransform();
+}
+function resetOrient(){if(typeof THREE!=='undefined')ORIENT=defaultOrient();SCALE=1;$('scaleVal').value=100;$('scaleOut').textContent='100%';applyTransform();}
+function scaleToFit(){
+  if(!MODEL)return;const sz=MODEL.size||MODEL.info.size;
+  const ratio=Math.min(CONFIG.build.x/sz.x,CONFIG.build.y/sz.y,CONFIG.build.z/sz.z)*0.98;
+  SCALE=Math.max(0.01,SCALE*ratio);$('scaleVal').value=Math.round(SCALE*100);$('scaleOut').textContent=Math.round(SCALE*100)+'%';applyTransform();
+}
+function loadBuffer(buf){
+  try{const pos=parseSTL(buf);if(!pos.length)throw new Error('No triangles');ingest(pos);}
+  catch(e){const uw=$('unitWarn');uw.style.display='block';uw.textContent='Could not read that STL: '+e.message;}
+}
+function loadFile(f){if(!f)return;const r=new FileReader();r.onload=()=>loadBuffer(r.result);r.readAsArrayBuffer(f);}
+function loadSample(){
+  let pos;
+  if(typeof THREE!=='undefined'){const g=new THREE.TorusKnotGeometry(15,5,160,22).toNonIndexed();pos=Float32Array.from(g.attributes.position.array);}
+  else{const c=[[0,0,0],[40,0,0],[40,40,0],[0,40,0],[0,0,45],[40,0,45],[40,40,45],[0,40,45]];const faces=[[0,1,2],[0,2,3],[4,6,5],[4,7,6],[0,4,5],[0,5,1],[1,5,6],[1,6,2],[2,6,7],[2,7,3],[3,7,4],[3,4,0]];pos=new Float32Array(faces.length*9);let p=0;faces.forEach(f=>f.forEach(i=>{pos[p++]=c[i][0];pos[p++]=c[i][1];pos[p++]=c[i][2];}));}
+  ingest(pos);
+}
+
+/* ================= UI wiring ================= */
+$('file').addEventListener('change',e=>loadFile(e.target.files[0]));
+const drop=$('drop');
+drop.addEventListener('click',()=>$('file').click());
+['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
+drop.addEventListener('drop',e=>loadFile(e.dataTransfer.files[0]));
+$('sample').addEventListener('click',loadSample);
+
+['infill','layer','qty','supports','priority','useCase','suit'].forEach(id=>['input','change'].forEach(ev=>$(id).addEventListener(ev,()=>{
+  $('infillOut').textContent=$('infill').value+'%';
+  $('layerOut').textContent=(+$('layer').value/100).toFixed(2)+' mm';
+  if(MODEL)updateAll();
+})));
+
+$('speedSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  document.querySelectorAll('#speedSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  CURSPEED=b.dataset.s;$('speedOut').textContent={draft:'Draft',std:'Standard',fine:'Fine'}[CURSPEED];if(MODEL)updateAll();});
+
+$('rotX').addEventListener('click',()=>rotate90('x'));
+$('rotY').addEventListener('click',()=>rotate90('y'));
+$('rotZ').addEventListener('click',()=>rotate90('z'));
+$('rotR').addEventListener('click',resetOrient);
+$('fitBtn').addEventListener('click',scaleToFit);
+$('scaleVal').addEventListener('input',()=>{SCALE=Math.max(0.01,(parseFloat($('scaleVal').value)||100)/100);$('scaleOut').textContent=Math.round(SCALE*100)+'%';applyTransform();});
+
+function setView(adv){document.body.classList.toggle('adv-on',adv);
+  document.querySelectorAll('#viewSeg button').forEach(b=>b.classList.toggle('on',(b.dataset.v==='adv')===adv));}
+document.querySelectorAll('#viewSeg button').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.v==='adv')));
+setView(false);
+
+/* ================= Quote submission ================= */
+$('send').addEventListener('click',function(){
+  const r=compute();if(!r)return;
+  const name=($('sendName').value||'').trim();
+  const email=($('sendEmail').value||'').trim();
+  const st=$('sendstat');
+  if(!email||email.indexOf('@')<1){st.className='sendstat err';st.textContent='Please add your email so we can reply.';return;}
+  const mat=CURMAT?(CURMAT.name+' — '+CURMAT.colour):'Unknown';
+  const txt='MARKED BY HAND — 3D print quote\n'+
+    'Name:        '+(name||'(not given)')+'\n'+'Email:       '+email+'\n'+
+    'Model size:  '+r.size.x.toFixed(0)+'×'+r.size.z.toFixed(0)+'×'+r.size.y.toFixed(0)+' mm\n'+
+    'Volume:      '+r.solid_cm3.toFixed(1)+' cm³\n'+
+    'Material:    '+mat+'\n'+
+    'Weight:      ≈ '+r.weight.toFixed(0)+' g\n'+
+    'Print time:  ≈ '+fmtTime(r.time_h)+'\n'+
+    'Supports:    '+(r.supportsOn?'yes':'no')+'\n'+
+    'Turnaround:  '+(r.pr.label||'')+'\n'+
+    'Quantity:    '+r.qty+'\n'+
+    'ESTIMATE:    $'+r.total.toFixed(2)+' (inc GST, incl '+CONFIG.pricing.safetyPct+'% buffer)';
+  const url=(CONFIG.business&&CONFIG.business.formUrl)||'';
+  const key=(CONFIG.business&&CONFIG.business.formKey)||'';
+  function showSuccess(){
+    $('sentText').textContent=txt;$('sent').style.display='block';
+    $('sent').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+  if(!url){showSuccess();return;}
+  const btn=this;btn.disabled=true;st.className='sendstat';st.textContent='Sending…';
+  const fd=new FormData();
+  fd.append('name',name||'(not given)');fd.append('email',email);
+  fd.append('subject','Marked By Hand — 3D print quote: '+mat+', qty '+r.qty);
+  fd.append('message',txt);
+  fd.append('size_mm',r.size.x.toFixed(0)+'×'+r.size.z.toFixed(0)+'×'+r.size.y.toFixed(0));
+  fd.append('volume_cm3',r.solid_cm3.toFixed(2));
+  fd.append('weight_g',r.weight.toFixed(1));
+  fd.append('print_time_min',(r.time_h*60).toFixed(0));
+  fd.append('material',mat);fd.append('supports',r.supportsOn?'yes':'no');
+  fd.append('turnaround',r.pr.label||'');fd.append('quantity',String(r.qty));
+  fd.append('displayed_estimate','$'+r.total.toFixed(2));
+  if(key)fd.append('access_key',key);
+  fetch(url,{method:'POST',headers:{Accept:'application/json'},body:fd})
+    .then(res=>res.json().catch(()=>({ok:res.ok})))
+    .then(d=>{
+      if(d&&(d.success||d.ok||d.next)){
+        showSuccess();st.className='sendstat ok';st.textContent='Sent — we’ll be in touch shortly.';
+        $('sendName').value='';$('sendEmail').value='';
+      }else{st.className='sendstat err';st.textContent='Couldn’t send — please try again shortly.';btn.disabled=false;}
+    }).catch(()=>{st.className='sendstat err';st.textContent='Couldn’t send — please try again shortly.';btn.disabled=false;});
+});
+
+/* ================= Load config from JSON ================= */
+fetch('print-quote-config.json',{cache:'no-store'})
+  .then(r=>{if(!r.ok)throw 0;return r.json();})
+  .then(j=>{applyConfig(j);console.info('[MBH] loaded print-quote-config.json');})
+  .catch(()=>{buildMaterialUI();console.info('[MBH] print-quote-config.json not found — using defaults');});
+</script>
+</body>
+</html>

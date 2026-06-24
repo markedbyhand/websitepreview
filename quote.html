@@ -6,9 +6,9 @@
 <title>Marked By Hand — Instant Laser Quote</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root{--graphite:#1A1714;--graphite-2:#211C18;--panel:#2A241F;--line:#433A32;--bone:#EDE6DA;--muted:#9A8E80;--amber:#FF7A1A;--amber-soft:#FFB070;--cyan:#5AD7E0;--ok:#7BD88F;--warn:#F2C14E;--op-cut:#FF5C7A;--op-shade:#FF7A1A;--op-line:#5AD7E0;--grid:rgba(255,255,255,.045);--wash:rgba(0,0,0,.25);--disp:'Space Grotesk',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;}
+  :root{--graphite:#F5EFE7;--graphite-2:#FCF8F2;--panel:#EAE0D4;--line:#D9CCBA;--bone:#3B2F26;--lede:#5C4F44;--muted:#8E7D6B;--amber:#A47864;--amber-soft:#8A5E4C;--btn-ink:#FFF7F0;--acc-ink:#0F241D;--cyan:#7A9A8B;--ok:#5E8C6A;--warn:#C8892F;--op-cut:#C25E6E;--op-shade:#A47864;--op-line:#7A9A8B;--grid:rgba(59,47,38,.055);--wash:rgba(0,0,0,.04);--disp:'Space Grotesk',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;}
   *{box-sizing:border-box}html,body{margin:0}
   body{background:var(--graphite);color:var(--bone);font-family:var(--disp);-webkit-font-smoothing:antialiased;line-height:1.45}
   a{color:var(--amber-soft);text-decoration:none}a:hover{text-decoration:underline}
@@ -17,8 +17,8 @@
   header.top{border-bottom:1px solid var(--line);background:linear-gradient(180deg,var(--graphite-2),var(--graphite));position:sticky;top:0;z-index:10}
   .top-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0}
   .brand{display:flex;align-items:center;gap:11px}
-  .mark{width:30px;height:30px;border-radius:7px;flex:none;background:radial-gradient(circle at 30% 30%,var(--amber),#b34c00);box-shadow:0 0 16px rgba(255,122,26,.45);position:relative}
-  .mark::after{content:"";position:absolute;inset:9px;border:2px solid rgba(0,0,0,.5);border-radius:3px}
+  .mark{width:30px;height:30px;flex:none;background:url("data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'><rect%20x='7'%20y='7'%20width='50'%20height='50'%20rx='13'%20fill='none'%20stroke='%23A47864'%20stroke-width='2.5'/><path%20d='M18%2028%20V18%20H28'%20fill='none'%20stroke='%23A47864'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'/><path%20d='M40%2030%20V34%20M40%2046%20V50%20M30%2040%20H34%20M46%2040%20H50'%20fill='none'%20stroke='%23A47864'%20stroke-width='1.8'%20stroke-linecap='round'/><path%20d='M40%2033%20L42.24%2037.76%20L47%2040%20L42.24%2042.24%20L40%2047%20L37.76%2042.24%20L33%2040%20L37.76%2037.76%20Z'%20fill='%237A9A8B'/></svg>") center/contain no-repeat}
+  .mark::after{content:none}
   .brand b{font-weight:700;letter-spacing:.2px}
   .brand small{display:block;color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.5px;text-transform:uppercase}
   .top-tag{color:var(--muted);font-family:var(--mono);font-size:12px}
@@ -27,7 +27,7 @@
   .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin:0 0 10px}
   h1{font-size:clamp(28px,5vw,46px);line-height:1.04;margin:0 0 12px;font-weight:700;letter-spacing:-.5px}
   h1 .ghost{color:var(--muted)}
-  .lede{max-width:560px;color:#cabeac;font-size:16px;margin:0}
+  .lede{max-width:560px;color:var(--lede);font-size:16px;margin:0}
   .grid{display:grid;grid-template-columns:1.25fr .9fr;gap:20px;padding:22px 0 8px;align-items:start}
   @media(max-width:880px){.grid{grid-template-columns:1fr}}
   .bed{background:linear-gradient(0deg,var(--wash),var(--wash)),repeating-linear-gradient(0deg,transparent 0 23px,var(--grid) 23px 24px),repeating-linear-gradient(90deg,transparent 0 23px,var(--grid) 23px 24px),var(--graphite-2);border:1px solid var(--line);border-radius:14px;position:relative;overflow:hidden;min-height:380px;display:flex;align-items:center;justify-content:center}
@@ -43,13 +43,13 @@
   .drop-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:4px}
   .szl{display:block;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
   button{font-family:var(--disp);cursor:pointer;border:none}
-  .btn{background:var(--amber);color:#1a0e02;font-weight:600;font-size:14px;padding:11px 18px;border-radius:9px;transition:transform .08s ease,filter .15s ease}
+  .btn{background:var(--amber);color:var(--btn-ink);font-weight:600;font-size:14px;padding:11px 18px;border-radius:9px;transition:transform .08s ease,filter .15s ease}
   .btn:hover{filter:brightness(1.06)}.btn:active{transform:translateY(1px)}
   .btn.ghost{background:transparent;color:var(--bone);border:1px solid var(--line)}
   .btn.ghost:hover{border-color:var(--amber);filter:none}
   .btn.block{width:100%;padding:14px;font-size:15px}
   .btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
-  .btn.cyan{background:var(--cyan);color:#06262a}
+  .btn.cyan{background:var(--cyan);color:var(--acc-ink)}
   .panel{background:var(--graphite-2);border:1px solid var(--line);border-radius:14px;padding:16px 16px 18px;margin-bottom:16px}
   .panel h2{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-family:var(--mono);margin:0 0 12px;font-weight:500}
   .reads{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -58,17 +58,21 @@
   .read .v{font-family:var(--mono);font-size:19px;font-weight:500;color:var(--bone);margin-top:2px}
   .read .v small{font-size:11px;color:var(--muted)}
   .units{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:9px}
+  body:not(.adv-on) .adv{display:none!important}
+  .adv-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+  .adv-bar .adv-lab{font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+  .adv-hint{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:-6px;margin-bottom:12px}
   .units .lab{font-size:12px;color:var(--muted)}.units .lab b{color:var(--bone)}
   .toggle{display:inline-flex;background:var(--graphite);border:1px solid var(--line);border-radius:8px;overflow:hidden;flex:none}
   .toggle button{background:transparent;color:var(--muted);font-family:var(--mono);font-size:12px;padding:6px 12px}
-  .toggle button[aria-pressed="true"]{background:var(--cyan);color:#06262a;font-weight:700}
+  .toggle button[aria-pressed="true"]{background:var(--cyan);color:var(--acc-ink);font-weight:700}
   .field{margin-bottom:13px}
   .field label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
   select,input[type=number]{width:100%;background:var(--panel);color:var(--bone);border:1px solid var(--line);border-radius:9px;padding:11px 12px;font-family:var(--mono);font-size:14px}
   select:hover{border-color:#5b5048}
   .seg{display:inline-flex;width:100%;background:var(--graphite);border:1px solid var(--line);border-radius:9px;overflow:hidden}
   .seg button{flex:1;background:transparent;color:var(--muted);font-size:13px;padding:10px 4px;font-weight:500}
-  .seg button[aria-pressed="true"]{background:var(--amber);color:#1a0e02;font-weight:700}
+  .seg button[aria-pressed="true"]{background:var(--amber);color:var(--btn-ink);font-weight:700}
   .layers .lrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line)}
   .layers .lrow:last-child{border-bottom:none}
   .swatch{width:14px;height:14px;border-radius:4px;flex:none;border:1px solid rgba(255,255,255,.2)}
@@ -135,11 +139,12 @@
   .sent pre{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:pre-wrap;margin:8px 0 0;background:var(--graphite);padding:10px;border-radius:8px;border:1px solid var(--line)}
   .err{background:rgba(242,193,78,.08);border:1px solid rgba(242,193,78,.4);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--warn);font-family:var(--mono);text-align:center}
   @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+.hero h1{font-family:'Bricolage Grotesque',var(--disp)}
 </style>
 </head>
 <body>
 <header class="top"><div class="wrap top-inner">
-  <div class="brand"><div class="mark" aria-hidden="true"></div><div><b>Marked By Hand</b><small>Laser &amp; handmade</small></div></div>
+  <a class="brand" href="index.html" style="text-decoration:none;color:inherit"><div class="mark" aria-hidden="true"></div><div><b style="font-family:'Bricolage Grotesque',sans-serif">Marked By Hand</b><small>Laser &amp; handmade</small></div></a>
   <div class="top-tag">// instant quote engine</div>
 </div></header>
 <main class="wrap">
@@ -166,7 +171,7 @@
             <div><label class="szl">Height mm</label><input id="szH" type="number" value="100" style="width:92px"></div>
             <button class="btn" id="szGo">Quote it</button>
           </div>
-          <p style="margin-top:8px">Prices a solid rectangle &mdash; flip the operation to Engrave for fill pricing.</p>
+          <p style="margin-top:8px">Prices a solid rectangle as a cut-out &mdash; upload a DXF for engrave jobs.</p>
         </div>
       </div>
       <svg id="view" style="display:none" preserveAspectRatio="xMidYMid meet"></svg>
@@ -175,6 +180,13 @@
       <input type="file" id="file" hidden>
     </div>
     <div>
+      <div class="adv-bar">
+        <span class="adv-lab">View</span>
+        <div class="seg adv-seg" role="group" aria-label="Detail level">
+          <button id="viewSimple" aria-pressed="true">Simple</button>
+          <button id="viewAdv" aria-pressed="false">Advanced</button>
+        </div>
+      </div>
       <div class="panel">
         <h2>Measured</h2>
         <div class="reads">
@@ -183,7 +195,7 @@
           <div class="read"><div class="k">Cut length</div><div class="v" id="rLen">&mdash; <small>mm</small></div></div>
           <div class="read"><div class="k" id="rExtraK">Contours</div><div class="v" id="rExtra">&mdash;</div></div>
         </div>
-        <div class="units">
+        <div class="units adv">
           <div class="lab">File units: <b id="uDetected">&mdash;</b><span id="uHint"></span></div>
           <div class="toggle" role="group" aria-label="Override units"><button id="uMM" aria-pressed="true">mm</button><button id="uIN" aria-pressed="false">inch</button></div>
         </div>
@@ -207,7 +219,7 @@
       <div class="panel">
         <h2>Specify</h2>
         <div class="field"><label for="material">Material &amp; thickness</label><select id="material"></select></div>
-        <div class="field"><label>Edge quality</label>
+        <div class="field adv"><label>Edge quality</label>
           <div class="quality">
             <button class="qopt" id="qDisplay" aria-pressed="true"><div class="qt"><span class="dot a"></span><span id="dispLabel">Display grade</span></div><div class="qd">Polished, glass-look edges. Slower, finished.</div><span class="soon">currently unavailable</span></button>
             <button class="qopt" id="qWorkshop" aria-pressed="false"><div class="qt"><span class="dot c"></span><span id="funcLabel">Functional grade</span></div><div class="qd">For templates, jigs &amp; hidden parts. Faster &amp; cheaper.</div><span class="soon">currently unavailable</span></button>
@@ -221,7 +233,12 @@
       <div class="panel est">
         <h2>Estimate</h2>
         <div id="estBody"><div class="empty-est">Add a file to see your price</div></div>
-        <button class="btn block cyan" id="send" disabled style="margin-top:16px">Send for review</button>
+        <div id="quoteContactWrap" class="enqf" style="display:none;margin-top:10px">
+          <input id="sendName" type="text" placeholder="Your name">
+          <input id="sendEmail" type="email" placeholder="Your email (so we can reply)">
+        </div>
+        <button class="btn block cyan" id="send" disabled style="margin-top:10px">Send for review</button>
+        <div id="sendStatus" class="enqstat" style="margin-top:5px"></div>
         <div id="availNote"></div>
         <div id="enquiryBox" style="display:none"><div class="warnbox enqf">
           <b>Want a heads-up when it's back?</b> Leave your details and we'll reply.
@@ -232,7 +249,7 @@
           <button id="enqSend" class="btn block">Send enquiry</button>
           <div id="enqStatus" class="enqstat"></div>
         </div></div>
-        <div class="sent" id="sent"><b>Sent.</b> In the live version this emails you + Kannika and stages the file on the cutting PC. For now, here&rsquo;s your quote summary to screenshot:<pre id="sentText"></pre></div>
+        <div class="sent" id="sent"><b>Quote received.</b> We&rsquo;ll review the details and be in touch within one business day to confirm before anything gets cut. Here&rsquo;s a copy of your quote:<pre id="sentText"></pre></div>
         <div class="note" id="estNote"></div>
       </div>
     </div>
@@ -241,7 +258,7 @@
     <summary><span>&#9881; Owner settings &mdash; rate card (hidden in production)</span><span class="chev">&#9656;</span></summary>
     <div class="sched-body"><div class="sched-grid">
       <div class="sched-sub">Appearance</div>
-      <div class="field" style="grid-column:1/-1"><label>Theme</label><select id="s_theme"><option value="workshop">Workshop Dark (current)</option><option value="walnut">Walnut &amp; Brass</option><option value="sage">Sage &amp; Bone (light)</option><option value="forest">Forest &amp; Butter</option><option value="plum">Plum &amp; Blush</option></select></div>
+      <div class="field" style="grid-column:1/-1"><label>Theme</label><select id="s_theme"><option value="mocha" selected>Mocha Mousse (current)</option><option value="workshop">Workshop Dark</option><option value="walnut">Walnut &amp; Brass</option><option value="sage">Sage &amp; Bone</option><option value="forest">Forest &amp; Butter</option><option value="plum">Plum &amp; Blush</option></select></div>
       <div class="sched-sub">Pricing</div>
       <div class="field"><label>Margin &times;</label><input type="number" id="s_margin" value="1.5" step="0.05" min="1"></div>
       <div class="field"><label>Setup fee $</label><input type="number" id="s_setup" value="8" step="0.5"></div>
@@ -280,7 +297,7 @@
 </main>
 <footer><div class="wrap foot">
   <div class="ft-l"><h3>Like this tool?</h3><p>We built it from scratch &mdash; instant quoting, live preview, the works. Want one wired into your own site or workshop? Let&rsquo;s talk.</p><div class="foot-mark">// MARKED BY HAND &middot; built by hand, naturally</div></div>
-  <a class="btn" href="#contact" id="contact">Contact us</a>
+  <a class="btn" href="contact.html">Contact us</a>
 </div></footer>
 <script>
 "use strict";
@@ -296,19 +313,20 @@ var MATERIALS=[
  {type:"Colour acrylic",thick:6,sheet:38,fd:5,fw:9,lead:4}
 ];
 MATERIALS.forEach(function(m){m.sheets=10;});
-var S={geom:null,parsed:null,unitScale:1,unitsOverridden:false,quality:"display",matIndex:1,singleOp:"cut",layerOps:{},engQuality:"standard",engMode:"shaded",jobType:"auto",manualOps:{},lastKinds:null,lastFlip:null,curVB:null,baseVB:null,groupColour:{},groupIndex:{}};
+var S={geom:null,parsed:null,unitScale:1,unitsOverridden:false,quality:"display",matIndex:1,layerOps:{},engQuality:"standard",engMode:"shaded",jobType:"auto",manualOps:{},curVB:null,baseVB:null,groupColour:{},groupIndex:{},_kindsSig:"",_lastGeom:null};
 var PALETTE=["#FF7A1A","#5AD7E0","#7BD88F","#F2C14E","#C792EA","#FF6B9D","#65B2FF","#FFB070"];
+var ADV=false;
 
 function cssVar(n){var v=getComputedStyle(document.documentElement).getPropertyValue(n).trim();return v||"#FF7A1A";}
 var THEMES={
- workshop:{"--graphite":"#1A1714","--graphite-2":"#211C18","--panel":"#2A241F","--line":"#433A32","--bone":"#EDE6DA","--muted":"#9A8E80","--amber":"#FF7A1A","--amber-soft":"#FFB070","--cyan":"#5AD7E0","--op-cut":"#FF5C7A","--op-shade":"#FF7A1A","--op-line":"#5AD7E0","--grid":"rgba(255,255,255,.045)","--wash":"rgba(0,0,0,.25)"},
- walnut:{"--graphite":"#211913","--graphite-2":"#2A201A","--panel":"#34291F","--line":"#4A3A2C","--bone":"#F0E7D8","--muted":"#A99680","--amber":"#C9913E","--amber-soft":"#E3B873","--cyan":"#8AA67E","--op-cut":"#E07A5F","--op-shade":"#C9913E","--op-line":"#8AA67E","--grid":"rgba(255,255,255,.04)","--wash":"rgba(0,0,0,.28)"},
- sage:{"--graphite":"#F4F1EA","--graphite-2":"#ECE7DC","--panel":"#FFFFFF","--line":"#DDD6C7","--bone":"#2E2A24","--muted":"#7A7264","--amber":"#6E8B6A","--amber-soft":"#9DB89A","--cyan":"#B5764F","--op-cut":"#C2543E","--op-shade":"#B5764F","--op-line":"#6E8B6A","--grid":"rgba(0,0,0,.05)","--wash":"rgba(0,0,0,.035)"},
- forest:{"--graphite":"#14211B","--graphite-2":"#1A2A22","--panel":"#21342B","--line":"#335043","--bone":"#EAF0E8","--muted":"#8FA89A","--amber":"#E8C547","--amber-soft":"#F2DA86","--cyan":"#6FB89A","--op-cut":"#E8765F","--op-shade":"#E8C547","--op-line":"#6FB89A","--grid":"rgba(255,255,255,.045)","--wash":"rgba(0,0,0,.25)"},
- plum:{"--graphite":"#211522","--graphite-2":"#2A1B2C","--panel":"#342338","--line":"#4C3550","--bone":"#F1E8F0","--muted":"#A38FA6","--amber":"#D98AA6","--amber-soft":"#EBB4C8","--cyan":"#C9A24B","--op-cut":"#E0698C","--op-shade":"#C9A24B","--op-line":"#D98AA6","--grid":"rgba(255,255,255,.045)","--wash":"rgba(0,0,0,.26)"}
+ mocha:{"--graphite":"#F5EFE7","--graphite-2":"#FCF8F2","--panel":"#EAE0D4","--line":"#D9CCBA","--bone":"#3B2F26","--lede":"#5C4F44","--muted":"#8E7D6B","--amber":"#A47864","--amber-soft":"#8A5E4C","--btn-ink":"#FFF7F0","--acc-ink":"#0F241D","--cyan":"#7A9A8B","--op-cut":"#C25E6E","--op-shade":"#A47864","--op-line":"#7A9A8B","--grid":"rgba(59,47,38,.055)","--wash":"rgba(0,0,0,.04)"},
+ workshop:{"--graphite":"#1A1714","--graphite-2":"#211C18","--panel":"#2A241F","--line":"#433A32","--bone":"#EDE6DA","--lede":"#CABEAC","--muted":"#9A8E80","--amber":"#FF7A1A","--amber-soft":"#FFB070","--btn-ink":"#1A0E02","--acc-ink":"#06262A","--cyan":"#5AD7E0","--op-cut":"#FF5C7A","--op-shade":"#FF7A1A","--op-line":"#5AD7E0","--grid":"rgba(255,255,255,.045)","--wash":"rgba(0,0,0,.25)"},
+ walnut:{"--graphite":"#211913","--graphite-2":"#2A201A","--panel":"#34291F","--line":"#4A3A2C","--bone":"#F0E7D8","--lede":"#D9C9B4","--muted":"#A99680","--amber":"#C9913E","--amber-soft":"#E3B873","--btn-ink":"#1A0E02","--acc-ink":"#10241D","--cyan":"#8AA67E","--op-cut":"#E07A5F","--op-shade":"#C9913E","--op-line":"#8AA67E","--grid":"rgba(255,255,255,.04)","--wash":"rgba(0,0,0,.28)"},
+ sage:{"--graphite":"#F4F1EA","--graphite-2":"#ECE7DC","--panel":"#FFFFFF","--line":"#DDD6C7","--bone":"#2E2A24","--lede":"#5A5347","--muted":"#7A7264","--amber":"#6E8B6A","--amber-soft":"#9DB89A","--btn-ink":"#FFFFFF","--acc-ink":"#FFFFFF","--cyan":"#B5764F","--op-cut":"#C2543E","--op-shade":"#B5764F","--op-line":"#6E8B6A","--grid":"rgba(0,0,0,.05)","--wash":"rgba(0,0,0,.035)"},
+ forest:{"--graphite":"#14211B","--graphite-2":"#1A2A22","--panel":"#21342B","--line":"#335043","--bone":"#EAF0E8","--lede":"#C7D6CA","--muted":"#8FA89A","--amber":"#E8C547","--amber-soft":"#F2DA86","--btn-ink":"#1A0E02","--acc-ink":"#0E2018","--cyan":"#6FB89A","--op-cut":"#E8765F","--op-shade":"#E8C547","--op-line":"#6FB89A","--grid":"rgba(255,255,255,.045)","--wash":"rgba(0,0,0,.25)"},
+ plum:{"--graphite":"#211522","--graphite-2":"#2A1B2C","--panel":"#342338","--line":"#4C3550","--bone":"#F1E8F0","--lede":"#D6C5D8","--muted":"#A38FA6","--amber":"#D98AA6","--amber-soft":"#EBB4C8","--btn-ink":"#2A0F1C","--acc-ink":"#241B06","--cyan":"#C9A24B","--op-cut":"#E0698C","--op-shade":"#C9A24B","--op-line":"#D98AA6","--grid":"rgba(255,255,255,.045)","--wash":"rgba(0,0,0,.26)"}
 };
 function applyTheme(k){var t=THEMES[k]||THEMES.workshop;for(var v in t)document.documentElement.style.setProperty(v,t[v]);}
-var ACI={1:"#ff0000",2:"#ffff00",3:"#00ff00",4:"#00ffff",5:"#0000ff",6:"#ff00ff",7:"#d8d8d8",8:"#808080",9:"#c0c0c0"};
 
 function tokenize(text){var raw=text.split(/\r\n|\r|\n/),pairs=[],i=0;while(i<raw.length-1){var cs=raw[i].trim();if(!/^-?\d+$/.test(cs)){i++;continue;}pairs.push({code:parseInt(cs,10),val:(raw[i+1]||"").trim()});i+=2;}return pairs;}
 function parseDXF(text){
@@ -356,7 +374,7 @@ function expand(verts,closed){if(!verts.length)return [];var out=[[verts[0][0],v
 function bulge(x1,y1,x2,y2,b){var th=4*Math.atan(b),ch=Math.hypot(x2-x1,y2-y1);if(ch<1e-9||Math.abs(th)<1e-9)return [[x2,y2]];var r=ch/(2*Math.sin(Math.abs(th)/2)),ca=Math.atan2(y2-y1,x2-x1),a=ca+(Math.PI/2-th/2),cx=x1+r*Math.cos(a),cy=y1+r*Math.sin(a),sa=Math.atan2(y1-cy,x1-cx),seg=Math.max(2,Math.ceil(Math.abs(th)/(Math.PI/24))),o=[];for(var i=1;i<=seg;i++){var t=sa+th*(i/seg);o.push([cx+r*Math.cos(t),cy+r*Math.sin(t)]);}return o;}
 function arc(c,r,a0d,a1d){var a0=a0d*Math.PI/180,a1=a1d*Math.PI/180,sw=a1-a0;if(sw<=0)sw+=Math.PI*2;var seg=Math.max(8,Math.ceil(sw/(Math.PI/36))),o=[];for(var i=0;i<=seg;i++){var t=a0+sw*(i/seg);o.push([c[0]+r*Math.cos(t),c[1]+r*Math.sin(t)]);}return o;}
 function ellipse(c,mj,ratio,t0,t1){var mn=[-mj[1]*ratio,mj[0]*ratio],sw=t1-t0;if(sw<=0)sw+=Math.PI*2;var seg=Math.max(16,Math.ceil(sw/(Math.PI/36))),o=[];for(var i=0;i<=seg;i++){var t=t0+sw*(i/seg);o.push([c[0]+mj[0]*Math.cos(t)+mn[0]*Math.sin(t),c[1]+mj[1]*Math.cos(t)+mn[1]*Math.sin(t)]);}return o;}
-function add(arr,pts,closed,layer,col,etype){if(pts&&pts.length>=2)arr.push({pts:pts,closed:closed,layer:layer||"0",col:col,etype:etype||"?"});}
+function add(arr,pts,closed,layer,col,etype){if(!pts||pts.length<2)return;for(var _i=0;_i<pts.length;_i++)if(!isFinite(pts[_i][0])||!isFinite(pts[_i][1]))return;arr.push({pts:pts,closed:closed,layer:layer||"0",col:col,etype:etype||"?"});}
 
 function build(parsed,scale){
   var gm={},order=[],minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
@@ -379,16 +397,6 @@ function shoelace(p){var s=0;for(var i=0;i<p.length;i++){var q=p[(i+1)%p.length]
 var UT={0:null,1:25.4,2:304.8,4:1,5:10,6:1000},UN={0:"unitless",1:"inch",2:"feet",4:"mm",5:"cm",6:"m"};
 function detect(u){if(u!=null&&UT[u]!=null)return {scale:UT[u],known:true,name:UN[u]};return {scale:1,known:false,name:"not set"};}
 function assignColours(){S.groupColour={};S.groupIndex={};if(!S.geom)return;for(var i=0;i<S.geom.groups.length;i++){var d=PALETTE[i%PALETTE.length];S.geom.groups[i].display=d;S.groupColour[S.geom.groups[i].key]=d;S.groupIndex[S.geom.groups[i].key]=i;}}
-function applySmartOps(){
-  if(!S.geom||S.geom.groups.length<2)return;
-  var maxA=-1,cutKey=null;
-  for(var i=0;i<S.parsed.contours.length;i++){var c=S.parsed.contours[i];if(c.closed){var a=Math.abs(shoelace(c.pts));if(a>maxA){maxA=a;cutKey=c.layer||"0";}}}
-  if(cutKey==null)return;
-  for(var k=0;k<S.geom.groups.length;k++){var key=S.geom.groups[k].key;S.layerOps[key]=(key===cutKey)?"cut":"engrave";}
-}
-function highlight(gi){var ps=document.querySelectorAll("#view .cut");for(var i=0;i<ps.length;i++){var pg=parseInt(ps[i].getAttribute("data-grp"),10);ps[i].style.opacity=(gi<0||pg===gi)?"1":"0.18";}}
-function opOf(key){if(S.geom.groups.length<=1)return S.singleOp;return S.layerOps[key]||"cut";}
-function hasEngraveActive(){if(!S.geom)return false;if(S.geom.groups.length<=1)return S.singleOp==="engrave";for(var i=0;i<S.geom.groups.length;i++)if(opOf(S.geom.groups[i].key)==="engrave")return true;return false;}
 
 function sched(){var n=function(id){return parseFloat(document.getElementById(id).value)||0;};
   return {margin:n("s_margin"),setup:n("s_setup"),min:n("s_min"),safety:n("s_safety"),voldisc:n("s_voldisc"),voldiscMax:n("s_voldiscmax"),machine:n("s_machine"),polish:n("s_polish"),transit:n("s_transit"),
@@ -435,10 +443,10 @@ function computePlan(){
   var multiBoundary=(mode==="cutengrave"&&topClosed>2);
   return {cutLen:cutLen,engFillArea:engFillArea,engLineLen:engLineLen,fillCount:fillCount,lineCount:lineCount,cutCount:cutCount,kinds:kinds,mode:mode,bigInner:bigInner,multiBoundary:multiBoundary,manualCount:manualCount,topClosed:topClosed};
 }
-function price(){
+function price(prePlan){
   var g=S.geom,sc=sched(),m=MATERIALS[S.matIndex],feedCut=(S.quality==="display"?m.fd:m.fw)||1;
   var qty=Math.max(1,parseInt(document.getElementById("qty").value,10)||1);
-  var pl=computePlan(),fill=(S.engQuality==="fine"?sc.fillFine:sc.fillStd)||1;
+  var pl=prePlan||computePlan(),fill=(S.engQuality==="fine"?sc.fillFine:sc.fillStd)||1;
   var sec=pl.cutLen/feedCut+pl.engLineLen/sc.score+pl.engFillArea/fill;
   var minutes=sec/60+g.count*sc.transit,machCost=minutes*sc.machine;
   var pack=partsPerSheet(g.W,g.H,sc);
@@ -457,14 +465,14 @@ function price(){
 function money(v){return "$"+v.toFixed(2);}
 
 function applyView(){if(!S.curVB)return;var v=S.curVB;document.getElementById("view").setAttribute("viewBox",v.x+" "+v.y+" "+v.w+" "+v.h);}
-function render(g){
+function render(g,prePlan){
   var svg=document.getElementById("view"),span=Math.max(g.W,g.H)||1,gap=span*0.10+6,ext=span*0.03+2,ah=ext*0.95;
   var x0=g.minX,x1=g.maxX,yT=-g.maxY,yB=-g.minY;
   var vbMinX=x0-gap-ext-8,vbMaxX=x1,vbMinY=yT,vbMaxY=yB+gap+ext+8;
   var padX=(vbMaxX-vbMinX)*0.12,padY=(vbMaxY-vbMinY)*0.12;vbMinX-=padX;vbMaxX+=padX;vbMinY-=padY;vbMaxY+=padY;
   var vw=vbMaxX-vbMinX,vh=vbMaxY-vbMinY;S.baseVB={x:vbMinX,y:vbMinY,w:vw,h:vh};if(!S.curVB)S.curVB={x:vbMinX,y:vbMinY,w:vw,h:vh};
   var fs=Math.max(vw,vh)*0.028,sw=Math.max(vw,vh)*0.004,paths="",parsed=S.parsed;
-  var plan=computePlan(),KC={cut:cssVar("--op-cut"),score:cssVar("--op-line"),engfill:cssVar("--op-shade"),engline:cssVar("--op-line")};
+  var plan=prePlan||computePlan(),KC={cut:cssVar("--op-cut"),engfill:cssVar("--op-shade"),engline:cssVar("--op-line")};
   for(var i=0;i<parsed.contours.length;i++){var c=parsed.contours[i],lk=c.layer||"0",gi=S.groupIndex[lk]||0,kind=plan.kinds[i]||"cut",colr=KC[kind]||"#FF7A1A",d="M ";
     for(var j=0;j<c.pts.length;j++){d+=(c.pts[j][0]*S.unitScale).toFixed(2)+" "+(-c.pts[j][1]*S.unitScale).toFixed(2)+(j<c.pts.length-1?" L ":"");}
     if(c.closed)d+=" Z";
@@ -499,18 +507,18 @@ function setEng(){var b=document.getElementById("engSeg").querySelectorAll("butt
 
 function refresh(){
   var estBody=document.getElementById("estBody"),send=document.getElementById("send");
-  if(!S.geom){estBody.innerHTML='<div class="empty-est">Add a file to see your price</div>';send.disabled=true;return;}
+  if(!S.geom){estBody.innerHTML='<div class="empty-est">Add a file to see your price</div>';setSend(false);return;}
   var g=S.geom;
   document.getElementById("rW").innerHTML=g.W.toFixed(1)+' <small>mm</small>';
   document.getElementById("rH").innerHTML=g.H.toFixed(1)+' <small>mm</small>';
-  render(g);
+  var planNow=computePlan(),sig=planNow.kinds.join(",");
+  if(sig!==S._kindsSig||S._lastGeom!==g){S._kindsSig=sig;S._lastGeom=g;render(g,planNow);}
   var sc0=sched();
   var fits=(g.W<=sc0.sheetW&&g.H<=sc0.sheetH)||(g.W<=sc0.sheetH&&g.H<=sc0.sheetW);
-  if(!fits){document.getElementById("rLen").innerHTML="&mdash;";document.getElementById("rExtraK").textContent="Contours";document.getElementById("rExtra").textContent=g.count;document.getElementById("bedScale").textContent=g.W.toFixed(0)+" × "+g.H.toFixed(0)+" mm";document.getElementById("engDetail").style.display="none";document.getElementById("confNote").innerHTML="";document.getElementById("estNote").innerHTML="";estBody.innerHTML='<div class="err">This part is '+g.W.toFixed(0)+'×'+g.H.toFixed(0)+'mm — larger than your '+sc0.sheetW+'×'+sc0.sheetH+'mm cutting area. It can&rsquo;t be cut as one piece.</div>';send.disabled=true;return;}
-  var p=price();
+  if(!fits){document.getElementById("rLen").innerHTML="&mdash;";document.getElementById("rExtraK").textContent="Contours";document.getElementById("rExtra").textContent=g.count;document.getElementById("bedScale").textContent=g.W.toFixed(0)+" × "+g.H.toFixed(0)+" mm";document.getElementById("engDetail").style.display="none";document.getElementById("confNote").innerHTML="";document.getElementById("estNote").innerHTML="";estBody.innerHTML='<div class="err">This part is '+g.W.toFixed(0)+'×'+g.H.toFixed(0)+'mm — larger than your '+sc0.sheetW+'×'+sc0.sheetH+'mm cutting area. It can&rsquo;t be cut as one piece.</div>';setSend(false);return;}
+  var p=price(planNow);
   document.getElementById("engDetail").style.display=(p.plan.fillCount+p.plan.lineCount>0)?"block":"none";setEng();setEngMode();
   var jb=document.getElementById("jobSeg").querySelectorAll("button");for(var ji=0;ji<jb.length;ji++)jb[ji].setAttribute("aria-pressed",jb[ji].dataset.jt===S.jobType);
-  S.lastKinds=p.plan.kinds;
   document.getElementById("rLen").innerHTML=p.cutLen.toFixed(0)+' <small>mm</small>';
   if(p.engFillArea>0){document.getElementById("rExtraK").textContent="Shaded area";document.getElementById("rExtra").innerHTML=p.engFillArea.toFixed(0)+' <small>mm²</small>';}
   else if(p.engLineLen>0){document.getElementById("rExtraK").textContent="Engrave lines";document.getElementById("rExtra").innerHTML=p.engLineLen.toFixed(0)+' <small>mm</small>';}
@@ -531,7 +539,7 @@ function refresh(){
   else li+='<div class="note">▦ Fits '+p.partsPerSheet+' per '+sc.sheetW+'×'+sc.sheetH+' sheet'+(p.qty>p.partsPerSheet?' · ~'+p.sheetsNeeded+' sheets for '+p.qty:'')+'</div>';
   if(p.hasEng)li+='<div class="note">▦ '+p.plan.fillCount+' shaded ('+p.engFillArea.toFixed(0)+'mm²) · ╱ '+p.plan.lineCount+' line'+(p.plan.lineCount===1?'':'s')+' ('+p.engLineLen.toFixed(0)+'mm)</div>';
   if(p.qty>1)li+='<div class="note">'+money(p.unit)+' each · '+p.qty+' parts</div>';
-  estBody.innerHTML=li;send.disabled=false;
+  estBody.innerHTML=li;setSend(true);
   var conf=[];
   if(p.plan.mode==="cutengrave")conf.push("Detected: "+p.plan.cutCount+" cut + "+(p.plan.fillCount+p.plan.lineCount)+" engrave shapes. Circles &amp; outer frame = cut, text/curves = engrave."+(p.plan.manualCount>0?" ("+p.plan.manualCount+" set by you)":""));
   else if(p.plan.mode==="engrave")conf.push("Detected: all engrave — tap shapes or use Cut + Engrave if some should be cut.");
@@ -553,7 +561,7 @@ function refresh(){
   if(!gOn){problem=(S.quality==="display"?dn:fn)+" grade isn’t available right now";}
   else if(sheetsHave<=0){problem=matM.type+" "+matM.thick+"mm is out of stock";stockIssue=true;}
   else if(sheetsNeed>sheetsHave){problem="Only "+sheetsHave+" sheet"+(sheetsHave===1?"":"s")+" of "+matM.type+" "+matM.thick+"mm in stock — this order needs "+sheetsNeed;stockIssue=true;}
-  if(problem){send.disabled=true;
+  if(problem){setSend(false);
     var tail=stockIssue?" Lower the quantity, pick another option, or leave your details below.":" Try another option, or check back soon.";
     var formUrl=(document.getElementById("s_formUrl").value||"").trim(),email=(document.getElementById("s_contactEmail").value||"").trim(),extra="";
     if(formUrl){document.getElementById("enqRegarding").textContent="Regarding: "+matM.type+" "+matM.thick+"mm — qty "+p.qty;S.enqContext={material:matM.type+" "+matM.thick+"mm",qty:p.qty};eb.style.display="";}
@@ -565,7 +573,7 @@ function refresh(){
 function load(text){
   try{var parsed=parseDXF(text),b=build(parsed,1);
     if(!b||b.count===0||(b.W<1e-6&&b.H<1e-6)){showErr("No cut geometry found in this file.");return;}
-    S.parsed=parsed;S.layerOps={};S.manualOps={};S.lastFlip=null;var d=detect(parsed.insunits);S.unitsOverridden=false;S.unitScale=d.known?d.scale:1;
+    S.parsed=parsed;S.layerOps={};S.manualOps={};var d=detect(parsed.insunits);S.unitsOverridden=false;S.unitScale=d.known?d.scale:1;
     document.getElementById("uDetected").textContent=d.name;document.getElementById("uHint").innerHTML=d.known?"":' <span style="color:var(--warn)">— confirm →</span>';
     setUnits(S.unitScale===25.4?"in":"mm");S.curVB=null;S.geom=build(parsed,S.unitScale);assignColours();buildOpUI();refresh();
   }catch(err){showErr(err&&err.nice?err.nice:"Couldn't read that file. Is it a plain DXF?");}
@@ -574,11 +582,12 @@ function quoteBySize(w,h){
   if(!(w>0)||!(h>0)){showErr("Enter a width and height in mm.");return;}
   var rect=[[0,0],[w,0],[w,h],[0,h]];
   var parsed={contours:[{pts:rect,closed:true,layer:"CUT",col:null}],insunits:4,flags:{spline:false,ellipse:false,insert:false,text:false}};
-  S.parsed=parsed;S.layerOps={};S.manualOps={};S.unitsOverridden=true;S.unitScale=1;S.singleOp="cut";
+  S.parsed=parsed;S.layerOps={};S.manualOps={};S.unitsOverridden=true;S.unitScale=1;
   setUnits("mm");document.getElementById("uDetected").textContent="mm (entered)";document.getElementById("uHint").innerHTML="";
   S.curVB=null;S.geom=build(parsed,1);assignColours();buildOpUI();refresh();
 }
-function showErr(msg){document.getElementById("estBody").innerHTML='<div class="err">'+esc(msg)+'</div>';document.getElementById("send").disabled=true;document.getElementById("opPanel").style.display="none";}
+function setSend(en){var b=document.getElementById("send");b.disabled=!en;document.getElementById("quoteContactWrap").style.display=en?"block":"none";if(!en)document.getElementById("sendStatus").textContent="";}
+function showErr(msg){document.getElementById("estBody").innerHTML='<div class="err">'+esc(msg)+'</div>';setSend(false);document.getElementById("opPanel").style.display="none";}
 function setUnits(w){document.getElementById("uMM").setAttribute("aria-pressed",w==="mm");document.getElementById("uIN").setAttribute("aria-pressed",w==="in");}
 function rescale(){S.curVB=null;S.geom=build(S.parsed,S.unitScale);assignColours();buildOpUI();refresh();}
 
@@ -633,25 +642,26 @@ function buildMatSelect(){var sel=document.getElementById("material");sel.innerH
 var matSel=document.getElementById("material");matSel.onchange=function(e){S.matIndex=parseInt(e.target.value,10);refresh();};buildMatSelect();
 ["s_margin","s_setup","s_min","s_machine","s_polish","s_transit","s_score","s_fill_std","s_fill_fine","s_fillthr","s_sheetW","s_sheetH","s_gap","s_eff","s_safety","s_voldisc","s_voldiscmax"].forEach(function(id){document.getElementById(id).oninput=function(){if(S.geom)refresh();};});
 var matBody=document.getElementById("matBody");
-for(var mb=0;mb<MATERIALS.length;mb++){var m=MATERIALS[mb],tr=document.createElement("tr");
+function renderMatTable(){matBody.innerHTML="";for(var mb=0;mb<MATERIALS.length;mb++){var m=MATERIALS[mb],tr=document.createElement("tr");
   tr.innerHTML='<td>'+m.type+'</td><td>'+m.thick+'mm</td>'+
   '<td><input type="number" value="'+m.sheet+'" step="1" data-i="'+mb+'" data-k="sheet"></td>'+
   '<td><input type="number" value="'+m.fd+'" step="1" data-i="'+mb+'" data-k="fd"></td>'+
   '<td><input type="number" value="'+m.fw+'" step="1" data-i="'+mb+'" data-k="fw"></td>'+
   '<td><input type="number" value="'+m.lead+'" step="1" data-i="'+mb+'" data-k="lead"></td>'+
   '<td><input type="number" min="0" step="1" value="'+(m.sheets||0)+'" data-i="'+mb+'" data-k="sheets"></td>';
-  matBody.appendChild(tr);}
+  matBody.appendChild(tr);}}
+renderMatTable();
 matBody.addEventListener("input",function(e){var t=e.target;if(t.dataset.i!=null){MATERIALS[+t.dataset.i][t.dataset.k]=parseFloat(t.value)||0;if(t.dataset.k==="sheets")buildMatSelect();if(S.geom)refresh();}});
 (function(){var view=document.getElementById("view");function cl(v,a,b){return Math.max(a,Math.min(b,v));}
 view.addEventListener("wheel",function(e){if(!S.curVB)return;e.preventDefault();var r=view.getBoundingClientRect();var px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height,f=e.deltaY<0?0.85:1.18,v=S.curVB,wx=v.x+px*v.w,wy=v.y+py*v.h,nw=cl(v.w*f,S.baseVB.w*0.05,S.baseVB.w*5),nh=cl(v.h*f,S.baseVB.h*0.05,S.baseVB.h*5);v.x=wx-px*nw;v.y=wy-py*nh;v.w=nw;v.h=nh;applyView();},{passive:false});
 var drag=false,lx,ly;
-var downX=0,downY=0;view.addEventListener("pointerdown",function(e){downX=e.clientX;downY=e.clientY;if(!S.curVB)return;drag=true;lx=e.clientX;ly=e.clientY;try{view.setPointerCapture(e.pointerId);}catch(_){}});
+view.addEventListener("pointerdown",function(e){if(!S.curVB)return;drag=true;lx=e.clientX;ly=e.clientY;try{view.setPointerCapture(e.pointerId);}catch(_){}});
 view.addEventListener("pointermove",function(e){if(!drag||!S.curVB)return;var r=view.getBoundingClientRect();S.curVB.x-=(e.clientX-lx)*(S.curVB.w/r.width);S.curVB.y-=(e.clientY-ly)*(S.curVB.h/r.height);lx=e.clientX;ly=e.clientY;applyView();});
 view.addEventListener("pointerup",function(){drag=false;});view.addEventListener("pointerleave",function(){drag=false;});
 var pd=null;view.addEventListener("touchmove",function(e){if(e.touches.length===2&&S.curVB){e.preventDefault();var dx=e.touches[0].clientX-e.touches[1].clientX,dy=e.touches[0].clientY-e.touches[1].clientY,d=Math.hypot(dx,dy);if(pd){var f=pd/d,v=S.curVB,cx=v.x+v.w/2,cy=v.y+v.h/2,nw=cl(v.w*f,S.baseVB.w*0.05,S.baseVB.w*5),nh=cl(v.h*f,S.baseVB.h*0.05,S.baseVB.h*5);v.x=cx-nw/2;v.y=cy-nh/2;v.w=nw;v.h=nh;applyView();}pd=d;}},{passive:false});
 view.addEventListener("touchend",function(){pd=null;});})();
 document.getElementById("resetView").onclick=function(){if(S.baseVB){S.curVB={x:S.baseVB.x,y:S.baseVB.y,w:S.baseVB.w,h:S.baseVB.h};applyView();}};
-document.getElementById("s_theme").onclick=function(){};document.getElementById("s_theme").onchange=function(e){applyTheme(e.target.value);if(S.geom)refresh();};
+document.getElementById("s_theme").onchange=function(e){applyTheme(e.target.value);S._kindsSig="";if(S.geom)refresh();};
 applyTheme(document.getElementById("s_theme").value);
 document.getElementById("enqSend").onclick=function(){
   var url=(document.getElementById("s_formUrl").value||"").trim();
@@ -676,15 +686,165 @@ document.getElementById("enqSend").onclick=function(){
 };
 document.getElementById("send").onclick=function(){
   var g=S.geom,p=price(),jt=S.jobType==="auto"?"auto-detected":(S.jobType==="cutonly"?"cut only":"cut + engrave");
-  var txt="MARKED BY HAND \u2014 quote request\nSize:        "+g.W.toFixed(1)+" \u00d7 "+g.H.toFixed(1)+" mm\nJob:         "+jt+" ("+p.plan.mode+")\nCut length:  "+p.cutLen.toFixed(0)+" mm"+
+  var name=(document.getElementById("sendName").value||"").trim();
+  var email=(document.getElementById("sendEmail").value||"").trim();
+  var st=document.getElementById("sendStatus");
+  if(!email||email.indexOf("@")<1){st.className="enqstat err";st.textContent="Please add your email so we can reply.";return;}
+  var txt="MARKED BY HAND \u2014 quote request\nName:        "+(name||"(not given)")+"\nEmail:       "+email+
+    "\nSize:        "+g.W.toFixed(1)+" \u00d7 "+g.H.toFixed(1)+" mm\nJob:         "+jt+" ("+p.plan.mode+")\nCut length:  "+p.cutLen.toFixed(0)+" mm"+
     (p.engFillArea>0?"\nShaded:      "+p.engFillArea.toFixed(0)+" mm\u00b2 ("+S.engQuality+")":"")+
     (p.engLineLen>0?"\nEng lines:   "+p.engLineLen.toFixed(0)+" mm":"")+
     "\nMaterial:    "+p.m.type+" "+p.m.thick+"mm\nEdge:        "+S.quality+"\nQuantity:    "+p.qty+
     "\nNesting:     "+(p.oversize?"oversize \u2014 review":p.partsPerSheet+" per "+p.sc.sheetW+"\u00d7"+p.sc.sheetH+" sheet")+
     "\nLead time:   ~"+p.lead+" business days\nESTIMATE:    "+money(p.total)+" (incl "+p.safetyPct+"% buffer, pending review)";
-  document.getElementById("sentText").textContent=txt;document.getElementById("sent").classList.add("show");
-  document.getElementById("sent").scrollIntoView({behavior:"smooth",block:"nearest"});
+  var url=(document.getElementById("s_formUrl").value||"").trim();
+  var key=(document.getElementById("s_formKey").value||"").trim();
+  if(!url){
+    /* No endpoint configured \u2014 show on-screen copy as fallback */
+    document.getElementById("sentText").textContent=txt;document.getElementById("sent").classList.add("show");
+    document.getElementById("sent").scrollIntoView({behavior:"smooth",block:"nearest"});
+    return;
+  }
+  var btn=this;btn.disabled=true;st.className="enqstat";st.textContent="Sending\u2026";
+  var fd=new FormData();
+  fd.append("name",name||"(not given)");fd.append("email",email);
+  fd.append("subject","Marked By Hand \u2014 quote: "+p.m.type+" "+p.m.thick+"mm, qty "+p.qty);
+  fd.append("message",txt);
+  /* Raw geometry \u2014 these come from the parsed DXF, not the displayed price */
+  fd.append("geo_w_mm",g.W.toFixed(2));fd.append("geo_h_mm",g.H.toFixed(2));
+  fd.append("cut_length_mm",p.cutLen.toFixed(1));fd.append("eng_fill_mm2",p.engFillArea.toFixed(1));fd.append("eng_lines_mm",p.engLineLen.toFixed(1));
+  fd.append("material",p.m.type+" "+p.m.thick+"mm");fd.append("edge_grade",S.quality);fd.append("job_type",jt);
+  fd.append("quantity",String(p.qty));fd.append("displayed_estimate",money(p.total));
+  if(key)fd.append("access_key",key);
+  fetch(url,{method:"POST",headers:{Accept:"application/json"},body:fd})
+    .then(function(r){return r.json().catch(function(){return{ok:r.ok};});})
+    .then(function(d){
+      if(d&&(d.success||d.ok||d.next)){
+        document.getElementById("sentText").textContent=txt;document.getElementById("sent").classList.add("show");
+        document.getElementById("sent").scrollIntoView({behavior:"smooth",block:"nearest"});
+        st.className="enqstat ok";st.textContent="Sent \u2014 we\u2019ll be in touch shortly.";
+        document.getElementById("sendName").value="";document.getElementById("sendEmail").value="";
+      }else{st.className="enqstat err";st.textContent="Couldn\u2019t send \u2014 please try again shortly.";btn.disabled=false;}
+    }).catch(function(){st.className="enqstat err";st.textContent="Couldn\u2019t send \u2014 please try again shortly.";btn.disabled=false;});
 };
+/* ============================================================
+   CONFIG · VIEW · ACCESS  (added v4)
+   Settings live in quote-config.json (fetched at load). If the file
+   is missing or you're running from file://, the tool falls back to
+   DEFAULT_CONFIG below, so it always works. Edit the JSON to retune
+   every quote — no code changes. NOTE: a browser tool can't truly
+   hide pricing (view-source exists); real protection = moving price()
+   to a server endpoint after July 1. computeQuote inputs/outputs are
+   already a clean seam for that.
+   ============================================================ */
+var DEFAULT_CONFIG = {
+  theme: "mocha",
+  business: {
+    contactEmail: "",
+    formUrl: "",
+    formKey: "",
+    ownerKey: "mbh"          /* unlock owner settings via ?owner=mbh */
+  },
+  pricing: {
+    margin:1.5, setup:8, min:15, safety:15, voldisc:2, voldiscMax:40,
+    machine:1.50, polish:0.015, transit:0.03, score:120,
+    fillStd:200, fillFine:110, fillThr:1.5,
+    sheetW:600, sheetH:400, gap:3, eff:90
+  },
+  grades: {
+    offerDisplay:true, offerFunctional:true,
+    displayName:"Display", functionalName:"Functional",
+    whyFunctional:"If your piece is a template, jig, prototype, or anything where the cut edges won't be on show, you don't need flame-polished perfection. Functional grade skips the extra edge finishing and runs faster — the cut is just as accurate, the price is lower. Choose Display grade when the edges will be seen."
+  },
+  materials: [
+    {type:"Clear acrylic",thick:2,sheet:13,fd:18,fw:30,lead:2,sheets:10},
+    {type:"Clear acrylic",thick:3,sheet:16,fd:12,fw:22,lead:3,sheets:10},
+    {type:"Clear acrylic",thick:4.5,sheet:24,fd:8,fw:16,lead:3,sheets:10},
+    {type:"Clear acrylic",thick:6,sheet:30,fd:5,fw:10,lead:4,sheets:10},
+    {type:"Colour acrylic",thick:2,sheet:16,fd:16,fw:28,lead:2,sheets:10},
+    {type:"Colour acrylic",thick:3,sheet:20,fd:11,fw:20,lead:3,sheets:10},
+    {type:"Colour acrylic",thick:4.5,sheet:30,fd:7,fw:15,lead:3,sheets:10},
+    {type:"Colour acrylic",thick:6,sheet:38,fd:5,fw:9,lead:4,sheets:10}
+  ]
+};
+
+function _set(id,v){var el=document.getElementById(id);if(el!=null&&v!=null)el.value=v;}
+function _chk(id,v){var el=document.getElementById(id);if(el!=null&&v!=null)el.checked=!!v;}
+
+function applyConfig(cfg){
+  cfg=cfg||{};
+  var p=cfg.pricing||{}, g=cfg.grades||{}, b=cfg.business||{};
+  _set("s_margin",p.margin);_set("s_setup",p.setup);_set("s_min",p.min);_set("s_safety",p.safety);
+  _set("s_voldisc",p.voldisc);_set("s_voldiscmax",p.voldiscMax);_set("s_machine",p.machine);
+  _set("s_polish",p.polish);_set("s_transit",p.transit);_set("s_score",p.score);
+  _set("s_fill_std",p.fillStd);_set("s_fill_fine",p.fillFine);_set("s_fillthr",p.fillThr);
+  _set("s_sheetW",p.sheetW);_set("s_sheetH",p.sheetH);_set("s_gap",p.gap);_set("s_eff",p.eff);
+  _chk("s_gOnDisp",g.offerDisplay);_chk("s_gOnFunc",g.offerFunctional);
+  _set("s_dispName",g.displayName);_set("s_funcName",g.functionalName);_set("s_funcWhy",g.whyFunctional);
+  _set("s_contactEmail",b.contactEmail);_set("s_formUrl",b.formUrl);_set("s_formKey",b.formKey);
+  if(b.ownerKey)DEFAULT_CONFIG.business.ownerKey=b.ownerKey;
+  if(cfg.materials&&cfg.materials.length){
+    MATERIALS.length=0;
+    cfg.materials.forEach(function(m){MATERIALS.push({type:m.type,thick:m.thick,sheet:m.sheet,fd:m.fd,fw:m.fw,lead:m.lead,sheets:(m.sheets!=null?m.sheets:10)});});
+    buildMatSelect();renderMatTable();
+  }
+  if(cfg.theme){_set("s_theme",cfg.theme);applyTheme(cfg.theme);}
+  if(typeof updateGrades==="function")updateGrades();
+  if(S.geom)refresh();
+}
+
+function collectConfig(){
+  var n=function(id){return parseFloat(document.getElementById(id).value)||0;};
+  var v=function(id){return document.getElementById(id).value;};
+  var c=function(id){return document.getElementById(id).checked;};
+  return {
+    theme:v("s_theme"),
+    business:{contactEmail:v("s_contactEmail"),formUrl:v("s_formUrl"),formKey:v("s_formKey"),ownerKey:DEFAULT_CONFIG.business.ownerKey},
+    pricing:{margin:n("s_margin"),setup:n("s_setup"),min:n("s_min"),safety:n("s_safety"),voldisc:n("s_voldisc"),voldiscMax:n("s_voldiscmax"),machine:n("s_machine"),polish:n("s_polish"),transit:n("s_transit"),score:n("s_score"),fillStd:n("s_fill_std"),fillFine:n("s_fill_fine"),fillThr:n("s_fillthr"),sheetW:n("s_sheetW"),sheetH:n("s_sheetH"),gap:n("s_gap"),eff:n("s_eff")},
+    grades:{offerDisplay:c("s_gOnDisp"),offerFunctional:c("s_gOnFunc"),displayName:v("s_dispName"),functionalName:v("s_funcName"),whyFunctional:v("s_funcWhy")},
+    materials:MATERIALS.map(function(m){return {type:m.type,thick:m.thick,sheet:m.sheet,fd:m.fd,fw:m.fw,lead:m.lead,sheets:m.sheets};})
+  };
+}
+
+function loadConfig(){
+  if(typeof fetch!=="function"){applyConfig(DEFAULT_CONFIG);return;}
+  fetch("quote-config.json",{cache:"no-store"})
+    .then(function(r){if(!r.ok)throw 0;return r.json();})
+    .then(function(j){applyConfig(j);console.info("[MBH] loaded quote-config.json");})
+    .catch(function(){applyConfig(DEFAULT_CONFIG);console.info("[MBH] quote-config.json not found — using built-in defaults");});
+}
+
+/* ---- Simple / Advanced view ---- */
+function setView(adv){
+  ADV=!!adv;document.body.classList.toggle("adv-on",ADV);
+  document.getElementById("viewSimple").setAttribute("aria-pressed",(!ADV).toString());
+  document.getElementById("viewAdv").setAttribute("aria-pressed",ADV.toString());
+  if(S.geom)refresh();
+}
+document.getElementById("viewSimple").onclick=function(){setView(false);};
+document.getElementById("viewAdv").onclick=function(){setView(true);};
+setView(false);
+
+/* ---- Owner settings: hidden unless unlocked via ?owner=KEY or #owner ---- */
+(function(){
+  var sched=document.querySelector(".sched");
+  if(!sched)return;
+  var hay=(location.search+"&"+location.hash).toLowerCase();
+  var key=(DEFAULT_CONFIG.business.ownerKey||"owner").toLowerCase();
+  var unlocked = hay.indexOf("owner="+key)>=0 || hay.indexOf("#owner")>=0 || hay.indexOf("&owner")>=0 || hay.indexOf("?owner")>=0;
+  if(!unlocked){sched.style.display="none";return;}
+  /* add export button for the owner */
+  var bar=document.createElement("div");bar.style.cssText="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px";
+  var dl=document.createElement("button");dl.className="btn ghost";dl.textContent="Download quote-config.json";
+  dl.onclick=function(){
+    var blob=new Blob([JSON.stringify(collectConfig(),null,2)],{type:"application/json"});
+    var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="quote-config.json";a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+  };
+  bar.appendChild(dl);
+  sched.querySelector(".sched-body").appendChild(bar);
+})();
+
+loadConfig();
 </script>
 </body>
 </html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photo → Engrave</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F5EFE7; --panel:#FCF8F2; --panel-2:#EAE0D4; --line:#D9CCBA;
+    --ink:#3B2F26; --ink-dim:#8E7D6B; --ink-faint:#A99A88;
+    --accent:#A47864; --accent-dim:#8A5E4C; --ok:#5E8C6A;
+    --mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Consolas,Menlo,monospace;
+    --sans:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.4;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1200px;margin:0 auto;padding:18px}
+  header{display:flex;align-items:baseline;gap:12px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:16px;flex-wrap:wrap}
+  header h1{font-size:18px;font-weight:650;letter-spacing:.2px}
+  header .tag{font-family:var(--mono);font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:1.5px}
+  .layout{display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start}
+  @media(max-width:820px){.layout{grid-template-columns:1fr}}
+
+  /* preview */
+  .stage{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-height:360px}
+  .stage-canvas{flex:1;display:flex;align-items:center;justify-content:center;padding:18px;background:
+    linear-gradient(45deg,#E4D8C8 25%,transparent 25%),linear-gradient(-45deg,#E4D8C8 25%,transparent 25%),
+    linear-gradient(45deg,transparent 75%,#E4D8C8 75%),linear-gradient(-45deg,transparent 75%,#E4D8C8 75%);
+    background-size:18px 18px;background-position:0 0,0 9px,9px -9px,-9px 0}
+  canvas#out{max-width:100%;max-height:62vh;image-rendering:pixelated;box-shadow:0 8px 28px rgba(0,0,0,.45);background:#fff;display:none}
+  .drop{border:2px dashed var(--line);border-radius:10px;padding:40px 24px;text-align:center;color:var(--ink-dim);cursor:pointer;transition:.15s;width:100%;max-width:420px}
+  .drop:hover,.drop.hot{border-color:var(--accent);color:var(--ink);background:rgba(164,120,100,.07)}
+  .drop strong{display:block;color:var(--ink);font-size:15px;margin-bottom:4px}
+  .drop span{font-size:12px}
+  .statusbar{display:flex;gap:16px;flex-wrap:wrap;padding:9px 14px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--ink-dim);background:var(--panel-2)}
+  .statusbar b{color:var(--ink);font-weight:600}
+  .statusbar .sp{color:var(--ink-faint)}
+
+  /* controls */
+  .controls{display:flex;flex-direction:column;gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+  .card h2{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink-faint);font-family:var(--mono);margin-bottom:11px;font-weight:600}
+  .row{margin-bottom:13px}
+  .row:last-child{margin-bottom:0}
+  label.lbl{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--ink-dim);margin-bottom:6px}
+  label.lbl .val{font-family:var(--mono);color:var(--ink);font-size:12px}
+  select,input[type=number]{width:100%;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:7px;padding:8px 9px;font-size:13px;font-family:var(--sans)}
+  select:focus,input:focus{outline:none;border-color:var(--accent)}
+  input[type=range]{width:100%;-webkit-appearance:none;height:4px;border-radius:3px;background:var(--line);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--panel)}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--panel)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .check{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--ink)}
+  .check input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
+  .btn{width:100%;background:var(--accent);color:#FFF7F0;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:650;cursor:pointer;transition:.15s;font-family:var(--sans)}
+  .btn:hover{background:#B98E7C}
+  .btn:disabled{background:var(--line);color:var(--ink-faint);cursor:not-allowed}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink-dim);font-weight:500;padding:8px}
+  .btn.ghost:hover{border-color:var(--accent);color:var(--ink)}
+  .hint{font-size:11px;color:var(--ink-faint);line-height:1.5;margin-top:8px}
+  .compare{position:relative}
+  .cmp-btn{position:absolute;top:12px;left:12px;z-index:5;font-family:var(--mono);font-size:11px;background:rgba(0,0,0,.6);border:1px solid var(--line);color:#FFF7F0;padding:5px 10px;border-radius:6px;cursor:pointer;display:none}
+  .cmp-btn:hover{border-color:var(--accent)}
+  .presetnote{font-size:11px;color:var(--accent);font-family:var(--mono);margin-top:6px;display:none}
+.home-brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);margin:0 0 10px;width:100%}
+  .home-brand svg{width:26px;height:26px;display:block;flex:none}
+  .home-brand b{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1px}
+  .home-brand small{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-left:2px}
+  header h1{font-family:'Bricolage Grotesque',sans-serif}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="index.html" class="home-brand"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="7" y="7" width="50" height="50" rx="13" fill="none" stroke="#A47864" stroke-width="2.5"/><path d="M18 28 V18 H28" fill="none" stroke="#A47864" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 30 V34 M40 46 V50 M30 40 H34 M46 40 H50" fill="none" stroke="#A47864" stroke-width="1.8" stroke-linecap="round"/><path d="M40 33 L42.24 37.76 L47 40 L42.24 42.24 L40 47 L37.76 42.24 L33 40 L37.76 37.76 Z" fill="#7A9A8B"/></svg><span><b>Marked By Hand</b> <small>home</small></span></a>
+    <h1>Photo → Engrave</h1>
+    <span class="tag">raster · marked by hand</span>
+  </header>
+
+  <div class="layout">
+    <!-- PREVIEW -->
+    <div class="stage compare">
+      <button class="cmp-btn" id="cmpBtn">hold to compare</button>
+      <div class="stage-canvas">
+        <div class="drop" id="drop">
+          <strong>Drop a photo here</strong>
+          <span>or tap to choose · JPG / PNG / WEBP</span>
+        </div>
+        <canvas id="out"></canvas>
+      </div>
+      <div class="statusbar" id="status">
+        <span>No image loaded</span>
+      </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="controls">
+      <div class="card">
+        <h2>Material</h2>
+        <div class="row">
+          <select id="preset">
+            <option value="wood">Wood (default)</option>
+            <option value="bamboo">Bamboo</option>
+            <option value="leather">Leather</option>
+            <option value="slate">Slate</option>
+            <option value="anodised">Anodised aluminium</option>
+            <option value="glass">Glass (frosted)</option>
+            <option value="acrylic">Clear edge-lit acrylic</option>
+            <option value="custom">Custom</option>
+          </select>
+          <div class="presetnote" id="presetnote"></div>
+        </div>
+        <div class="row">
+          <label class="lbl">Dithering<span class="val" id="ditherName"></span></label>
+          <select id="dither">
+            <option value="fs">Floyd–Steinberg (photos)</option>
+            <option value="atkinson">Atkinson (lighter, wood)</option>
+            <option value="ordered">Ordered / Bayer</option>
+            <option value="threshold">Threshold (pure B/W)</option>
+            <option value="grey">Greyscale (power-modulated)</option>
+          </select>
+        </div>
+        <label class="check"><input type="checkbox" id="invert"> Invert (engraved = light)</label>
+      </div>
+
+      <div class="card">
+        <h2>Tuning</h2>
+        <div class="row">
+          <label class="lbl">Brightness <span class="val" id="vBright">0</span></label>
+          <input type="range" id="bright" min="-100" max="100" value="0">
+        </div>
+        <div class="row">
+          <label class="lbl">Contrast <span class="val" id="vContrast">0</span></label>
+          <input type="range" id="contrast" min="-100" max="100" value="0">
+        </div>
+        <div class="row">
+          <label class="lbl">Gamma <span class="val" id="vGamma">1.00</span></label>
+          <input type="range" id="gamma" min="30" max="300" value="100">
+        </div>
+        <div class="row">
+          <label class="lbl">Sharpen <span class="val" id="vSharp">0</span></label>
+          <input type="range" id="sharp" min="0" max="100" value="0">
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Output size</h2>
+        <div class="two">
+          <div class="row" style="margin:0">
+            <label class="lbl">Width (mm)</label>
+            <input type="number" id="wmm" value="100" min="5" max="900" step="1">
+          </div>
+          <div class="row" style="margin:0">
+            <label class="lbl">DPI</label>
+            <input type="number" id="dpi" value="254" min="50" max="600" step="1">
+          </div>
+        </div>
+        <div class="hint" id="sizeHint">Load an image to see output resolution.</div>
+      </div>
+
+      <button class="btn" id="export" disabled>Export PNG</button>
+      <button class="btn ghost" id="reset">Reset tuning</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="file" accept="image/*" hidden>
+
+<script>
+(()=>{
+  const $=id=>document.getElementById(id);
+  const drop=$('drop'),fileIn=$('file'),outCanvas=$('out'),ctx=outCanvas.getContext('2d');
+  const cmpBtn=$('cmpBtn');
+  let srcCanvas=null;          // full-res source (greyscale-able)
+  let lastProcessedURL=null;
+  let busy=false,pending=false;
+
+  // ---- presets: starting points, user can override ----
+  const PRESETS={
+    wood:     {invert:false,bright:5, contrast:8,  gamma:1.12,sharp:35, dither:'fs',      dpi:254, note:'Lightened so midtones don\u2019t black out. Keep laser power low.'},
+    bamboo:   {invert:false,bright:10,contrast:6,  gamma:1.2, sharp:35, dither:'atkinson',dpi:254, note:'Bamboo over-burns \u2014 extra lightened. Low power, higher speed.'},
+    leather:  {invert:false,bright:3, contrast:8,  gamma:1.1, sharp:25, dither:'atkinson',dpi:200, note:'Lighter touch, watch the lows.'},
+    slate:    {invert:true, bright:0, contrast:22, gamma:1.0, sharp:30, dither:'fs',      dpi:300, note:'Inverted — engraving lifts to light grey.'},
+    anodised: {invert:true, bright:0, contrast:30, gamma:1.0, sharp:30, dither:'fs',      dpi:300, note:'Inverted — laser removes coating to bright metal.'},
+    glass:    {invert:true, bright:0, contrast:15, gamma:1.1, sharp:20, dither:'ordered', dpi:200, note:'Inverted + ordered — gentler on brittle glass.'},
+    acrylic:  {invert:true, bright:8, contrast:6,  gamma:1.25,sharp:15, dither:'atkinson',dpi:200, note:'Edge-lit: engraved glows. Sparser = reads as a lit image.'}
+  };
+
+  // ---- load image ----
+  function loadFile(f){
+    if(!f||!f.type.startsWith('image/'))return;
+    const img=new Image();
+    img.onload=()=>{
+      const c=document.createElement('canvas');
+      c.width=img.naturalWidth;c.height=img.naturalHeight;
+      c.getContext('2d').drawImage(img,0,0);
+      srcCanvas=c;
+      drop.style.display='none';outCanvas.style.display='block';cmpBtn.style.display='block';
+      $('export').disabled=false;
+      process();
+    };
+    img.onerror=()=>setStatus('Could not read that image — try a JPG or PNG.');
+    img.src=URL.createObjectURL(f);
+  }
+  drop.addEventListener('click',()=>fileIn.click());
+  fileIn.addEventListener('change',e=>loadFile(e.target.files[0]));
+  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('hot')}));
+  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('hot')}));
+  drop.addEventListener('drop',e=>loadFile(e.dataTransfer.files[0]));
+  document.addEventListener('paste',e=>{const it=[...e.clipboardData.items].find(i=>i.type.startsWith('image/'));if(it)loadFile(it.getAsFile())});
+
+  // ---- controls ----
+  const ctrls=['bright','contrast','gamma','sharp','wmm','dpi','dither','invert'];
+  ctrls.forEach(id=>$(id).addEventListener('input',()=>{ if(id!=='wmm'&&id!=='dpi') markCustomMaybe(id); schedule(); }));
+  $('preset').addEventListener('change',applyPreset);
+  $('export').addEventListener('click',exportPNG);
+  $('reset').addEventListener('click',()=>{applyPreset(true)});
+
+  // live value labels
+  const fmt={bright:v=>v,contrast:v=>v,gamma:v=>(v/100).toFixed(2),sharp:v=>v};
+  function syncLabels(){
+    $('vBright').textContent=$('bright').value;
+    $('vContrast').textContent=$('contrast').value;
+    $('vGamma').textContent=(($('gamma').value)/100).toFixed(2);
+    $('vSharp').textContent=$('sharp').value;
+    $('ditherName').textContent=$('dither').selectedOptions[0].text.split(' ')[0];
+  }
+
+  let suppress=false;
+  function markCustomMaybe(){ if(suppress)return; if($('preset').value!=='custom'){$('preset').value='custom';$('presetnote').style.display='none';} }
+
+  function applyPreset(forceCurrent){
+    const key=forceCurrent===true?($('preset').value==='custom'?'wood':$('preset').value):$('preset').value;
+    const p=PRESETS[key];
+    if(!p){ $('presetnote').style.display='none'; syncLabels(); schedule(); return; }
+    suppress=true;
+    $('invert').checked=p.invert;
+    $('bright').value=p.bright; $('contrast').value=p.contrast;
+    $('gamma').value=Math.round(p.gamma*100); $('sharp').value=p.sharp;
+    $('dither').value=p.dither; $('dpi').value=p.dpi;
+    if(forceCurrent!==true)$('preset').value=key;
+    suppress=false;
+    const note=$('presetnote'); note.textContent=p.note; note.style.display='block';
+    syncLabels(); schedule();
+  }
+
+  // ---- processing pipeline ----
+  function schedule(){ syncLabels(); if(!srcCanvas)return; if(busy){pending=true;return;} busy=true; requestAnimationFrame(()=>{process();busy=false; if(pending){pending=false;schedule();}}); }
+
+  function process(){
+    if(!srcCanvas)return;
+    const wmm=clamp(+$('wmm').value||100,5,900);
+    const dpi=clamp(+$('dpi').value||254,50,600);
+    let tw=Math.round(wmm/25.4*dpi);
+    tw=Math.min(tw,3200);                          // safety cap
+    const ar=srcCanvas.height/srcCanvas.width;
+    let th=Math.round(tw*ar);
+    const hmm=(th/dpi*25.4);
+
+    // resample source down/up to target px
+    outCanvas.width=tw; outCanvas.height=th;
+    ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+    ctx.fillStyle='#fff'; ctx.fillRect(0,0,tw,th);
+    ctx.drawImage(srcCanvas,0,0,tw,th);
+    const imgData=ctx.getImageData(0,0,tw,th);
+    const d=imgData.data;
+
+    // greyscale (luma)
+    const grey=new Float32Array(tw*th);
+    for(let i=0,p=0;i<d.length;i+=4,p++) grey[p]=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+
+    // brightness / contrast / gamma
+    const br=+$('bright').value;
+    const cVal=+$('contrast').value; const cf=(259*(cVal+255))/(255*(259-cVal));
+    const gm=(+$('gamma').value)/100;
+    for(let p=0;p<grey.length;p++){
+      let v=grey[p]+br;
+      v=cf*(v-128)+128;
+      v=255*Math.pow(clamp(v,0,255)/255,1/gm);
+      grey[p]=clamp(v,0,255);
+    }
+
+    // sharpen (unsharp via 3x3) 
+    const sAmt=(+$('sharp').value)/100;
+    if(sAmt>0) unsharp(grey,tw,th,sAmt);
+
+    // invert
+    if($('invert').checked) for(let p=0;p<grey.length;p++) grey[p]=255-grey[p];
+
+    // dither -> output pixels
+    const mode=$('dither').value;
+    let bytes;
+    if(mode==='grey') bytes=greyOut(grey);
+    else if(mode==='threshold') bytes=threshold(grey);
+    else if(mode==='ordered') bytes=ordered(grey,tw,th);
+    else bytes=errorDiffuse(grey,tw,th,mode);
+
+    for(let p=0,i=0;p<grey.length;p++,i+=4){ d[i]=d[i+1]=d[i+2]=bytes[p]; d[i+3]=255; }
+    ctx.putImageData(imgData,0,0);
+    if(lastProcessedURL)URL.revokeObjectURL(lastProcessedURL);
+
+    // status + size readout
+    setStatus(`<b>${tw}\u00d7${th}px</b> <span class="sp">|</span> <b>${wmm}\u00d7${hmm.toFixed(0)}mm</b> <span class="sp">|</span> ${dpi} dpi <span class="sp">|</span> ${$('dither').selectedOptions[0].text.split(' ')[0]}${$('invert').checked?' <span class="sp">|</span> inverted':''}`);
+    $('sizeHint').innerHTML=`Output: <b style="color:var(--ink)">${tw}\u00d7${th}px</b> at ${dpi}dpi \u2192 ${wmm}\u00d7${hmm.toFixed(1)}mm on material. Black = engraved.`;
+  }
+
+  // ---- algorithms ----
+  function clamp(v,a,b){return v<a?a:v>b?b:v;}
+
+  function greyOut(g){const o=new Uint8ClampedArray(g.length);for(let i=0;i<g.length;i++)o[i]=g[i];return o;}
+  function threshold(g){const o=new Uint8ClampedArray(g.length);for(let i=0;i<g.length;i++)o[i]=g[i]<128?0:255;return o;}
+
+  const BAYER=[ // 8x8 normalised
+    [0,48,12,60,3,51,15,63],[32,16,44,28,35,19,47,31],
+    [8,56,4,52,11,59,7,55],[40,24,36,20,43,27,39,23],
+    [2,50,14,62,1,49,13,61],[34,18,46,30,33,17,45,29],
+    [10,58,6,54,9,57,5,53],[42,26,38,22,41,25,37,21]];
+  function ordered(g,w,h){
+    const o=new Uint8ClampedArray(g.length);
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+      const t=(BAYER[y&7][x&7]+0.5)/64*255;
+      o[y*w+x]=g[y*w+x]<t?0:255;
+    }
+    return o;
+  }
+  function errorDiffuse(g,w,h,mode){
+    const o=new Uint8ClampedArray(g.length);
+    const buf=Float32Array.from(g);
+    const fs=mode==='fs';
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+      const i=y*w+x, old=buf[i], nv=old<128?0:255, err=old-nv;
+      o[i]=nv;
+      if(fs){ // Floyd–Steinberg
+        push(buf,w,h,x+1,y,err*7/16); push(buf,w,h,x-1,y+1,err*3/16);
+        push(buf,w,h,x,y+1,err*5/16); push(buf,w,h,x+1,y+1,err*1/16);
+      }else{ // Atkinson (diffuse 6/8, drops some -> punchier)
+        const e=err/8;
+        push(buf,w,h,x+1,y,e);push(buf,w,h,x+2,y,e);
+        push(buf,w,h,x-1,y+1,e);push(buf,w,h,x,y+1,e);push(buf,w,h,x+1,y+1,e);
+        push(buf,w,h,x,y+2,e);
+      }
+    }
+    return o;
+  }
+  function push(buf,w,h,x,y,e){ if(x<0||x>=w||y<0||y>=h)return; buf[y*w+x]+=e; }
+
+  function unsharp(g,w,h,amt){
+    const blur=Float32Array.from(g);
+    // separable 3x3 box approx
+    const tmp=new Float32Array(g.length);
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+      let s=0,n=0;for(let k=-1;k<=1;k++){const xx=x+k;if(xx>=0&&xx<w){s+=g[y*w+xx];n++;}}tmp[y*w+x]=s/n;}
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+      let s=0,n=0;for(let k=-1;k<=1;k++){const yy=y+k;if(yy>=0&&yy<h){s+=tmp[yy*w+x];n++;}}blur[y*w+x]=s/n;}
+    for(let i=0;i<g.length;i++) g[i]=clamp(g[i]+(g[i]-blur[i])*amt*2,0,255);
+  }
+
+  // ---- compare (hold to see original) ----
+  let origURL=null;
+  function buildOriginalPreview(){
+    if(!srcCanvas)return;
+    origURL=srcCanvas.toDataURL();
+  }
+  cmpBtn.addEventListener('mousedown',showOrig);
+  cmpBtn.addEventListener('touchstart',e=>{e.preventDefault();showOrig()});
+  ['mouseup','mouseleave','touchend'].forEach(ev=>cmpBtn.addEventListener(ev,hideOrig));
+  function showOrig(){ if(!srcCanvas)return; ctx.save(); ctx.fillStyle='#fff';ctx.fillRect(0,0,outCanvas.width,outCanvas.height); ctx.imageSmoothingQuality='high'; ctx.drawImage(srcCanvas,0,0,outCanvas.width,outCanvas.height); ctx.restore(); cmpBtn.textContent='original'; }
+  function hideOrig(){ cmpBtn.textContent='hold to compare'; process(); }
+
+  // ---- export ----
+  function exportPNG(){
+    if(!srcCanvas)return;
+    process();
+    outCanvas.toBlob(b=>{
+      const a=document.createElement('a');
+      const wmm=$('wmm').value,dpi=$('dpi').value;
+      a.href=URL.createObjectURL(b);
+      a.download=`engrave_${wmm}mm_${dpi}dpi_${$('dither').value}${$('invert').checked?'_inv':''}.png`;
+      a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    },'image/png');
+  }
+
+  function setStatus(html){ $('status').innerHTML=`<span>${html}</span>`; }
+
+  applyPreset(); syncLabels();
+})();
+</script>
+</body>
+</html>

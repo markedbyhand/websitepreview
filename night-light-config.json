@@ -1,0 +1,21 @@
+{
+  "business": {
+    "contactEmail": "",
+    "formUrl": "",
+    "formKey": "",
+    "ownerKey": "mbh"
+  },
+  "pricing": {
+    "base": 34,
+    "sizes": [
+      { "key": "s", "label": "Small · ~120 mm",  "adj": 0  },
+      { "key": "m", "label": "Medium · ~180 mm",  "adj": 6  },
+      { "key": "l", "label": "Large · ~240 mm",   "adj": 14 }
+    ],
+    "leds": [
+      { "key": "warm",    "label": "Warm white — USB",         "adj": 0 },
+      { "key": "rgb",     "label": "Colour-changing + remote", "adj": 8 },
+      { "key": "battery", "label": "Warm white — battery",     "adj": 4 }
+    ]
+  }
+}

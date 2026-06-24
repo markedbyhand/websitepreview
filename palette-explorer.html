@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marked By Hand — Palette Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--disp:'Space Grotesk',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:var(--disp);background:#0e0d0c;color:#e9e4dc;-webkit-font-smoothing:antialiased}
+
+  /* ---- app chrome (fixed, neutral, NOT part of the palette being tested) ---- */
+  .appbar{position:sticky;top:0;z-index:30;background:#141211;border-bottom:1px solid #2a2723;display:flex;align-items:center;gap:14px;padding:11px 18px;flex-wrap:wrap}
+  .appbar .t{font-weight:700;font-size:15px}
+  .appbar .t small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:#9a9085;font-weight:400}
+  .appbar .now{font-family:var(--mono);font-size:12px;color:#b9ae9f;margin-left:6px}
+  .appbar .now b{color:#fff}
+  .appbar .spacer{flex:1}
+  .chip{background:transparent;border:1px solid #34302b;color:#cfc6ba;font-family:var(--mono);font-size:11px;padding:7px 11px;border-radius:8px;cursor:pointer;text-transform:uppercase;letter-spacing:.5px}
+  .chip[aria-pressed="true"]{background:#cfc6ba;color:#141211;border-color:#cfc6ba;font-weight:700}
+  .abtn{background:#e0a458;border:none;color:#241500;font-weight:600;font-size:13px;padding:9px 14px;border-radius:9px;cursor:pointer;font-family:var(--disp)}
+  .abtn.ghost{background:transparent;border:1px solid #34302b;color:#e9e4dc}
+  .arrowbtn{width:36px;height:36px;border-radius:9px;border:1px solid #34302b;background:transparent;color:#e9e4dc;cursor:pointer;font-size:16px}
+
+  .layout{display:grid;grid-template-columns:320px 1fr;gap:0;align-items:start}
+  @media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+  /* ---- palette library ---- */
+  .lib{border-right:1px solid #2a2723;padding:14px;height:calc(100vh - 53px);overflow-y:auto;position:sticky;top:53px}
+  @media(max-width:900px){.lib{height:auto;position:static;border-right:none;border-bottom:1px solid #2a2723}}
+  .lib h2{font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#9a9085;margin:4px 4px 12px}
+  .pcard{border:1px solid #2a2723;border-radius:11px;padding:11px 12px;margin-bottom:9px;cursor:pointer;transition:border-color .12s,transform .12s;background:#161311}
+  .pcard:hover{border-color:#4a443c;transform:translateY(-1px)}
+  .pcard[aria-current="true"]{border-color:#e0a458;box-shadow:0 0 0 1px #e0a458 inset}
+  .pcard .pn{font-size:13.5px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .pcard .modetag{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:#9a9085;border:1px solid #34302b;border-radius:20px;padding:2px 7px}
+  .pcard .pi{font-family:var(--mono);font-size:10px;color:#9a9085;margin:3px 0 9px}
+  .sw{display:flex;height:22px;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+  .sw span{flex:1}
+
+  /* ---- live preview stage (this is what gets re-skinned) ---- */
+  .stagewrap{padding:18px}
+  .stage{
+    --bg:#fff;--surface:#fff;--panel:#eee;--line:#ddd;--ink:#222;--muted:#888;
+    --primary:#c96442;--primaryInk:#fff;--accent:#3e6b5e;--grid:rgba(0,0,0,.05);
+    background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    box-shadow:0 24px 60px rgba(0,0,0,.45);transition:background .25s,color .25s
+  }
+  .stage a{color:inherit;text-decoration:none}
+
+  .s-head{display:flex;align-items:center;gap:16px;padding:14px 22px;border-bottom:1px solid var(--line);background:var(--surface)}
+  .s-brand{display:flex;align-items:center;gap:10px}
+  .s-mark{width:28px;height:28px;border-radius:7px;background:var(--primary);position:relative;box-shadow:0 0 14px color-mix(in srgb,var(--primary) 45%,transparent)}
+  .s-mark::after{content:"";position:absolute;inset:8px;border:2px solid color-mix(in srgb,var(--bg) 70%,transparent);border-radius:3px}
+  .s-brand b{font-size:15px;font-weight:700;color:var(--ink)}
+  .s-brand small{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+  .s-nav{display:flex;gap:6px;margin-left:auto}
+  .s-nav a{font-size:13.5px;font-weight:500;color:var(--ink);padding:7px 11px;border-radius:8px}
+  .s-nav a:hover{background:color-mix(in srgb,var(--ink) 7%,transparent)}
+  .s-nav a.on{color:var(--primary)}
+  .s-cart{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:9px;padding:7px 11px;font-family:var(--mono);font-size:12px;color:var(--ink)}
+  .s-cart .ct{background:var(--primary);color:var(--primaryInk);border-radius:20px;min-width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+  @media(max-width:620px){.s-nav{display:none}}
+
+  .s-hero{display:grid;grid-template-columns:1.05fr .95fr;gap:26px;align-items:center;padding:38px 22px}
+  @media(max-width:760px){.s-hero{grid-template-columns:1fr;gap:20px}}
+  .s-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--primary);margin:0 0 10px}
+  .s-hero h1{font-size:clamp(26px,4vw,40px);line-height:1.05;margin:0 0 12px;font-weight:700;letter-spacing:-.6px;color:var(--ink)}
+  .s-hero h1 .g{color:var(--muted)}
+  .s-hero p.l{color:color-mix(in srgb,var(--ink) 72%,var(--bg));font-size:15.5px;margin:0 0 20px;max-width:440px}
+  .s-cta{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{font-family:var(--disp);cursor:pointer;border:none;font-weight:600;font-size:14px;padding:11px 18px;border-radius:9px;text-decoration:none;display:inline-flex;align-items:center;gap:7px}
+  .btn.primary{background:var(--primary);color:var(--primaryInk)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  .btn.accent{background:var(--accent);color:#fff}
+  .s-trust{display:flex;gap:20px;margin-top:20px;flex-wrap:wrap}
+  .s-trust div{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .s-trust b{display:block;color:var(--ink);font-size:18px;font-weight:600}
+
+  .bed{position:relative;border:1px solid var(--line);border-radius:14px;aspect-ratio:5/4;overflow:hidden;
+    background:
+      repeating-linear-gradient(0deg,transparent 0 21px,var(--grid) 21px 22px),
+      repeating-linear-gradient(90deg,transparent 0 21px,var(--grid) 21px 22px),
+      var(--surface)}
+  .bed .corner{position:absolute;font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px}
+  .bed .tl{top:9px;left:11px}.bed .br{bottom:9px;right:11px}
+  .bed .center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px}
+  .bed .center .big{font-family:var(--mono);font-weight:700;font-size:30px;color:var(--primary)}
+  .bed .center .lab{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+  /* sale section */
+  .s-sale{padding:8px 22px 34px}
+  .s-sale-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+  .s-sale-head h2{font-size:24px;margin:4px 0 0;font-weight:700;letter-spacing:-.3px;color:var(--ink)}
+  .s-sale-head .sublink{font-family:var(--mono);font-size:12px;color:var(--accent)}
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
+  .pc{background:var(--surface);border:1px solid var(--line);border-radius:13px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.05);transition:transform .15s,box-shadow .15s}
+  .pc:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(0,0,0,.10)}
+  .pc .thumb{aspect-ratio:1/1;position:relative;display:flex;align-items:center;justify-content:center}
+  .pc .thumb .glyph{font-family:var(--mono);font-size:13px;color:rgba(255,255,255,.7);letter-spacing:1px}
+  .pc .sale-badge{position:absolute;top:9px;left:9px;background:var(--primary);color:var(--primaryInk);font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:4px 8px;border-radius:7px}
+  .pc .b{padding:12px 13px 14px}
+  .pc .nm{font-size:14px;font-weight:600;color:var(--ink);margin:0}
+  .pc .mt{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin:3px 0 9px}
+  .pc .pr{display:flex;align-items:baseline;gap:8px}
+  .pc .now{font-family:var(--mono);font-weight:700;color:var(--primary);font-size:16px}
+  .pc .was{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:line-through}
+  .pc .add{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--accent)}
+  /* fixed material thumbs (real materials, palette-independent) */
+  .m-acrylic{background:radial-gradient(120% 120% at 30% 20%,#3a6e7a,#1f4651)}
+  .m-bamboo{background:repeating-linear-gradient(0deg,#b5915a,#b5915a 9px,#c39e63 9px,#c39e63 18px)}
+  .m-slate{background:linear-gradient(135deg,#4a4640,#2c2925)}
+  .m-wood{background:repeating-linear-gradient(95deg,#9a7a4e,#9a7a4e 6px,#a8895a 6px,#a8895a 13px)}
+
+  .s-foot{border-top:1px solid var(--line);background:var(--surface);padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+  .s-foot .fm{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .s-foot .pills{display:flex;gap:8px}
+  .s-pill{font-family:var(--mono);font-size:11px;border:1px solid var(--line);color:var(--muted);padding:5px 10px;border-radius:20px}
+
+  /* hex readout under stage */
+  .hexbar{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .hexbar .hx{display:flex;align-items:center;gap:7px;border:1px solid #2a2723;border-radius:9px;padding:6px 10px;font-family:var(--mono);font-size:11px;color:#cfc6ba}
+  .hexbar .hx i{width:14px;height:14px;border-radius:4px;display:block;border:1px solid rgba(255,255,255,.12)}
+  .copied{font-family:var(--mono);font-size:11px;color:#7BD88F;margin-left:8px}
+
+  @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="appbar">
+  <a class="t" href="index.html" style="text-decoration:none;color:inherit;display:inline-flex;align-items:center;gap:9px"><span style="width:22px;height:22px;flex:none;display:block"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="7" y="7" width="50" height="50" rx="13" fill="none" stroke="#A47864" stroke-width="2.5"/><path d="M18 28 V18 H28" fill="none" stroke="#A47864" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 30 V34 M40 46 V50 M30 40 H34 M46 40 H50" fill="none" stroke="#A47864" stroke-width="1.8" stroke-linecap="round"/><path d="M40 33 L42.24 37.76 L47 40 L42.24 42.24 L40 47 L37.76 42.24 L33 40 L37.76 37.76 Z" fill="#7A9A8B"/></svg></span><span style="font-family:'Bricolage Grotesque',sans-serif">Marked By Hand<small>Palette explorer · 20 collections</small></span></a>
+  <div class="now" id="nowName">—</div>
+  <div class="spacer"></div>
+  <span class="chip" data-filter="all" aria-pressed="true">All</span>
+  <span class="chip" data-filter="light" aria-pressed="false">Light</span>
+  <span class="chip" data-filter="dark" aria-pressed="false">Dark</span>
+  <button class="arrowbtn" id="prev" aria-label="Previous">‹</button>
+  <button class="arrowbtn" id="next" aria-label="Next">›</button>
+  <button class="abtn" id="copy">Copy theme.css variables</button>
+</div>
+
+<div class="layout">
+  <aside class="lib">
+    <h2>Collections</h2>
+    <div id="list"></div>
+  </aside>
+
+  <div class="stagewrap">
+    <div class="stage" id="stage">
+      <!-- header -->
+      <div class="s-head">
+        <div class="s-brand"><span class="s-mark"></span><span><b>Marked By Hand</b><small>Laser &amp; handmade · Sydney</small></span></div>
+        <nav class="s-nav"><a class="on">Shop</a><a>Custom orders</a><a>About</a><a>Contact</a></nav>
+        <span class="s-cart">Cart <span class="ct">2</span></span>
+      </div>
+      <!-- hero -->
+      <div class="s-hero">
+        <div>
+          <p class="s-eyebrow">// Custom laser studio · Sydney</p>
+          <h1>Your idea, made by hand.<br><span class="g">Cut &amp; engraved to order.</span></h1>
+          <p class="l">Personalised gifts, homewares and signage — designed with you, priced on the spot, and made on a CO₂ laser in our Sydney workshop.</p>
+          <div class="s-cta">
+            <a class="btn primary">Start a custom quote →</a>
+            <a class="btn ghost">Shop ready-made</a>
+          </div>
+          <div class="s-trust">
+            <div><b>2–4 day</b>turnaround</div>
+            <div><b>Aus-wide</b>tracked post</div>
+            <div><b>By hand</b>checked &amp; packed</div>
+          </div>
+        </div>
+        <div class="bed">
+          <span class="corner tl">BED 0,0</span><span class="corner br">300 × 400 mm</span>
+          <div class="center"><div class="big">⟡ Zekie</div><div class="lab">engraving preview</div></div>
+        </div>
+      </div>
+      <!-- sale row -->
+      <div class="s-sale">
+        <div class="s-sale-head">
+          <div><p class="s-eyebrow" style="margin-bottom:0">// Winter sale · ends Sunday</p><h2>On sale now</h2></div>
+          <span class="sublink">View all deals ›</span>
+        </div>
+        <div class="pgrid" id="cards"></div>
+      </div>
+      <!-- footer -->
+      <div class="s-foot">
+        <span class="fm">// MARKED BY HAND · built by hand, naturally</span>
+        <span class="pills"><span class="s-pill">Free pickup · Sydney</span><span class="s-pill">Secure checkout</span></span>
+      </div>
+    </div>
+
+    <div class="hexbar" id="hexbar"></div>
+  </div>
+</div>
+
+<script>
+/* ---- 20 collections. mix of Pantone Colours of the Year + palettes from
+   shops/sites known for feeling inviting. role keys map to theme.css tokens. ---- */
+const PAL = [
+  {name:'Bone & Clay', insp:'Anthropic / artisan craft', mode:'light',
+   bg:'#F4F1EA',surface:'#FBF9F4',panel:'#EFEAE0',line:'#E0D8CA',ink:'#2A2521',muted:'#8A8073',primary:'#C96442',primaryInk:'#FFF8F3',accent:'#3E6B5E'},
+  {name:'Etsy Warmth', insp:'Etsy · handmade marketplace', mode:'light',
+   bg:'#FBF7F2',surface:'#FFFFFF',panel:'#F3EDE4',line:'#E6DDD0',ink:'#2D2A26',muted:'#8C8073',primary:'#F1641E',primaryInk:'#FFFFFF',accent:'#2F5D62'},
+  {name:'Peach Fuzz', insp:'Pantone 2024 · 13-1023', mode:'light',
+   bg:'#FFF4EE',surface:'#FFFFFF',panel:'#FBE7DC',line:'#F2D6C8',ink:'#3A2C25',muted:'#9C8479',primary:'#F2906B',primaryInk:'#3A2018',accent:'#6C8C7F'},
+  {name:'Mocha Mousse', insp:'Pantone 2025 · 17-1230', mode:'light',
+   bg:'#F5EFE7',surface:'#FCF8F2',panel:'#EAE0D4',line:'#D9CCBA',ink:'#3B2F26',muted:'#8E7D6B',primary:'#A47864',primaryInk:'#FFF7F0',accent:'#7A9A8B'},
+  {name:'Living Coral', insp:'Pantone 2019 · 16-1546', mode:'light',
+   bg:'#FFF6F2',surface:'#FFFFFF',panel:'#FCE6DE',line:'#F4D2C7',ink:'#34261F',muted:'#9A857B',primary:'#FF6F61',primaryInk:'#FFFFFF',accent:'#1F8A8A'},
+  {name:'Classic Blue', insp:'Pantone 2020 · 19-4052', mode:'light',
+   bg:'#F4F6FA',surface:'#FFFFFF',panel:'#E8EDF5',line:'#D6DEEC',ink:'#1B2433',muted:'#76808F',primary:'#0F4C81',primaryInk:'#FFFFFF',accent:'#E8943A'},
+  {name:'Greenery', insp:'Pantone 2017 · 15-0343', mode:'light',
+   bg:'#F5F8F1',surface:'#FFFFFF',panel:'#E8F0DF',line:'#D6E3C9',ink:'#23291E',muted:'#7E8873',primary:'#5A8F3C',primaryInk:'#FFFFFF',accent:'#D98A3D'},
+  {name:'Viva Magenta', insp:'Pantone 2023 · 18-1750', mode:'light',
+   bg:'#FBF3F4',surface:'#FFFFFF',panel:'#F6E1E5',line:'#EDCAD2',ink:'#2B1E22',muted:'#917A80',primary:'#BB2649',primaryInk:'#FFFFFF',accent:'#1E7A6E'},
+  {name:'Very Peri', insp:'Pantone 2022 · 17-3938', mode:'light',
+   bg:'#F4F4FB',surface:'#FFFFFF',panel:'#E8E8F7',line:'#D6D6EE',ink:'#22223A',muted:'#7B7B92',primary:'#6667AB',primaryInk:'#FFFFFF',accent:'#E8A33D'},
+  {name:'Marsala', insp:'Pantone 2015 · 18-1438', mode:'light',
+   bg:'#F7F1EE',surface:'#FCF8F5',panel:'#EEDFD8',line:'#E0CBC0',ink:'#2E211D',muted:'#8C786F',primary:'#964F4C',primaryInk:'#FFFFFF',accent:'#5C7A6B'},
+  {name:'Aesop Apothecary', insp:'Aesop · muted olive', mode:'light',
+   bg:'#F1EEE6',surface:'#F8F6EF',panel:'#E5E0D2',line:'#D3CCBA',ink:'#2B2A22',muted:'#807B69',primary:'#5B6236',primaryInk:'#F5F4EC',accent:'#B5703B'},
+  {name:'Allbirds Natural', insp:'Allbirds · soft neutral', mode:'light',
+   bg:'#F6F4F0',surface:'#FFFFFF',panel:'#ECE8E1',line:'#DCD6CC',ink:'#2C2A27',muted:'#857F76',primary:'#3F7A6E',primaryInk:'#FFFFFF',accent:'#E08A4B'},
+  {name:'Headspace Calm', insp:'Headspace · friendly warm', mode:'light',
+   bg:'#FBF6EE',surface:'#FFFFFF',panel:'#F3E9DA',line:'#E7DAC6',ink:'#2A2620',muted:'#8C8173',primary:'#F47D42',primaryInk:'#FFFFFF',accent:'#2C5CC2'},
+  {name:'Cavendish', insp:'Mailchimp · bold friendly', mode:'light',
+   bg:'#FFFDF6',surface:'#FFFFFF',panel:'#F4F0E0',line:'#E6E0C8',ink:'#241F20',muted:'#7E776A',primary:'#FFD000',primaryInk:'#241F20',accent:'#007C89'},
+  {name:'Glossier Pink', insp:'Glossier · soft modern', mode:'light',
+   bg:'#FDF3F3',surface:'#FFFFFF',panel:'#FBE4E6',line:'#F2CFD3',ink:'#2B2326',muted:'#937E83',primary:'#E8657A',primaryInk:'#FFFFFF',accent:'#3C3C3C'},
+  {name:'Stripe Indigo', insp:'Stripe · clean & techy', mode:'light',
+   bg:'#F6F8FC',surface:'#FFFFFF',panel:'#EBEFF8',line:'#DCE3F1',ink:'#1A1F36',muted:'#6B7388',primary:'#635BFF',primaryInk:'#FFFFFF',accent:'#00A3BF'},
+  {name:'Slate & Citrus', insp:'cool grey + sale energy', mode:'light',
+   bg:'#F4F5F4',surface:'#FFFFFF',panel:'#E9EBEA',line:'#D8DBD9',ink:'#1F2422',muted:'#79817D',primary:'#84BD00',primaryInk:'#11210A',accent:'#FF6B35'},
+  {name:'Workshop Amber', insp:'your current theme', mode:'dark',
+   bg:'#1A1714',surface:'#211C18',panel:'#2A241F',line:'#433A32',ink:'#EDE6DA',muted:'#9A8E80',primary:'#FF7A1A',primaryInk:'#1A0E02',accent:'#5AD7E0'},
+  {name:'Midnight Plum', insp:'premium dark · softer', mode:'dark',
+   bg:'#1B1620',surface:'#241D2B',panel:'#2E2638',line:'#43394F',ink:'#EDE6F0',muted:'#9C8FA8',primary:'#C77DFF',primaryInk:'#1C0F2B',accent:'#FFC15E'},
+  {name:'Forest Workshop', insp:'deep green + brass', mode:'dark',
+   bg:'#13201A',surface:'#1A2B22',panel:'#22372C',line:'#33503F',ink:'#E6EEE6',muted:'#8AA396',primary:'#E0A458',primaryInk:'#241500',accent:'#7FD1A0'},
+];
+
+/* fixed sample products for the sale row */
+const CARDS = [
+  {nm:'Edge-lit name night light',mt:'Acrylic · personalised',now:'27.20',was:'34.00',mat:'m-acrylic',glyph:'⟡ NAME',badge:'-20%'},
+  {nm:'Engraved bamboo board',mt:'Bamboo · monogram',now:'33.60',was:'42.00',mat:'m-bamboo',glyph:'◳ BOARD',badge:'Sale'},
+  {nm:'Slate coaster set (4)',mt:'Slate · custom text',now:'22.00',was:'28.00',mat:'m-slate',glyph:'▦ ×4',badge:'-21%'},
+  {nm:'Custom timber sign',mt:'Ply · cut + engrave',now:'44.00',was:'55.00',mat:'m-wood',glyph:'▭ SIGN',badge:'Sale'},
+];
+
+function hexToRgba(hex,a){const h=hex.replace('#','');const r=parseInt(h.substr(0,2),16),g=parseInt(h.substr(2,2),16),b=parseInt(h.substr(4,2),16);return `rgba(${r},${g},${b},${a})`;}
+function grid(p){return p.mode==='dark' ? 'rgba(255,255,255,0.05)' : hexToRgba(p.ink,0.055);}
+
+const stage=document.getElementById('stage');
+const list=document.getElementById('list');
+const hexbar=document.getElementById('hexbar');
+const nowName=document.getElementById('nowName');
+let filter='all', idx=0;
+
+function roles(p){return {'--bg':p.bg,'--surface':p.surface,'--panel':p.panel,'--line':p.line,'--ink':p.ink,'--muted':p.muted,'--primary':p.primary,'--primaryInk':p.primaryInk,'--accent':p.accent,'--grid':grid(p)};}
+
+function apply(p){
+  const r=roles(p);
+  for(const k in r) stage.style.setProperty(k,r[k]);
+  nowName.innerHTML='<b>'+p.name+'</b> · '+p.insp;
+  // hex readout
+  const order=[['bg','Background'],['surface','Surface'],['panel','Panel'],['line','Line'],['ink','Text'],['muted','Muted'],['primary','Primary'],['accent','Accent']];
+  hexbar.innerHTML = order.map(([k,lab])=>`<span class="hx"><i style="background:${p[k]}"></i>${lab} ${p[k].toUpperCase()}</span>`).join('') + '<span class="copied" id="copied"></span>';
+}
+
+function renderCards(){
+  document.getElementById('cards').innerHTML = CARDS.map(c=>`
+    <div class="pc">
+      <div class="thumb ${c.mat}"><span class="sale-badge">${c.badge}</span><span class="glyph">${c.glyph}</span></div>
+      <div class="b">
+        <p class="nm">${c.nm}</p>
+        <p class="mt">${c.mt}</p>
+        <div class="pr"><span class="now">$${c.now}</span><span class="was">$${c.was}</span><span class="add">Add ›</span></div>
+      </div>
+    </div>`).join('');
+}
+
+function visible(){return PAL.map((p,i)=>({p,i})).filter(x=>filter==='all'||x.p.mode===filter);}
+
+function renderList(){
+  list.innerHTML = visible().map(({p,i})=>`
+    <div class="pcard" data-i="${i}" aria-current="${i===idx?'true':'false'}" tabindex="0">
+      <div class="pn">${p.name}<span class="modetag">${p.mode}</span></div>
+      <div class="pi">${p.insp}</div>
+      <div class="sw">
+        <span style="background:${p.bg}"></span><span style="background:${p.surface}"></span>
+        <span style="background:${p.panel}"></span><span style="background:${p.primary};flex:1.6"></span>
+        <span style="background:${p.accent}"></span><span style="background:${p.ink}"></span>
+      </div>
+    </div>`).join('');
+  list.querySelectorAll('.pcard').forEach(el=>{
+    const go=()=>select(+el.dataset.i);
+    el.addEventListener('click',go);
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});
+  });
+}
+
+function select(i){
+  idx=i; apply(PAL[i]);
+  list.querySelectorAll('.pcard').forEach(el=>el.setAttribute('aria-current', (+el.dataset.i===i)?'true':'false'));
+  const sel=list.querySelector(`.pcard[data-i="${i}"]`); if(sel) sel.scrollIntoView({block:'nearest'});
+}
+
+function step(d){
+  const vis=visible(); const pos=vis.findIndex(x=>x.i===idx);
+  const np=( (pos<0?0:pos) + d + vis.length)%vis.length;
+  select(vis[np].i);
+}
+
+/* filters */
+document.querySelectorAll('.chip').forEach(c=>{
+  c.addEventListener('click',()=>{
+    filter=c.dataset.filter;
+    document.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed', x===c?'true':'false'));
+    renderList();
+    if(!visible().some(x=>x.i===idx)) select(visible()[0].i);
+  });
+});
+document.getElementById('prev').onclick=()=>step(-1);
+document.getElementById('next').onclick=()=>step(1);
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')step(-1);if(e.key==='ArrowRight')step(1);});
+
+/* copy → theme.css token names so it pastes straight into your stylesheet */
+document.getElementById('copy').addEventListener('click',()=>{
+  const p=PAL[idx];
+  const css=`/* Marked By Hand — ${p.name} (${p.insp}) */
+:root{
+  --graphite:${p.bg};        /* page background */
+  --graphite-2:${p.surface}; /* header / footer / cards */
+  --panel:${p.panel};        /* inputs / insets */
+  --line:${p.line};          /* borders */
+  --bone:${p.ink};           /* primary text */
+  --muted:${p.muted};        /* captions */
+  --amber:${p.primary};      /* primary action */
+  --amber-soft:${p.primary}; /* links (tweak lighter if you like) */
+  --cyan:${p.accent};        /* secondary accent */
+  --grid:${grid(p)};
+}
+/* note: .btn text colour — set to ${p.primaryInk} for this palette */`;
+  navigator.clipboard.writeText(css).then(()=>{
+    const c=document.getElementById('copied'); if(c){c.textContent='✓ copied — paste over the :root block in theme.css';setTimeout(()=>c.textContent='',2600);}
+  });
+});
+
+renderCards();
+renderList();
+select(0);
+</script>
+</body>
+</html>

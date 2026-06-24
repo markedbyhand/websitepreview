@@ -1,0 +1,44 @@
+{
+  "business": {
+    "contactEmail": "",
+    "formUrl": "",
+    "formKey": "",
+    "ownerKey": "mbh"
+  },
+  "build": { "x": 256, "y": 256, "z": 256 },
+  "print": {
+    "wallThk": 0.9,
+    "wastePct": 4,
+    "throughput": 11,
+    "setupMin": 8
+  },
+  "supports": { "surchargePct": 15 },
+  "priority": {
+    "std":     { "mult": 1.00, "label": "Standard · 3–5 business days" },
+    "express": { "mult": 1.30, "label": "Express +30% · 2 days" },
+    "rush":    { "mult": 1.60, "label": "Rush +60% · next day" }
+  },
+  "speed": { "draft": 1.6, "std": 1.0, "fine": 0.62 },
+  "pricing": {
+    "machinePerHour": 1.5,
+    "setup": 3,
+    "min": 8,
+    "margin": 1.6,
+    "safetyPct": 10,
+    "voldisc": 2,
+    "voldiscMax": 35
+  },
+  "gst": { "enabled": true, "rate": 10 },
+  "materials": [
+    { "name": "PLA", "colour": "Galaxy Black",   "hex": "#1b1b20", "pricePerKg": 25, "density": 1.24, "inStock": true },
+    { "name": "PLA", "colour": "Jade White",     "hex": "#f1ede4", "pricePerKg": 25, "density": 1.24, "inStock": true },
+    { "name": "PLA", "colour": "Bambu Green",    "hex": "#10a64a", "pricePerKg": 25, "density": 1.24, "inStock": true },
+    { "name": "PLA", "colour": "Sunflower",      "hex": "#f4c20d", "pricePerKg": 25, "density": 1.24, "inStock": true },
+    { "name": "PLA", "colour": "Pumpkin Orange", "hex": "#ff6a13", "pricePerKg": 25, "density": 1.24, "inStock": true },
+    { "name": "PLA", "colour": "Scarlet Red",    "hex": "#c8102e", "pricePerKg": 25, "density": 1.24, "inStock": true },
+    { "name": "PLA", "colour": "Cobalt Blue",    "hex": "#0057b8", "pricePerKg": 25, "density": 1.24, "inStock": true },
+    { "name": "PLA", "colour": "Ash Grey",       "hex": "#8a8d8f", "pricePerKg": 25, "density": 1.24, "inStock": true },
+    { "name": "PLA", "colour": "Matte Charcoal", "hex": "#36383b", "pricePerKg": 25, "density": 1.24, "inStock": true },
+    { "name": "PLA", "colour": "Gold Silk",      "hex": "#c9a227", "pricePerKg": 28, "density": 1.24, "inStock": true }
+  ]
+}

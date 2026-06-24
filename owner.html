@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marked By Hand — Owner Settings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+  .owrap{max-width:1240px;margin:0 auto;padding:0 18px}
+  .obar{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,var(--graphite-2),var(--graphite));border-bottom:1px solid var(--line)}
+  .obar-in{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 0}
+  .obar .ttl{font-weight:700;font-size:16px}
+  .obar .ttl small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+  .obar .sp{flex:1}
+  .status{font-family:var(--mono);font-size:11px;padding:5px 10px;border-radius:20px;border:1px solid var(--line);color:var(--muted)}
+  .status.dirty{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+  .status.saved{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
+  .tab-bar{display:flex;gap:0;border-top:1px solid var(--line);padding:0 0 0 2px}
+  .tab-btn{background:transparent;border:none;border-bottom:3px solid transparent;padding:10px 22px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer}
+  .tab-btn.on{color:var(--amber);border-bottom-color:var(--amber)}
+  .tab-btn:hover:not(.on){color:var(--bone)}
+
+  .olayout{display:grid;grid-template-columns:1fr 380px;gap:24px;align-items:start;padding-bottom:60px}
+  @media(max-width:960px){.olayout{grid-template-columns:1fr}}
+  .side{position:sticky;top:100px;display:flex;flex-direction:column;gap:16px}
+  @media(max-width:960px){.side{position:static}}
+  .tabpane{display:none;padding-top:22px}
+  .tabpane.active{display:block}
+
+  .card{background:var(--graphite-2);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:18px;box-shadow:0 6px 16px rgba(59,47,38,.05)}
+  .card h2{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-family:var(--mono);margin:0 0 4px;font-weight:500}
+  .card .sub{color:var(--muted);font-size:12.5px;margin:0 0 16px}
+  .frow{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:520px){.frow{grid-template-columns:1fr}}
+  .frow.three{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:680px){.frow.three{grid-template-columns:repeat(2,1fr)}}
+  .frow.four{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:800px){.frow.four{grid-template-columns:repeat(2,1fr)}}
+  .f{display:flex;flex-direction:column;gap:5px}
+  .f.full{grid-column:1/-1}
+  .f label{font-family:var(--mono);font-size:11px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted)}
+  .f .hint{font-family:var(--disp);font-size:11.5px;color:var(--faint);text-transform:none;letter-spacing:0;margin-top:-2px}
+  .f .ig{display:flex;align-items:center;gap:0;border:1px solid var(--line);border-radius:9px;background:var(--graphite-2);overflow:hidden}
+  .f .ig .pre,.f .ig .post{font-family:var(--mono);font-size:12px;color:var(--muted);padding:0 10px;white-space:nowrap}
+  .f .ig input{border:none;border-radius:0;background:transparent}
+  .checkline{display:flex;gap:18px;align-items:center;padding-top:4px}
+  .checkline label{display:flex;gap:7px;align-items:center;font-family:var(--disp);font-size:14px;color:var(--bone);text-transform:none;letter-spacing:0}
+  input[type=checkbox]{width:auto;accent-color:var(--amber)}
+
+  table.mt{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px}
+  table.mt th{text-align:left;color:var(--muted);font-weight:500;font-size:10px;letter-spacing:.5px;text-transform:uppercase;padding:0 6px 8px}
+  table.mt td{padding:3px 4px}
+  table.mt input{padding:8px 8px;font-size:12.5px}
+  table.mt input.type{font-family:var(--disp)}
+  table.mt input[type=color]{padding:2px 3px;height:34px;width:44px;border-radius:6px;cursor:pointer;background:transparent}
+  table.mt input[type=checkbox]{height:34px}
+  .delrow{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:7px;width:30px;height:34px;cursor:pointer}
+  .delrow:hover{border-color:var(--op-cut);color:var(--op-cut)}
+  .addrow{margin-top:10px}
+
+  pre.json{background:var(--graphite);border:1px solid var(--line);border-radius:10px;padding:12px;font-family:var(--mono);font-size:11px;line-height:1.45;color:var(--lede);max-height:280px;overflow:auto;white-space:pre-wrap;word-break:break-word;margin:0}
+  .prev-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--line);font-family:var(--mono);font-size:12px}
+  .prev-row:last-child{border-bottom:none}
+  .prev-row .k{color:var(--muted)}
+  .prev-total{font-family:var(--mono);font-weight:700;color:var(--amber);font-size:26px;letter-spacing:-.5px}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--bone);color:var(--graphite);font-family:var(--mono);font-size:12px;padding:10px 16px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;transition:.2s;pointer-events:none;z-index:60}
+  .toast.show{opacity:1}
+  .warnbox{background:color-mix(in srgb,var(--warn) 12%,var(--graphite-2));border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);border-radius:10px;padding:12px 14px;font-size:12.5px;color:var(--bone);line-height:1.5;margin-bottom:18px}
+  .minibtn{background:transparent;border:1px solid var(--line);color:var(--bone);font-family:var(--mono);font-size:11px;padding:7px 11px;border-radius:8px;cursor:pointer}
+  .minibtn:hover{border-color:var(--amber)}
+  .shared-card{margin:22px 0 0}
+  .nl-matrix table.mt td{font-weight:600;color:var(--amber)}
+  .nl-matrix table.mt td.rowhead{color:var(--muted);font-weight:400}
+</style>
+</head>
+<body>
+
+<div class="obar">
+  <div class="owrap">
+    <div class="obar-in">
+      <a href="index.html" aria-label="Home" style="text-decoration:none;display:inline-flex;align-items:center;gap:10px;color:inherit"><span class="mark" style="width:26px;height:26px"></span><span class="ttl" style="font-family:'Bricolage Grotesque',sans-serif">Owner settings<small id="tabFile">quote-config.json</small></span></a>
+      <div class="sp"></div>
+      <span class="status" id="status">Loading…</span>
+      <button class="btn ghost" id="openBtn">Open file…</button>
+      <button class="btn ghost" id="dlBtn">Download</button>
+      <button class="btn" id="saveBtn">Save to file</button>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-btn on" data-tab="laser">✂ Laser Cutter</button>
+      <button class="tab-btn" data-tab="print">⬡ 3D Printer</button>
+      <button class="tab-btn" data-tab="nightlight">🌙 Night Light</button>
+    </div>
+  </div>
+</div>
+
+<main class="owrap">
+
+  <!-- ===== SHARED: Business & Contact ===== -->
+  <div class="card shared-card" id="businessCard">
+    <h2>Business &amp; contact</h2>
+    <p class="sub">Applies to all tools — where quote submissions go, and the key that unlocks rate cards.</p>
+    <div class="frow">
+      <div class="f full"><label>Contact email</label><input type="email" id="b_contactEmail" placeholder="hello@markedbyhand.com.au"><span class="hint">Reply-to / fallback for enquiries.</span></div>
+      <div class="f full"><label>Enquiry form endpoint</label><input type="url" id="b_formUrl" placeholder="https://api.web3forms.com/submit"><span class="hint">Web3Forms / Formspree / your backend — used by all quote tools.</span></div>
+      <div class="f"><label>Form access key</label><input type="text" id="b_formKey" placeholder="(Web3Forms only)"><span class="hint">Public by design — fine to expose.</span></div>
+      <div class="f"><label>Owner unlock key</label><input type="text" id="b_ownerKey" placeholder="mbh"><span class="hint">Opens rate cards via ?owner=KEY. Obfuscation only.</span></div>
+    </div>
+  </div>
+
+  <div class="warnbox" style="margin-top:16px">
+    <b>How saving works.</b> In Chrome/Edge, "Save to file" writes straight back to <b id="warnFile">quote-config.json</b> (grant permission once via "Open file…"). Elsewhere it downloads a copy to replace manually. Change tabs to manage each tool's config independently.
+  </div>
+
+  <!-- ===== LASER TAB ===== -->
+  <div class="tabpane active" data-pane="laser">
+    <div class="olayout">
+      <div>
+
+        <div class="card">
+          <h2>Pricing model</h2>
+          <p class="sub">price = margin × ( setup + material + machine × $/min + polish ), floored at minimum, × safety, less volume discount.</p>
+          <div class="frow three">
+            <div class="f"><label>Margin</label><div class="ig"><span class="pre">×</span><input type="number" id="p_margin" step="0.05" min="1"></div></div>
+            <div class="f"><label>Setup fee</label><div class="ig"><span class="pre">$</span><input type="number" id="p_setup" step="0.5"></div></div>
+            <div class="f"><label>Minimum order</label><div class="ig"><span class="pre">$</span><input type="number" id="p_min" step="1"></div></div>
+            <div class="f"><label>Quote safety</label><div class="ig"><input type="number" id="p_safety" step="1"><span class="post">%</span></div></div>
+            <div class="f"><label>Vol. discount</label><div class="ig"><input type="number" id="p_voldisc" step="0.5"><span class="post">% / part</span></div></div>
+            <div class="f"><label>Max vol. discount</label><div class="ig"><input type="number" id="p_voldiscMax" step="1"><span class="post">%</span></div></div>
+            <div class="f"><label>Machine rate</label><div class="ig"><span class="pre">$</span><input type="number" id="p_machine" step="0.05"><span class="post">/min</span></div></div>
+            <div class="f"><label>Polish</label><div class="ig"><span class="pre">$</span><input type="number" id="p_polish" step="0.005"><span class="post">/mm</span></div></div>
+            <div class="f"><label>Transit</label><div class="ig"><input type="number" id="p_transit" step="0.01"><span class="post">min/contour</span></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Engraving &amp; nesting</h2>
+          <p class="sub">Measured fill/score speeds and how parts pack onto a sheet.</p>
+          <div class="frow three">
+            <div class="f"><label>Score feed</label><div class="ig"><input type="number" id="p_score" step="5"><span class="post">mm/s</span></div></div>
+            <div class="f"><label>Standard fill</label><div class="ig"><input type="number" id="p_fillStd" step="10"><span class="post">mm²/s</span></div></div>
+            <div class="f"><label>Fine fill</label><div class="ig"><input type="number" id="p_fillFine" step="10"><span class="post">mm²/s</span></div></div>
+            <div class="f"><label>Fill detect</label><div class="ig"><input type="number" id="p_fillThr" step="0.1"><span class="post">area÷perim</span></div></div>
+            <div class="f"><label>Sheet width</label><div class="ig"><input type="number" id="p_sheetW" step="10"><span class="post">mm</span></div></div>
+            <div class="f"><label>Sheet height</label><div class="ig"><input type="number" id="p_sheetH" step="10"><span class="post">mm</span></div></div>
+            <div class="f"><label>Part gap</label><div class="ig"><input type="number" id="p_gap" step="0.5"><span class="post">mm</span></div></div>
+            <div class="f"><label>Usable area</label><div class="ig"><input type="number" id="p_eff" step="1"><span class="post">%</span></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Edge grades</h2>
+          <p class="sub">Offer, rename, and explain the Display vs Functional choice shown to customers.</p>
+          <div class="checkline" style="margin-bottom:12px">
+            <label><input type="checkbox" id="g_offerDisplay"> Offer Display grade</label>
+            <label><input type="checkbox" id="g_offerFunctional"> Offer Functional grade</label>
+          </div>
+          <div class="frow">
+            <div class="f"><label>Display name</label><input type="text" id="g_displayName"></div>
+            <div class="f"><label>Functional name</label><input type="text" id="g_functionalName"></div>
+            <div class="f full"><label>"Why Functional?" explainer</label><textarea id="g_whyFunctional" rows="3"></textarea></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Materials &amp; stock</h2>
+          <p class="sub">$/sheet is for one full sheet at the size above. Cut feeds in mm/s. Stock = sheets on hand (0 = out of stock).</p>
+          <div style="overflow-x:auto">
+            <table class="mt">
+              <thead><tr>
+                <th style="min-width:130px">Material</th><th>Thick mm</th><th>$/sheet</th><th>Display mm/s</th><th>Func mm/s</th><th>Lead days</th><th>Stock</th><th></th>
+              </tr></thead>
+              <tbody id="matBody"></tbody>
+            </table>
+          </div>
+          <button class="btn ghost addrow" id="addMat">+ Add material</button>
+        </div>
+
+        <div class="card">
+          <h2>Appearance</h2>
+          <div class="f" style="max-width:300px"><label>Quote tool theme</label>
+            <select id="a_theme">
+              <option value="mocha">Mocha Mousse</option>
+              <option value="workshop">Workshop Dark</option>
+              <option value="walnut">Walnut &amp; Brass</option>
+              <option value="sage">Sage &amp; Bone</option>
+              <option value="forest">Forest &amp; Butter</option>
+              <option value="plum">Plum &amp; Blush</option>
+            </select>
+          </div>
+        </div>
+
+      </div><!-- /laser main col -->
+
+      <aside class="side">
+        <div class="card" style="margin:0">
+          <h2>Price check — laser</h2>
+          <p class="sub">Solid rectangle, cut only, Display grade — to sanity-check your rates.</p>
+          <div class="frow three" style="margin-bottom:12px">
+            <div class="f"><label>W mm</label><input type="number" id="tv_w" value="100"></div>
+            <div class="f"><label>H mm</label><input type="number" id="tv_h" value="100"></div>
+            <div class="f"><label>Qty</label><input type="number" id="tv_q" value="1" min="1"></div>
+          </div>
+          <div class="f" style="margin-bottom:14px"><label>Material</label><select id="tv_mat"></select></div>
+          <div id="prevBody"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+            <span class="mono" style="color:var(--muted);font-size:12px">Estimate</span>
+            <span class="prev-total" id="prevTotal">—</span>
+          </div>
+        </div>
+
+        <div class="card" style="margin:0">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <h2 style="margin:0">Live JSON — laser</h2>
+            <button class="minibtn" id="copyLaserJson">Copy</button>
+          </div>
+          <pre class="json" id="lJsonOut">{}</pre>
+        </div>
+      </aside>
+
+    </div><!-- /laser olayout -->
+  </div><!-- /laser tabpane -->
+
+  <!-- ===== 3D PRINT TAB ===== -->
+  <div class="tabpane" data-pane="print">
+    <div class="olayout">
+      <div>
+
+        <div class="card">
+          <h2>Machine &amp; print</h2>
+          <p class="sub">Physical machine constants. These apply to every print regardless of material.</p>
+          <div class="frow">
+            <div class="f"><label>Machine rate</label><div class="ig"><span class="pre">$</span><input type="number" id="d_machineHr" step="0.1"><span class="post">/hr</span></div></div>
+            <div class="f"><label>Throughput</label><div class="ig"><input type="number" id="d_throughput" step="0.5"><span class="post">mm³/s</span></div></div>
+            <div class="f"><label>Wall thickness</label><div class="ig"><input type="number" id="d_wallThk" step="0.05"><span class="post">mm</span></div></div>
+            <div class="f"><label>Waste</label><div class="ig"><input type="number" id="d_wastePct" step="1"><span class="post">%</span></div></div>
+            <div class="f"><label>Setup time</label><div class="ig"><input type="number" id="d_setupMin" step="1"><span class="post">min</span></div></div>
+            <div class="f"><label>Supports surcharge</label><div class="ig"><input type="number" id="d_supportPct" step="1"><span class="post">%</span></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Pricing model</h2>
+          <p class="sub">price = margin × ( setup + filament cost + machine time × $/hr ), floored at minimum, × safety, less volume discount.</p>
+          <div class="frow three">
+            <div class="f"><label>Margin</label><div class="ig"><span class="pre">×</span><input type="number" id="d_margin" step="0.05" min="1"></div></div>
+            <div class="f"><label>Setup fee</label><div class="ig"><span class="pre">$</span><input type="number" id="d_setup" step="0.5"></div></div>
+            <div class="f"><label>Minimum order</label><div class="ig"><span class="pre">$</span><input type="number" id="d_min" step="1"></div></div>
+            <div class="f"><label>Quote safety</label><div class="ig"><input type="number" id="d_safety" step="1"><span class="post">%</span></div></div>
+            <div class="f"><label>Vol. discount</label><div class="ig"><input type="number" id="d_voldisc" step="0.5"><span class="post">% / part</span></div></div>
+            <div class="f"><label>Max vol. discount</label><div class="ig"><input type="number" id="d_voldiscMax" step="1"><span class="post">%</span></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>GST &amp; build volume</h2>
+          <div class="frow">
+            <div class="f"><label>GST rate</label><div class="ig"><input type="number" id="d_gstRate" step="1"><span class="post">%</span></div></div>
+            <div class="f" style="justify-content:flex-end"><div class="checkline"><label><input type="checkbox" id="d_gstEnabled"> Charge GST</label></div></div>
+          </div>
+          <div class="frow three" style="margin-top:12px">
+            <div class="f"><label>Bed X mm</label><input type="number" id="d_bx" step="1"></div>
+            <div class="f"><label>Bed Y mm</label><input type="number" id="d_by" step="1"></div>
+            <div class="f"><label>Bed Z mm</label><input type="number" id="d_bz" step="1"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Priority &amp; speed presets</h2>
+          <p class="sub">Express and Rush multiply the base price. Speed presets scale throughput (higher = faster = cheaper).</p>
+          <div class="frow">
+            <div class="f"><label>Express mult.</label><div class="ig"><span class="pre">×</span><input type="number" id="d_prioExpress" step="0.05" min="1"><span class="post">· 2 days</span></div></div>
+            <div class="f"><label>Rush mult.</label><div class="ig"><span class="pre">×</span><input type="number" id="d_prioRush" step="0.05" min="1"><span class="post">· next day</span></div></div>
+            <div class="f"><label>Draft throughput</label><div class="ig"><span class="pre">×</span><input type="number" id="d_speedDraft" step="0.05"><span class="post">of std</span></div></div>
+            <div class="f"><label>Fine throughput</label><div class="ig"><span class="pre">×</span><input type="number" id="d_speedFine" step="0.05"><span class="post">of std</span></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Materials &amp; colours</h2>
+          <p class="sub">Each row is one filament + colour. Pick the colour with the swatch picker. $/kg and density can vary per filament brand. Un-tick to hide from customers without deleting.</p>
+          <div style="overflow-x:auto">
+            <table class="mt">
+              <thead><tr>
+                <th style="min-width:100px">Material</th>
+                <th style="min-width:120px">Colour name</th>
+                <th>Swatch</th>
+                <th>$/kg</th>
+                <th>Density</th>
+                <th>In stock</th>
+                <th></th>
+              </tr></thead>
+              <tbody id="printMatBody"></tbody>
+            </table>
+          </div>
+          <button class="btn ghost addrow" id="addPrintMat">+ Add colour / material</button>
+        </div>
+
+      </div><!-- /print main col -->
+
+      <aside class="side">
+        <div class="card" style="margin:0">
+          <h2>Price check — 3D</h2>
+          <p class="sub">Enter a solid volume to sanity-check rates. Uses simplified geometry (no surface-area shell split).</p>
+          <div class="frow" style="margin-bottom:12px">
+            <div class="f"><label>Solid vol. cm³</label><input type="number" id="dv_vol" value="10" step="1" min="0.1"></div>
+            <div class="f"><label>Infill %</label><input type="number" id="dv_infill" value="15" step="5" min="0" max="100"></div>
+            <div class="f"><label>Qty</label><input type="number" id="dv_q" value="1" min="1"></div>
+            <div class="f"><label>Priority</label>
+              <select id="dv_prio">
+                <option value="std">Standard</option>
+                <option value="express">Express</option>
+                <option value="rush">Rush</option>
+              </select>
+            </div>
+          </div>
+          <div class="f" style="margin-bottom:14px"><label>Material</label><select id="dv_mat"></select></div>
+          <div id="dPrevBody"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+            <span class="mono" style="color:var(--muted);font-size:12px">Estimate · inc GST</span>
+            <span class="prev-total" id="dPrevTotal">—</span>
+          </div>
+        </div>
+
+        <div class="card" style="margin:0">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <h2 style="margin:0">Live JSON — 3D</h2>
+            <button class="minibtn" id="copyPrintJson">Copy</button>
+          </div>
+          <pre class="json" id="pJsonOut">{}</pre>
+        </div>
+      </aside>
+
+    </div><!-- /print olayout -->
+  </div><!-- /print tabpane -->
+
+  <!-- ===== NIGHT LIGHT TAB ===== -->
+  <div class="tabpane" data-pane="nightlight">
+    <div class="olayout">
+      <div>
+
+        <div class="card">
+          <h2>Base price</h2>
+          <p class="sub">All prices shown to customers are base + size adjustment + LED adjustment.</p>
+          <div class="frow" style="max-width:240px">
+            <div class="f"><label>Base price</label><div class="ig"><span class="pre">$</span><input type="number" id="nl_base" step="1" min="0" value="34"></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Size tiers</h2>
+          <p class="sub">Panel size options shown to the customer. Adjustment adds to (or subtracts from) the base price.</p>
+          <div style="overflow-x:auto">
+            <table class="mt">
+              <thead><tr>
+                <th style="min-width:60px">Key</th>
+                <th style="min-width:200px">Label (shown to customer)</th>
+                <th style="min-width:80px">Adj $</th>
+                <th></th>
+              </tr></thead>
+              <tbody id="nlSizeBody"></tbody>
+            </table>
+          </div>
+          <button class="btn ghost addrow" id="addNLSize">+ Add size</button>
+        </div>
+
+        <div class="card">
+          <h2>LED bases</h2>
+          <p class="sub">LED base options shown to the customer. Adjustment adds to the base + size price.</p>
+          <div style="overflow-x:auto">
+            <table class="mt">
+              <thead><tr>
+                <th style="min-width:80px">Key</th>
+                <th style="min-width:220px">Label (shown to customer)</th>
+                <th style="min-width:80px">Adj $</th>
+                <th></th>
+              </tr></thead>
+              <tbody id="nlLedBody"></tbody>
+            </table>
+          </div>
+          <button class="btn ghost addrow" id="addNLLed">+ Add LED base</button>
+        </div>
+
+      </div><!-- /nightlight main col -->
+
+      <aside class="side">
+        <div class="card" style="margin:0">
+          <h2>Price matrix</h2>
+          <p class="sub">All size × LED combinations at current settings.</p>
+          <div class="nl-matrix" id="nlMatrix"></div>
+        </div>
+
+        <div class="card" style="margin:0">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <h2 style="margin:0">Live JSON — night light</h2>
+            <button class="minibtn" id="copyNLJson">Copy</button>
+          </div>
+          <pre class="json" id="nlJsonOut">{}</pre>
+        </div>
+      </aside>
+
+    </div><!-- /nightlight olayout -->
+  </div><!-- /nightlight tabpane -->
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+var $=function(id){return document.getElementById(id);};
+
+/* ======================================================
+   DEFAULTS
+   ====================================================== */
+var DEFAULT_LASER={
+  theme:"mocha",
+  business:{contactEmail:"",formUrl:"",formKey:"",ownerKey:"mbh"},
+  pricing:{margin:1.5,setup:8,min:15,safety:15,voldisc:2,voldiscMax:40,machine:1.5,polish:0.015,transit:0.03,score:120,fillStd:200,fillFine:110,fillThr:1.5,sheetW:600,sheetH:400,gap:3,eff:90},
+  grades:{offerDisplay:true,offerFunctional:true,displayName:"Display",functionalName:"Functional",whyFunctional:"If your piece is a template, jig, prototype, or anything where the cut edges won't be on show, you don't need flame-polished perfection. Functional grade skips the extra edge finishing and runs faster — the cut is just as accurate, the price is lower. Choose Display grade when the edges will be seen."},
+  materials:[
+    {type:"Clear acrylic",thick:2,sheet:13,fd:18,fw:30,lead:2,sheets:10},
+    {type:"Clear acrylic",thick:3,sheet:16,fd:12,fw:22,lead:3,sheets:10},
+    {type:"Clear acrylic",thick:4.5,sheet:24,fd:8,fw:16,lead:3,sheets:10},
+    {type:"Clear acrylic",thick:6,sheet:30,fd:5,fw:10,lead:4,sheets:10},
+    {type:"Colour acrylic",thick:2,sheet:16,fd:16,fw:28,lead:2,sheets:10},
+    {type:"Colour acrylic",thick:3,sheet:20,fd:11,fw:20,lead:3,sheets:10},
+    {type:"Colour acrylic",thick:4.5,sheet:30,fd:7,fw:15,lead:3,sheets:10},
+    {type:"Colour acrylic",thick:6,sheet:38,fd:5,fw:9,lead:4,sheets:10}
+  ]
+};
+var DEFAULT_PRINT={
+  business:{contactEmail:"",formUrl:"",formKey:"",ownerKey:"mbh"},
+  build:{x:256,y:256,z:256},
+  print:{wallThk:0.9,wastePct:4,throughput:11,setupMin:8},
+  supports:{surchargePct:15},
+  priority:{std:{mult:1.00,label:"Standard · 3–5 business days"},express:{mult:1.30,label:"Express +30% · 2 days"},rush:{mult:1.60,label:"Rush +60% · next day"}},
+  speed:{draft:1.6,std:1.0,fine:0.62},
+  pricing:{machinePerHour:1.5,setup:3,min:8,margin:1.6,safetyPct:10,voldisc:2,voldiscMax:35},
+  gst:{enabled:true,rate:10},
+  materials:[
+    {name:"PLA",colour:"Galaxy Black",hex:"#1b1b20",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Jade White",hex:"#f1ede4",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Bambu Green",hex:"#10a64a",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Sunflower",hex:"#f4c20d",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Pumpkin Orange",hex:"#ff6a13",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Scarlet Red",hex:"#c8102e",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Cobalt Blue",hex:"#0057b8",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Ash Grey",hex:"#8a8d8f",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Matte Charcoal",hex:"#36383b",pricePerKg:25,density:1.24,inStock:true},
+    {name:"PLA",colour:"Gold Silk",hex:"#c9a227",pricePerKg:28,density:1.24,inStock:true}
+  ]
+};
+var DEFAULT_NIGHTLIGHT={
+  business:{contactEmail:"",formUrl:"",formKey:"",ownerKey:"mbh"},
+  pricing:{
+    base:34,
+    sizes:[
+      {key:"s",label:"Small · ~120 mm",adj:0},
+      {key:"m",label:"Medium · ~180 mm",adj:6},
+      {key:"l",label:"Large · ~240 mm",adj:14}
+    ],
+    leds:[
+      {key:"warm",label:"Warm white — USB",adj:0},
+      {key:"rgb",label:"Colour-changing + remote",adj:8},
+      {key:"battery",label:"Warm white — battery",adj:4}
+    ]
+  }
+};
+
+/* ======================================================
+   STATE
+   ====================================================== */
+var CURTAB="laser";
+var fileHandles={laser:null,print:null,nightlight:null};
+var dirty={laser:false,print:false,nightlight:false};
+var canFS=("showOpenFilePicker" in window);
+var SAVE_ENDPOINT="";
+
+/* ======================================================
+   TAB SWITCHING
+   ====================================================== */
+function setTab(t){
+  CURTAB=t;
+  document.querySelectorAll(".tab-btn").forEach(function(b){b.classList.toggle("on",b.dataset.tab===t);});
+  document.querySelectorAll(".tabpane").forEach(function(p){p.classList.toggle("active",p.dataset.pane===t);});
+  var fname=currentFileName();
+  $("tabFile").textContent=fname;
+  $("warnFile").textContent=fname;
+  refreshStatus();
+  refreshActive();
+}
+document.querySelectorAll(".tab-btn").forEach(function(b){b.addEventListener("click",function(){setTab(b.dataset.tab);});});
+
+/* ======================================================
+   BUSINESS (shared — populates all tabs' JSON)
+   ====================================================== */
+function gatherBusiness(){
+  return {contactEmail:$("b_contactEmail").value.trim(),formUrl:$("b_formUrl").value.trim(),formKey:$("b_formKey").value.trim(),ownerKey:$("b_ownerKey").value.trim()||"mbh"};
+}
+function populateBusiness(cfg){
+  var b=(cfg&&cfg.business)||{};
+  $("b_contactEmail").value=b.contactEmail||"";
+  $("b_formUrl").value=b.formUrl||"";
+  $("b_formKey").value=b.formKey||"";
+  $("b_ownerKey").value=b.ownerKey||"mbh";
+}
+
+/* ======================================================
+   LASER — gather / populate
+   ====================================================== */
+function gatherLaser(){
+  var n=function(id){return parseFloat($(id).value)||0;};
+  return {
+    theme:$("a_theme").value,
+    business:gatherBusiness(),
+    pricing:{margin:n("p_margin"),setup:n("p_setup"),min:n("p_min"),safety:n("p_safety"),voldisc:n("p_voldisc"),voldiscMax:n("p_voldiscMax"),machine:n("p_machine"),polish:n("p_polish"),transit:n("p_transit"),score:n("p_score"),fillStd:n("p_fillStd"),fillFine:n("p_fillFine"),fillThr:n("p_fillThr"),sheetW:n("p_sheetW"),sheetH:n("p_sheetH"),gap:n("p_gap"),eff:n("p_eff")},
+    grades:{offerDisplay:$("g_offerDisplay").checked,offerFunctional:$("g_offerFunctional").checked,displayName:$("g_displayName").value,functionalName:$("g_functionalName").value,whyFunctional:$("g_whyFunctional").value},
+    materials:readLaserMats()
+  };
+}
+function populateLaser(cfg){
+  cfg=cfg||DEFAULT_LASER;
+  var p=cfg.pricing||{},dl=DEFAULT_LASER.pricing;
+  ["margin","setup","min","safety","voldisc","voldiscMax","machine","polish","transit","score","fillStd","fillFine","fillThr","sheetW","sheetH","gap","eff"]
+    .forEach(function(k){$("p_"+k).value=(p[k]!=null?p[k]:dl[k]);});
+  var g=cfg.grades||{};
+  $("g_offerDisplay").checked=g.offerDisplay!==false;
+  $("g_offerFunctional").checked=g.offerFunctional!==false;
+  $("g_displayName").value=g.displayName||"Display";
+  $("g_functionalName").value=g.functionalName||"Functional";
+  $("g_whyFunctional").value=g.whyFunctional||"";
+  $("a_theme").value=cfg.theme||"mocha";
+  renderLaserMats((cfg.materials&&cfg.materials.length)?cfg.materials:DEFAULT_LASER.materials);
+  populateBusiness(cfg);
+}
+
+/* ======================================================
+   LASER — materials table
+   ====================================================== */
+function laserMatRow(m){
+  m=m||{type:"New material",thick:3,sheet:20,fd:10,fw:18,lead:3,sheets:0};
+  var tr=document.createElement("tr");
+  tr.innerHTML=
+    '<td><input class="type" data-k="type" value="'+(m.type||'')+'"></td>'+
+    '<td><input type="number" step="0.5" data-k="thick" value="'+m.thick+'"></td>'+
+    '<td><input type="number" step="1" data-k="sheet" value="'+m.sheet+'"></td>'+
+    '<td><input type="number" step="1" data-k="fd" value="'+m.fd+'"></td>'+
+    '<td><input type="number" step="1" data-k="fw" value="'+m.fw+'"></td>'+
+    '<td><input type="number" step="1" data-k="lead" value="'+m.lead+'"></td>'+
+    '<td><input type="number" step="1" min="0" data-k="sheets" value="'+(m.sheets||0)+'"></td>'+
+    '<td><button class="delrow" title="Remove">×</button></td>';
+  tr.querySelector(".delrow").onclick=function(){tr.remove();markDirty("laser");refreshActive();};
+  return tr;
+}
+function renderLaserMats(list){var tb=$("matBody");tb.innerHTML="";list.forEach(function(m){tb.appendChild(laserMatRow(m));});}
+$("addMat").onclick=function(){$("matBody").appendChild(laserMatRow());markDirty("laser");refreshActive();};
+function readLaserMats(){
+  var rows=$("matBody").querySelectorAll("tr"),out=[];
+  rows.forEach(function(tr){
+    var o={};
+    tr.querySelectorAll("input").forEach(function(inp){var k=inp.dataset.k;o[k]=(k==="type")?inp.value:(parseFloat(inp.value)||0);});
+    out.push(o);
+  });
+  return out;
+}
+
+/* ======================================================
+   3D PRINT — gather / populate
+   ====================================================== */
+function gatherPrint(){
+  var n=function(id){return parseFloat($(id).value)||0;};
+  var ex=n("d_prioExpress"),ru=n("d_prioRush");
+  return {
+    business:gatherBusiness(),
+    build:{x:n("d_bx"),y:n("d_by"),z:n("d_bz")},
+    print:{wallThk:n("d_wallThk"),wastePct:n("d_wastePct"),throughput:n("d_throughput"),setupMin:n("d_setupMin")},
+    supports:{surchargePct:n("d_supportPct")},
+    priority:{
+      std:{mult:1.00,label:"Standard · 3–5 business days"},
+      express:{mult:ex,label:"Express +"+(Math.round((ex-1)*100))+"%· 2 days"},
+      rush:{mult:ru,label:"Rush +"+(Math.round((ru-1)*100))+"%· next day"}
+    },
+    speed:{draft:n("d_speedDraft"),std:1.0,fine:n("d_speedFine")},
+    pricing:{machinePerHour:n("d_machineHr"),setup:n("d_setup"),min:n("d_min"),margin:n("d_margin"),safetyPct:n("d_safety"),voldisc:n("d_voldisc"),voldiscMax:n("d_voldiscMax")},
+    gst:{enabled:$("d_gstEnabled").checked,rate:n("d_gstRate")},
+    materials:readPrintMats()
+  };
+}
+function populatePrint(cfg){
+  cfg=cfg||DEFAULT_PRINT;
+  var set=function(id,v){if($(id))$(id).value=v;};
+  var b=cfg.build||{};
+  set("d_bx",b.x||256);set("d_by",b.y||256);set("d_bz",b.z||256);
+  var p=cfg.print||{};
+  set("d_wallThk",p.wallThk||0.9);set("d_wastePct",p.wastePct||4);set("d_throughput",p.throughput||11);set("d_setupMin",p.setupMin||8);
+  set("d_supportPct",(cfg.supports&&cfg.supports.surchargePct)||15);
+  var pr=cfg.priority||{};
+  set("d_prioExpress",(pr.express&&pr.express.mult)||1.30);set("d_prioRush",(pr.rush&&pr.rush.mult)||1.60);
+  var sp=cfg.speed||{};
+  set("d_speedDraft",sp.draft||1.6);set("d_speedFine",sp.fine||0.62);
+  var pc=cfg.pricing||{};
+  set("d_machineHr",pc.machinePerHour||1.5);set("d_setup",pc.setup||3);set("d_min",pc.min||8);
+  set("d_margin",pc.margin||1.6);set("d_safety",pc.safetyPct||10);set("d_voldisc",pc.voldisc||2);set("d_voldiscMax",pc.voldiscMax||35);
+  var gst=cfg.gst||{};
+  $("d_gstEnabled").checked=gst.enabled!==false;set("d_gstRate",gst.rate||10);
+  renderPrintMats((cfg.materials&&cfg.materials.length)?cfg.materials:DEFAULT_PRINT.materials);
+  populateBusiness(cfg);
+}
+
+/* ======================================================
+   3D PRINT — materials table (colour picker)
+   ====================================================== */
+function printMatRow(m){
+  m=m||{name:"PLA",colour:"New Colour",hex:"#888888",pricePerKg:25,density:1.24,inStock:true};
+  var tr=document.createElement("tr");
+  tr.innerHTML=
+    '<td><input data-k="name" value="'+(m.name||'')+'"></td>'+
+    '<td><input class="type" data-k="colour" value="'+(m.colour||'')+'"></td>'+
+    '<td><input type="color" data-k="hex" value="'+(m.hex||'#888888')+'"></td>'+
+    '<td><input type="number" step="1" data-k="pricePerKg" value="'+(m.pricePerKg||25)+'"></td>'+
+    '<td><input type="number" step="0.01" data-k="density" value="'+(m.density||1.24)+'"></td>'+
+    '<td style="text-align:center"><input type="checkbox" data-k="inStock"'+(m.inStock!==false?" checked":"")+'></td>'+
+    '<td><button class="delrow" title="Remove">×</button></td>';
+  tr.querySelector(".delrow").onclick=function(){tr.remove();markDirty("print");refreshActive();};
+  return tr;
+}
+function renderPrintMats(list){var tb=$("printMatBody");tb.innerHTML="";list.forEach(function(m){tb.appendChild(printMatRow(m));});}
+$("addPrintMat").onclick=function(){$("printMatBody").appendChild(printMatRow());markDirty("print");refreshActive();};
+function readPrintMats(){
+  var rows=$("printMatBody").querySelectorAll("tr"),out=[];
+  rows.forEach(function(tr){
+    var o={};
+    tr.querySelectorAll("input").forEach(function(inp){
+      var k=inp.dataset.k;
+      if(k==="name"||k==="colour"||k==="hex")o[k]=inp.value;
+      else if(k==="inStock")o[k]=inp.checked;
+      else o[k]=parseFloat(inp.value)||0;
+    });
+    out.push(o);
+  });
+  return out;
+}
+
+/* ======================================================
+   NIGHT LIGHT — gather / populate
+   ====================================================== */
+function gatherNightLight(){
+  return {
+    business:gatherBusiness(),
+    pricing:{
+      base:parseFloat($("nl_base").value)||0,
+      sizes:readNLSizes(),
+      leds:readNLLeds()
+    }
+  };
+}
+function populateNightLight(cfg){
+  cfg=cfg||DEFAULT_NIGHTLIGHT;
+  var pr=cfg.pricing||DEFAULT_NIGHTLIGHT.pricing;
+  $("nl_base").value=(pr.base!=null?pr.base:DEFAULT_NIGHTLIGHT.pricing.base);
+  renderNLSizes(pr.sizes&&pr.sizes.length?pr.sizes:DEFAULT_NIGHTLIGHT.pricing.sizes);
+  renderNLLeds(pr.leds&&pr.leds.length?pr.leds:DEFAULT_NIGHTLIGHT.pricing.leds);
+  populateBusiness(cfg);
+}
+
+/* ======================================================
+   NIGHT LIGHT — sizes table
+   ====================================================== */
+function nlSizeRow(m){
+  m=m||{key:"new",label:"New Size",adj:0};
+  var tr=document.createElement("tr");
+  tr.innerHTML=
+    '<td><input data-k="key" value="'+(m.key||'')+'"></td>'+
+    '<td><input class="type" data-k="label" value="'+(m.label||'')+'"></td>'+
+    '<td><input type="number" step="1" data-k="adj" value="'+(m.adj||0)+'"></td>'+
+    '<td><button class="delrow" title="Remove">×</button></td>';
+  tr.querySelector(".delrow").onclick=function(){tr.remove();markDirty("nightlight");refreshActive();};
+  return tr;
+}
+function renderNLSizes(list){var tb=$("nlSizeBody");tb.innerHTML="";list.forEach(function(m){tb.appendChild(nlSizeRow(m));});}
+$("addNLSize").onclick=function(){$("nlSizeBody").appendChild(nlSizeRow());markDirty("nightlight");refreshActive();};
+function readNLSizes(){
+  var rows=$("nlSizeBody").querySelectorAll("tr"),out=[];
+  rows.forEach(function(tr){
+    var o={};
+    tr.querySelectorAll("input").forEach(function(inp){var k=inp.dataset.k;o[k]=(k==="key"||k==="label")?inp.value:(parseFloat(inp.value)||0);});
+    out.push(o);
+  });
+  return out;
+}
+
+/* ======================================================
+   NIGHT LIGHT — LEDs table
+   ====================================================== */
+function nlLedRow(m){
+  m=m||{key:"new",label:"New LED Base",adj:0};
+  var tr=document.createElement("tr");
+  tr.innerHTML=
+    '<td><input data-k="key" value="'+(m.key||'')+'"></td>'+
+    '<td><input class="type" data-k="label" value="'+(m.label||'')+'"></td>'+
+    '<td><input type="number" step="1" data-k="adj" value="'+(m.adj||0)+'"></td>'+
+    '<td><button class="delrow" title="Remove">×</button></td>';
+  tr.querySelector(".delrow").onclick=function(){tr.remove();markDirty("nightlight");refreshActive();};
+  return tr;
+}
+function renderNLLeds(list){var tb=$("nlLedBody");tb.innerHTML="";list.forEach(function(m){tb.appendChild(nlLedRow(m));});}
+$("addNLLed").onclick=function(){$("nlLedBody").appendChild(nlLedRow());markDirty("nightlight");refreshActive();};
+function readNLLeds(){
+  var rows=$("nlLedBody").querySelectorAll("tr"),out=[];
+  rows.forEach(function(tr){
+    var o={};
+    tr.querySelectorAll("input").forEach(function(inp){var k=inp.dataset.k;o[k]=(k==="key"||k==="label")?inp.value:(parseFloat(inp.value)||0);});
+    out.push(o);
+  });
+  return out;
+}
+
+/* ======================================================
+   PRICE PREVIEWS
+   ====================================================== */
+function partsPerSheet(pw,ph,sc){
+  if(pw<=0||ph<=0)return{n:1,oversize:false};
+  var gap=sc.gap,SW=sc.sheetW,SH=sc.sheetH;
+  function fit(a,b){var nx=Math.floor((SW+gap)/(a+gap)),ny=Math.floor((SH+gap)/(b+gap));return(nx>0&&ny>0)?nx*ny:0;}
+  var raw=Math.max(fit(pw,ph),fit(ph,pw));
+  if(raw<=0)return{n:1,oversize:true};
+  return{n:Math.max(1,Math.floor(raw*(sc.eff/100))),oversize:false};
+}
+function laserPreview(){
+  var cfg=gatherLaser(),sc=cfg.pricing;
+  var mi=parseInt($("tv_mat").value,10)||0,m=cfg.materials[mi]||cfg.materials[0];
+  if(!m){$("prevBody").innerHTML="";$("prevTotal").textContent="—";return;}
+  var W=parseFloat($("tv_w").value)||0,H=parseFloat($("tv_h").value)||0,qty=Math.max(1,parseInt($("tv_q").value,10)||1);
+  var feed=m.fd||1,cutLen=2*(W+H),sec=cutLen/feed;
+  var minutes=sec/60+1*sc.transit,machCost=minutes*sc.machine;
+  var pack=partsPerSheet(W,H,sc),matEach=pack.oversize?m.sheet:m.sheet/pack.n;
+  var finishing=cutLen*sc.polish,perPart=matEach+machCost+finishing;
+  var disc=Math.min(sc.voldiscMax||0,Math.max(0,qty-1)*(sc.voldisc||0))/100;
+  var batch=(sc.setup+perPart*(1-disc)*qty)*sc.margin;
+  var total=Math.max(sc.min,batch)*(1+(sc.safety||0)/100);
+  var rows=[["Setup","$"+sc.setup.toFixed(2)],["Material · 1/"+pack.n+" sheet × "+qty,"$"+(matEach*qty).toFixed(2)],
+    ["Machine · "+minutes.toFixed(1)+" min × "+qty,"$"+(machCost*qty).toFixed(2)],
+    ["Polish (cut edges)","$"+(finishing*qty).toFixed(2)],
+    ["Margin ×"+sc.margin+(disc>0?" · −"+(disc*100).toFixed(0)+"% vol":""),""],
+    ["Safety +"+sc.safety+"%",""]];
+  if(pack.oversize)rows.unshift(["⚠ larger than sheet","review"]);
+  $("prevBody").innerHTML=rows.map(function(r){return'<div class="prev-row"><span class="k">'+r[0]+'</span><span>'+r[1]+'</span></div>';}).join("");
+  $("prevTotal").textContent="$"+total.toFixed(2);
+}
+function fillLaserMatSelect(){
+  var cfg=gatherLaser(),sel=$("tv_mat"),cur=sel.value;sel.innerHTML="";
+  cfg.materials.forEach(function(m,i){var o=document.createElement("option");o.value=i;o.textContent=m.type+" — "+m.thick+"mm";sel.appendChild(o);});
+  if(cur&&cfg.materials[cur])sel.value=cur;
+}
+
+function printPreview(){
+  var cfg=gatherPrint(),pr=cfg.pricing,gst=cfg.gst;
+  var mi=parseInt($("dv_mat").value,10)||0,mat=cfg.materials[mi];
+  if(!mat){$("dPrevBody").innerHTML="";$("dPrevTotal").textContent="$—";return;}
+  var volCm3=parseFloat($("dv_vol").value)||0;
+  var infill=(parseFloat($("dv_infill").value)||15)/100;
+  var qty=Math.max(1,parseInt($("dv_q").value,10)||1);
+  var prioKey=$("dv_prio").value||"std";
+  var prioMult=(cfg.priority[prioKey]&&cfg.priority[prioKey].mult)||1;
+  var P=cfg.print;
+  var mat_cm3=volCm3*(0.2+0.8*infill)*(1+P.wastePct/100);
+  var weight=mat_cm3*mat.density;
+  var effThrough=Math.max(0.5,P.throughput);
+  var time_h=((mat_cm3*1000)/effThrough+P.setupMin*60)/3600;
+  var matCost=weight/1000*mat.pricePerKg;
+  var machCost=time_h*pr.machinePerHour;
+  var perPart=pr.setup+matCost+machCost;
+  var disc=Math.min(pr.voldiscMax||0,Math.max(0,qty-1)*(pr.voldisc||0))/100;
+  var baseEach=Math.max(pr.min,perPart*pr.margin)*(1+pr.safetyPct/100)*prioMult;
+  var eachEx=baseEach*(1-disc);
+  var exGst=eachEx*qty;
+  var gstAmt=gst.enabled?exGst*gst.rate/100:0;
+  var total=exGst+gstAmt;
+  function fmtTime(h){var m=Math.round(h*60);if(m<60)return m+" min";return Math.floor(m/60)+"h "+(m%60)+"m";}
+  var rows=[["Setup","$"+pr.setup.toFixed(2)],
+    ["Filament · "+weight.toFixed(0)+"g","$"+matCost.toFixed(2)],
+    ["Machine · "+fmtTime(time_h),"$"+machCost.toFixed(2)],
+    prioMult>1?["Turnaround +"+Math.round((prioMult-1)*100)+"%",""]:null,
+    ["Margin ×"+pr.margin+(disc>0?" · −"+(disc*100).toFixed(0)+"% bulk":""),""],
+    ["Safety +"+pr.safetyPct+"%",""],
+    gst.enabled?["GST "+gst.rate+"%","$"+gstAmt.toFixed(2)]:null
+  ].filter(Boolean);
+  $("dPrevBody").innerHTML=rows.map(function(r){return'<div class="prev-row"><span class="k">'+r[0]+'</span><span>'+r[1]+'</span></div>';}).join("");
+  $("dPrevTotal").textContent="$"+total.toFixed(2);
+}
+function fillPrintMatSelect(){
+  var cfg=gatherPrint(),sel=$("dv_mat"),cur=sel.value;sel.innerHTML="";
+  cfg.materials.forEach(function(m,i){var o=document.createElement("option");o.value=i;o.textContent=m.name+" — "+m.colour;sel.appendChild(o);});
+  if(cur&&cfg.materials[cur])sel.value=cur;
+}
+
+function nightLightPreview(){
+  var cfg=gatherNightLight();
+  var base=cfg.pricing.base,sizes=cfg.pricing.sizes,leds=cfg.pricing.leds;
+  if(!sizes.length||!leds.length){$("nlMatrix").innerHTML="";$("nlJsonOut").textContent=JSON.stringify(cfg,null,2);return;}
+  var html='<table class="mt"><thead><tr><th></th>';
+  html+=leds.map(function(l){return '<th>'+l.label.split('—')[0].trim()+'</th>';}).join('');
+  html+='</tr></thead><tbody>';
+  sizes.forEach(function(sz){
+    html+='<tr><td class="rowhead">'+sz.label.split('·')[0].trim()+'</td>';
+    leds.forEach(function(led){html+='<td>$'+(base+(sz.adj||0)+(led.adj||0)).toFixed(0)+'</td>';});
+    html+='</tr>';
+  });
+  html+='</tbody></table>';
+  $("nlMatrix").innerHTML=html;
+  $("nlJsonOut").textContent=JSON.stringify(cfg,null,2);
+}
+
+/* ======================================================
+   REFRESH
+   ====================================================== */
+function refreshActive(){
+  if(CURTAB==="laser"){
+    $("lJsonOut").textContent=JSON.stringify(gatherLaser(),null,2);
+    fillLaserMatSelect();
+    laserPreview();
+  }else if(CURTAB==="print"){
+    $("pJsonOut").textContent=JSON.stringify(gatherPrint(),null,2);
+    fillPrintMatSelect();
+    printPreview();
+  }else{
+    nightLightPreview();
+  }
+}
+
+/* ======================================================
+   DIRTY STATE & STATUS
+   ====================================================== */
+function markDirty(tab){dirty[tab||CURTAB]=true;refreshStatus();}
+function refreshStatus(){
+  var d=dirty[CURTAB];
+  setStatus(d?"Unsaved changes":"Ready",d?"dirty":"saved");
+}
+function setStatus(t,cls){var s=$("status");s.textContent=t;s.className="status"+(cls?" "+cls:"");}
+
+document.addEventListener("input",function(e){
+  if(!e.target.closest("main"))return;
+  if(e.target.closest(".side"))return;
+  if(e.target.closest("#businessCard")){markDirty("laser");markDirty("print");markDirty("nightlight");}
+  else if(e.target.closest('[data-pane="laser"]')){markDirty("laser");}
+  else if(e.target.closest('[data-pane="print"]')){markDirty("print");}
+  else if(e.target.closest('[data-pane="nightlight"]')){markDirty("nightlight");}
+  refreshActive();
+});
+
+/* ======================================================
+   FILE OPEN / SAVE / DOWNLOAD
+   ====================================================== */
+function currentFileName(){
+  if(CURTAB==="laser")return "quote-config.json";
+  if(CURTAB==="print")return "print-quote-config.json";
+  return "night-light-config.json";
+}
+function currentJson(){
+  if(CURTAB==="laser")return JSON.stringify(gatherLaser(),null,2);
+  if(CURTAB==="print")return JSON.stringify(gatherPrint(),null,2);
+  return JSON.stringify(gatherNightLight(),null,2);
+}
+
+$("openBtn").onclick=async function(){
+  if(!canFS){toast("Your browser can't open files directly — use Download to save instead.");return;}
+  try{
+    var[h]=await window.showOpenFilePicker({types:[{description:"JSON",accept:{"application/json":[".json"]}}]});
+    fileHandles[CURTAB]=h;
+    var f=await h.getFile(),txt=await f.text(),parsed=JSON.parse(txt);
+    if(CURTAB==="laser")populateLaser(parsed);
+    else if(CURTAB==="print")populatePrint(parsed);
+    else populateNightLight(parsed);
+    dirty[CURTAB]=false;setStatus("Opened "+h.name,"saved");
+    toast("Loaded "+h.name+" — edits will save back to it.");
+    refreshActive();
+  }catch(err){if(err&&err.name!=="AbortError")toast("Couldn't open that file.");}
+};
+
+$("saveBtn").onclick=async function(){
+  var json=currentJson();
+  if(SAVE_ENDPOINT){
+    try{
+      var r=await fetch(SAVE_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:json});
+      if(!r.ok)throw 0;
+      dirty[CURTAB]=false;setStatus("Saved to server","saved");toast("Saved "+currentFileName()+" to server.");
+    }catch(e){toast("Server save failed — downloading instead.");download(json);}
+    return;
+  }
+  if(canFS){
+    try{
+      if(!fileHandles[CURTAB]){
+        fileHandles[CURTAB]=await window.showSaveFilePicker({suggestedName:currentFileName(),types:[{description:"JSON",accept:{"application/json":[".json"]}}]});
+      }
+      var w=await fileHandles[CURTAB].createWritable();await w.write(json);await w.close();
+      dirty[CURTAB]=false;setStatus("Saved "+fileHandles[CURTAB].name,"saved");toast("Saved to "+fileHandles[CURTAB].name);
+    }catch(err){if(err&&err.name!=="AbortError"){toast("Save cancelled — downloading instead.");download(json);}}
+  }else{download(json);}
+};
+function download(json){
+  var blob=new Blob([json],{type:"application/json"}),a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download=currentFileName();a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+  dirty[CURTAB]=false;setStatus("Downloaded — replace your file","saved");
+}
+$("dlBtn").onclick=function(){download(currentJson());};
+$("copyLaserJson").onclick=function(){navigator.clipboard.writeText($("lJsonOut").textContent).then(function(){toast("JSON copied");});};
+$("copyPrintJson").onclick=function(){navigator.clipboard.writeText($("pJsonOut").textContent).then(function(){toast("JSON copied");});};
+$("copyNLJson").onclick=function(){navigator.clipboard.writeText($("nlJsonOut").textContent).then(function(){toast("JSON copied");});};
+
+function toast(msg){var t=$("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2200);}
+window.addEventListener("beforeunload",function(e){if(dirty.laser||dirty.print||dirty.nightlight){e.preventDefault();e.returnValue="";}});
+
+/* ======================================================
+   BOOT — load all three JSON files
+   ====================================================== */
+(function(){
+  var loaded=0, total=3;
+  function done(){loaded++;if(loaded>=total){setStatus(canFS?"Ready · open a file to enable direct save":"Ready","saved");}}
+  if(typeof fetch==="function"){
+    fetch("quote-config.json",{cache:"no-store"})
+      .then(function(r){if(!r.ok)throw 0;return r.json();})
+      .then(function(j){populateLaser(j);refreshActive();done();})
+      .catch(function(){populateLaser(DEFAULT_LASER);dirty.laser=true;done();refreshActive();});
+    fetch("print-quote-config.json",{cache:"no-store"})
+      .then(function(r){if(!r.ok)throw 0;return r.json();})
+      .then(function(j){populatePrint(j);done();})
+      .catch(function(){populatePrint(DEFAULT_PRINT);dirty.print=true;done();});
+    fetch("night-light-config.json",{cache:"no-store"})
+      .then(function(r){if(!r.ok)throw 0;return r.json();})
+      .then(function(j){populateNightLight(j);done();})
+      .catch(function(){populateNightLight(DEFAULT_NIGHTLIGHT);dirty.nightlight=true;done();});
+  }else{
+    populateLaser(DEFAULT_LASER);populatePrint(DEFAULT_PRINT);populateNightLight(DEFAULT_NIGHTLIGHT);
+    dirty.laser=true;dirty.print=true;dirty.nightlight=true;
+    setStatus("Defaults","dirty");refreshActive();
+  }
+})();
+</script>
+</body>
+</html>

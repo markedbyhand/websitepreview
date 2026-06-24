@@ -1,0 +1,46 @@
+{
+  "_comment": "Marked By Hand — quote tool settings. Edit here to retune every quote. NOTE: this file is served to the browser, so anyone can read it. Keep truly sensitive logic (final margins, cost) server-side once the pricing API is live. ownerKey only HIDES the rate card from customers; it is not real security.",
+  "theme": "mocha",
+  "business": {
+    "contactEmail": "hello@markedbyhand.com.au",
+    "formUrl": "",
+    "formKey": "",
+    "ownerKey": "mbh"
+  },
+  "pricing": {
+    "margin": 1.5,
+    "setup": 8,
+    "min": 15,
+    "safety": 15,
+    "voldisc": 2,
+    "voldiscMax": 40,
+    "machine": 1.5,
+    "polish": 0.015,
+    "transit": 0.03,
+    "score": 120,
+    "fillStd": 200,
+    "fillFine": 110,
+    "fillThr": 1.5,
+    "sheetW": 600,
+    "sheetH": 400,
+    "gap": 3,
+    "eff": 90
+  },
+  "grades": {
+    "offerDisplay": true,
+    "offerFunctional": true,
+    "displayName": "Display",
+    "functionalName": "Functional",
+    "whyFunctional": "If your piece is a template, jig, prototype, or anything where the cut edges won't be on show, you don't need flame-polished perfection. Functional grade skips the extra edge finishing and runs faster — the cut is just as accurate, the price is lower. Choose Display grade when the edges will be seen."
+  },
+  "materials": [
+    {"type": "Clear acrylic", "thick": 2, "sheet": 13, "fd": 18, "fw": 30, "lead": 2, "sheets": 10},
+    {"type": "Clear acrylic", "thick": 3, "sheet": 16, "fd": 12, "fw": 22, "lead": 3, "sheets": 10},
+    {"type": "Clear acrylic", "thick": 4.5, "sheet": 24, "fd": 8, "fw": 16, "lead": 3, "sheets": 10},
+    {"type": "Clear acrylic", "thick": 6, "sheet": 30, "fd": 5, "fw": 10, "lead": 4, "sheets": 10},
+    {"type": "Colour acrylic", "thick": 2, "sheet": 16, "fd": 16, "fw": 28, "lead": 2, "sheets": 10},
+    {"type": "Colour acrylic", "thick": 3, "sheet": 20, "fd": 11, "fw": 20, "lead": 3, "sheets": 10},
+    {"type": "Colour acrylic", "thick": 4.5, "sheet": 30, "fd": 7, "fw": 15, "lead": 3, "sheets": 10},
+    {"type": "Colour acrylic", "thick": 6, "sheet": 38, "fd": 5, "fw": 9, "lead": 4, "sheets": 10}
+  ]
+}
