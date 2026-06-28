@@ -28,7 +28,7 @@
   --ok:#5E8C6A;
   --warn:#C8892F;
   --op-cut:#C25E6E;
-  --op-shade:#A47864;
+  --op-shade:#1E9AAD;
   --op-line:#7A9A8B;
   /* texture */
   --grid:rgba(59,47,38,.055);
@@ -65,7 +65,7 @@ img{max-width:100%;display:block}
 .top-inner{display:flex;align-items:center;gap:18px;padding:13px 0}
 .brand{display:flex;align-items:center;gap:11px;flex:none}
 .brand:hover{text-decoration:none}
-.mark{width:30px;height:30px;flex:none;background:url("data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'><rect%20x='7'%20y='7'%20width='50'%20height='50'%20rx='13'%20fill='none'%20stroke='%23A47864'%20stroke-width='2.5'/><path%20d='M18%2028%20V18%20H28'%20fill='none'%20stroke='%23A47864'%20stroke-width='2.6'%20stroke-linecap='round'%20stroke-linejoin='round'/><path%20d='M40%2030%20V34%20M40%2046%20V50%20M30%2040%20H34%20M46%2040%20H50'%20fill='none'%20stroke='%23A47864'%20stroke-width='1.8'%20stroke-linecap='round'/><path%20d='M40%2033%20L42.24%2037.76%20L47%2040%20L42.24%2042.24%20L40%2047%20L37.76%2042.24%20L33%2040%20L37.76%2037.76%20Z'%20fill='%237A9A8B'/></svg>") center/contain no-repeat}
+.mark{width:30px;height:30px;flex:none;object-fit:contain}
 .mark::after{content:none}
 .brand b{font-family:var(--brand);font-weight:700;letter-spacing:.2px;color:var(--bone)}
 .brand small{display:block;color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.5px;text-transform:uppercase}

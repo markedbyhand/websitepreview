@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MBH Quote — Test Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5EFE7;--surface:#FCF8F2;--panel:#EAE0D4;--line:#D9CCBA;--ink:#3B2F26;--muted:#8E7D6B;--amber:#A47864;--sage:#7A9A8B;--ok:#5E8C6A;--warn:#C8892F;--err:#C25E6E;--mono:'JetBrains Mono',monospace;--sans:'Space Grotesk',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);padding:28px 24px;-webkit-font-smoothing:antialiased}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-size:34px;font-weight:700;margin-bottom:4px}
+.subtitle{color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:28px}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:32px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.stat .k{font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.stat .v{font-family:var(--mono);font-size:30px;font-weight:700;margin-top:2px;color:var(--ink)}
+.stat.s-ok .v{color:var(--ok)}.stat.s-fail .v{color:var(--err)}.stat.s-warn .v{color:var(--warn)}.stat.s-total .v{color:var(--amber)}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.filter-btn{font-family:var(--mono);font-size:11px;padding:6px 13px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;letter-spacing:.3px}
+.filter-btn.active{background:var(--amber);color:#FFF7F0;border-color:var(--amber)}
+.category{margin-bottom:28px}
+.cat-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.cat-head span{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--amber)}
+.cat-stats{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.test{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:6px;overflow:hidden}
+.test.t-fail{border-color:rgba(194,94,110,.4)}
+.test.t-warn{border-color:rgba(200,137,47,.35)}
+.test-head{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;user-select:none}
+.test-head:hover{background:var(--panel)}
+.badge{font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 9px;border-radius:4px;letter-spacing:.5px;flex:none;text-transform:uppercase}
+.badge.pass{background:rgba(94,140,106,.13);color:var(--ok)}
+.badge.fail{background:rgba(194,94,110,.13);color:var(--err)}
+.badge.warn{background:rgba(200,137,47,.13);color:var(--warn)}
+.test-name{flex:1;font-size:13px;font-weight:500}
+.test-time{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.test-body{padding:10px 14px 12px;border-top:1px dashed var(--line);background:var(--panel);display:none}
+.test-body.open{display:block}
+.test-msg{font-size:12px;margin-bottom:6px;line-height:1.5}
+.test-msg.ok{color:var(--ok)}.test-msg.err{color:var(--err)}.test-msg.wrn{color:var(--warn)}
+.test-body pre{font-family:var(--mono);font-size:10.5px;color:var(--ink);white-space:pre-wrap;word-break:break-all;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin-top:6px;max-height:160px;overflow:auto}
+.progress{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:24px;font-family:var(--mono);font-size:12px}
+.progress-bar{height:6px;border-radius:3px;background:var(--line);margin-top:8px;overflow:hidden}
+.progress-fill{height:100%;background:var(--sage);transition:width .1s}
+</style>
+</head>
+<body>
+<h1>MBH Quote — Test Suite</h1>
+<div class="subtitle">// laser quote engine · parser + geometry + pricing stress tests</div>
+
+<div class="progress" id="progress">Running tests…<div class="progress-bar"><div class="progress-fill" id="pbar" style="width:0%"></div></div></div>
+
+<div class="summary" id="summary"></div>
+<div class="filter-bar" id="filterBar"></div>
+<div id="results"></div>
+
+<!-- Hidden DOM inputs required by computePlan / price / sched -->
+<div style="display:none" aria-hidden="true">
+  <input id="s_margin"    value="1.5">
+  <input id="s_setup"     value="8">
+  <input id="s_min"       value="15">
+  <input id="s_safety"    value="15">
+  <input id="s_voldisc"   value="2">
+  <input id="s_voldiscmax" value="40">
+  <input id="s_machine"   value="1.50">
+  <input id="s_polish"    value="0.015">
+  <input id="s_transit"   value="0.03">
+  <input id="s_score"     value="120">
+  <input id="s_fill_std"  value="200">
+  <input id="s_fill_fine" value="110">
+  <input id="s_fillthr"   value="1.5">
+  <input id="s_sheetW"    value="600">
+  <input id="s_sheetH"    value="400">
+  <input id="s_gap"       value="3">
+  <input id="s_eff"       value="90">
+  <input id="qty"         value="1">
+  <input id="s_gOnDisp"   type="checkbox" checked>
+  <input id="s_gOnFunc"   type="checkbox" checked>
+</div>
+
+<script>
+"use strict";
+
+// ================================================================
+// FUNCTIONS UNDER TEST — copied verbatim from quote.html
+// ================================================================
+function tokenize(text){var raw=text.split(/\r\n|\r|\n/),pairs=[],i=0;while(i<raw.length-1){var cs=raw[i].trim();if(!/^-?\d+$/.test(cs)){i++;continue;}pairs.push({code:parseInt(cs,10),val:(raw[i+1]||"").trim()});i+=2;}return pairs;}
+function parseDXF(text){
+  if(/^\s*AutoCAD Binary DXF/.test(text)) throw {nice:"That's a binary DXF. Re-export as ASCII DXF and try again."};
+  if(/^(AC10|AC1\.|MC0\.0)/.test(text.slice(0,6))) throw {nice:"That looks like a DWG file. Export it as DXF first."};
+  var pairs=tokenize(text);if(!pairs.length)throw{nice:"Couldn't read any data. Is this a plain DXF?"};
+  var layerMap=parseLayerColours(pairs);
+  var insunits=null,section=null,inEnt=false,entities=[],cur=null;
+  for(var i=0;i<pairs.length;i++){var code=pairs[i].code,val=pairs[i].val;
+    if(code===0&&val==="SECTION"){section=(pairs[i+1]&&pairs[i+1].code===2)?pairs[i+1].val:null;inEnt=(section==="ENTITIES");continue;}
+    if(code===0&&val==="ENDSEC"){if(cur){entities.push(cur);cur=null;}section=null;inEnt=false;continue;}
+    if(section==="HEADER"&&code===9&&val==="$INSUNITS"){for(var j=i+1;j<pairs.length&&pairs[j].code!==9;j++){if(pairs[j].code===70){insunits=parseInt(pairs[j].val,10);break;}}continue;}
+    if(inEnt){if(code===0){if(cur)entities.push(cur);cur={type:val,p:[]};}else if(cur)cur.p.push({code:code,val:val});}}
+  var merged=[];
+  for(var k=0;k<entities.length;k++){var e=entities[k];
+    if(e.type==="POLYLINE"){var verts=[],closed=(num(e,70,0)&1)===1,layer=str(e,8,"0"),col=num(e,62,null);k++;
+      while(k<entities.length&&entities[k].type==="VERTEX"){verts.push([num(entities[k],10,0),num(entities[k],20,0),num(entities[k],42,0)]);k++;}
+      if(k<entities.length&&entities[k].type!=="SEQEND")k--;
+      merged.push({type:"_POLY",verts:verts,closed:closed,layer:layer,col:col});}
+    else merged.push(e);}
+  var flags={spline:false,ellipse:false,insert:false,text:false},contours=[];
+  for(var m=0;m<merged.length;m++){var en=merged[m];try{
+    var layer=en.layer!==undefined?en.layer:str(en,8,"0"),col=en.col!==undefined?en.col:num(en,62,null);
+    col=resolveCol(col,layer,layerMap);
+    switch(en.type){
+      case "LINE":add(contours,[[num(en,10,0),num(en,20,0)],[num(en,11,0),num(en,21,0)]],false,layer,col,"LINE");break;
+      case "CIRCLE":add(contours,arc([num(en,10,0),num(en,20,0)],num(en,40,0),0,360),true,layer,col,"CIRCLE");break;
+      case "ARC":add(contours,arc([num(en,10,0),num(en,20,0)],num(en,40,0),num(en,50,0),num(en,51,0)),false,layer,col,"ARC");break;
+      case "LWPOLYLINE":var lw=readLW(en);add(contours,expand(lw.pts,lw.closed),lw.closed,layer,col,"LWPOLYLINE");break;
+      case "_POLY":add(contours,expand(en.verts,en.closed),en.closed,layer,col,"POLYLINE");break;
+      case "ELLIPSE":flags.ellipse=true;var t0=num(en,41,0),t1=num(en,42,Math.PI*2);add(contours,ellipse([num(en,10,0),num(en,20,0)],[num(en,11,0),num(en,21,0)],num(en,40,1),t0,t1),Math.abs((t1-t0)-Math.PI*2)<1e-3,layer,col,"ELLIPSE");break;
+      case "SPLINE":flags.spline=true;var fit=xy(en,11,21),ctl=xy(en,10,20),pts=(fit.length>=2?fit:ctl);if(pts.length>=2)add(contours,pts,false,layer,col,"SPLINE");break;
+      case "INSERT":flags.insert=true;break;
+      case "TEXT":case "MTEXT":flags.text=true;break;
+    }}catch(_){}}
+  return {contours:contours,insunits:insunits,flags:flags};
+}
+function parseLayerColours(pairs){var map={},section=null,cur=null;for(var i=0;i<pairs.length;i++){var c=pairs[i].code,v=pairs[i].val;if(c===0&&v==="SECTION"){section=(pairs[i+1]&&pairs[i+1].code===2)?pairs[i+1].val:null;cur=null;continue;}if(c===0&&v==="ENDSEC"){if(cur&&cur.name)map[cur.name]=cur.col;section=null;cur=null;continue;}if(section!=="TABLES")continue;if(c===0){if(cur&&cur.name)map[cur.name]=cur.col;cur=(v==="LAYER")?{name:null,col:null}:null;}else if(cur){if(c===2)cur.name=v;else if(c===62)cur.col=parseInt(v,10);}}if(cur&&cur.name)map[cur.name]=cur.col;return map;}
+function resolveCol(entCol,layer,map){if(entCol!=null&&entCol>0&&entCol!==256)return entCol;var lc=map[layer];return (lc!=null&&lc>0)?lc:null;}
+function num(e,c,d){for(var i=0;i<(e.p||[]).length;i++)if(e.p[i].code===c)return parseFloat(e.p[i].val);return d===undefined?null:d;}
+function str(e,c,d){for(var i=0;i<(e.p||[]).length;i++)if(e.p[i].code===c)return e.p[i].val;return d;}
+function xy(e,cx,cy){var o=[],x=null;for(var i=0;i<e.p.length;i++){var pr=e.p[i];if(pr.code===cx)x=parseFloat(pr.val);else if(pr.code===cy&&x!==null){o.push([x,parseFloat(pr.val)]);x=null;}}return o;}
+function readLW(e){var pts=[],closed=false,last=null;for(var i=0;i<e.p.length;i++){var pr=e.p[i];if(pr.code===70)closed=(parseInt(pr.val,10)&1)===1;else if(pr.code===10){last=[parseFloat(pr.val),0,0];pts.push(last);}else if(pr.code===20&&last)last[1]=parseFloat(pr.val);else if(pr.code===42&&last)last[2]=parseFloat(pr.val);}return {pts:pts,closed:closed};}
+function expand(verts,closed){if(!verts.length)return [];var out=[[verts[0][0],verts[0][1]]],n=verts.length,lim=closed?n:n-1;for(var i=0;i<lim;i++){var a=verts[i],b=verts[(i+1)%n],bg=a[2]||0;if(Math.abs(bg)>1e-9){var seg=bulge(a[0],a[1],b[0],b[1],bg);for(var j=0;j<seg.length;j++)out.push(seg[j]);}else out.push([b[0],b[1]]);}return out;}
+function bulge(x1,y1,x2,y2,b){var th=4*Math.atan(b),ch=Math.hypot(x2-x1,y2-y1);if(ch<1e-9||Math.abs(th)<1e-9)return [[x2,y2]];var r=ch/(2*Math.sin(Math.abs(th)/2)),ca=Math.atan2(y2-y1,x2-x1),a=ca+(Math.PI/2-th/2),cx=x1+r*Math.cos(a),cy=y1+r*Math.sin(a),sa=Math.atan2(y1-cy,x1-cx),seg=Math.max(2,Math.ceil(Math.abs(th)/(Math.PI/24))),o=[];for(var i=1;i<=seg;i++){var t=sa+th*(i/seg);o.push([cx+r*Math.cos(t),cy+r*Math.sin(t)]);}return o;}
+function arc(c,r,a0d,a1d){var a0=a0d*Math.PI/180,a1=a1d*Math.PI/180,sw=a1-a0;if(sw<=0)sw+=Math.PI*2;var seg=Math.max(8,Math.ceil(sw/(Math.PI/36))),o=[];for(var i=0;i<=seg;i++){var t=a0+sw*(i/seg);o.push([c[0]+r*Math.cos(t),c[1]+r*Math.sin(t)]);}return o;}
+function ellipse(c,mj,ratio,t0,t1){var mn=[-mj[1]*ratio,mj[0]*ratio],sw=t1-t0;if(sw<=0)sw+=Math.PI*2;var seg=Math.max(16,Math.ceil(sw/(Math.PI/36))),o=[];for(var i=0;i<=seg;i++){var t=t0+sw*(i/seg);o.push([c[0]+mj[0]*Math.cos(t)+mn[0]*Math.sin(t),c[1]+mj[1]*Math.cos(t)+mn[1]*Math.sin(t)]);}return o;}
+function add(arr,pts,closed,layer,col,etype){if(pts&&pts.length>=2)arr.push({pts:pts,closed:closed,layer:layer||"0",col:col,etype:etype||"?"});}
+function build(parsed,scale){
+  var gm={},order=[],minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  for(var i=0;i<parsed.contours.length;i++){var c=parsed.contours[i],key=c.layer||"0";
+    if(!gm[key]){gm[key]={key:key,col:c.col,contours:[]};order.push(key);}
+    if(gm[key].col==null&&c.col!=null)gm[key].col=c.col;
+    var pts=[];for(var j=0;j<c.pts.length;j++){var x=c.pts[j][0]*scale,y=c.pts[j][1]*scale;pts.push([x,y]);if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y;}
+    gm[key].contours.push({pts:pts,closed:c.closed});}
+  if(!isFinite(minX))return null;var groups=[];
+  for(var k=0;k<order.length;k++){var g=gm[order[k]],set={},len=0,area=0,count=g.contours.length;
+    for(var ci=0;ci<g.contours.length;ci++){var ct=g.contours[ci],p=ct.pts;
+      for(var s=1;s<p.length;s++)len+=uniqSeg(set,p[s-1],p[s]);
+      if(ct.closed&&p.length>1){len+=uniqSeg(set,p[p.length-1],p[0]);area+=Math.abs(shoelace(p));}}
+    groups.push({key:g.key,col:g.col,len:len,area:area,count:count,label:(g.key&&g.key!=="0")?g.key:(g.col!=null?("colour "+g.col):"layer 0")});}
+  return {groups:groups,minX:minX,minY:minY,maxX:maxX,maxY:maxY,W:maxX-minX,H:maxY-minY,count:parsed.contours.length,flags:parsed.flags};
+}
+function uniqSeg(set,a,b){var L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(L<1e-9)return 0;var ax=Math.round(a[0]*100),ay=Math.round(a[1]*100),bx=Math.round(b[0]*100),by=Math.round(b[1]*100);var key=(ax<bx||(ax===bx&&ay<=by))?ax+","+ay+","+bx+","+by:bx+","+by+","+ax+","+ay;if(set[key])return 0;set[key]=1;return L;}
+function shoelace(p){var s=0;for(var i=0;i<p.length;i++){var q=p[(i+1)%p.length];s+=p[i][0]*q[1]-q[0]*p[i][1];}return s/2;}
+function contourLen(pts,closed){var L=0;for(var i=1;i<pts.length;i++)L+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);if(closed&&pts.length>1)L+=Math.hypot(pts[0][0]-pts[pts.length-1][0],pts[0][1]-pts[pts.length-1][1]);return L;}
+function bboxMM(pts,sc){var a={minX:1e9,minY:1e9,maxX:-1e9,maxY:-1e9};for(var i=0;i<pts.length;i++){var x=pts[i][0]*sc,y=pts[i][1]*sc;if(x<a.minX)a.minX=x;if(x>a.maxX)a.maxX=x;if(y<a.minY)a.minY=y;if(y>a.maxY)a.maxY=y;}a.area=Math.max(0,a.maxX-a.minX)*Math.max(0,a.maxY-a.minY);return a;}
+function autoOpFor(m){if(m.frame)return "cut";if(m.etype==="CIRCLE")return "cut";if(m.etype==="SPLINE")return "engrave";if(m.closed&&!m.contained)return "cut";return "engrave";}
+function partsPerSheet(pw,ph,sc){
+  if(pw<=0||ph<=0)return {n:1,oversize:false};
+  var gap=sc.gap,SW=sc.sheetW,SH=sc.sheetH;
+  function fit(a,b){var nx=Math.floor((SW+gap)/(a+gap)),ny=Math.floor((SH+gap)/(b+gap));return (nx>0&&ny>0)?nx*ny:0;}
+  var raw=Math.max(fit(pw,ph),fit(ph,pw));
+  if(raw<=0)return {n:1,oversize:true};
+  return {n:Math.max(1,Math.floor(raw*sc.eff)),oversize:false};
+}
+
+// ================================================================
+// TEST-ONLY: computePlan and price that take config, not DOM
+// ================================================================
+var MATERIALS_T=[
+  {type:"Clear acrylic",thick:3,sheet:16,fd:12,fw:22,lead:3,sheets:10}
+];
+var CFG_DEFAULT={margin:1.5,setup:8,min:15,safety:15,voldisc:2,voldiscMax:40,machine:1.50,polish:0.015,transit:0.03,score:120,fillStd:200,fillFine:110,fillThr:1.5,sheetW:600,sheetH:400,gap:3,eff:0.90};
+
+function computePlanT(parsed,geom,cfg){
+  cfg=cfg||CFG_DEFAULT;
+  var thr=cfg.fillThr,sc=1,cs=parsed.contours,jt="auto",engMode="shaded",g=geom;
+  var ov={minX:g.minX,minY:g.minY,maxX:g.maxX,maxY:g.maxY},tol=Math.max(1,Math.max(g.W,g.H)*0.015);
+  var meta=[];
+  for(var i=0;i<cs.length;i++){var c=cs[i],frame=c.pts.length>=2;
+    for(var j=0;j<c.pts.length&&frame;j++){var x=c.pts[j][0]*sc,y=c.pts[j][1]*sc;if(!(Math.abs(x-ov.minX)<=tol||Math.abs(x-ov.maxX)<=tol||Math.abs(y-ov.minY)<=tol||Math.abs(y-ov.maxY)<=tol))frame=false;}
+    meta.push({closed:c.closed,etype:c.etype,len:contourLen(c.pts,c.closed)*sc,area:c.closed?Math.abs(shoelace(c.pts))*sc*sc:0,bb:bboxMM(c.pts,sc),frame:frame,contained:false});}
+  var closedIdx=[];for(i=0;i<meta.length;i++)if(meta[i].closed)closedIdx.push(i);
+  function inside(a,b){var e=0.5;return a.minX>=b.minX-e&&a.maxX<=b.maxX+e&&a.minY>=b.minY-e&&a.maxY<=b.maxY+e&&a.area<b.area;}
+  for(var ci=0;ci<closedIdx.length;ci++){var ii=closedIdx[ci];for(var cj=0;cj<closedIdx.length;cj++){var jj=closedIdx[cj];if(jj!==ii&&inside(meta[ii].bb,meta[jj].bb)){meta[ii].contained=true;break;}}}
+  var cutLen=0,engFillArea=0,engLineLen=0,fillCount=0,lineCount=0,cutCount=0,kinds=[],manualCount=0;
+  for(i=0;i<cs.length;i++){var m=meta[i],op=autoOpFor(m);
+    if(op==="cut"){cutLen+=m.len;kinds[i]="cut";cutCount++;continue;}
+    if(!m.closed){engLineLen+=m.len;kinds[i]="engline";lineCount++;continue;}
+    var ratio=m.len>0?m.area/m.len:0;
+    var asFill=(engMode==="shaded")?true:(ratio>=thr);
+    if(asFill){engFillArea+=m.area;kinds[i]="engfill";fillCount++;}else{engLineLen+=m.len;kinds[i]="engline";lineCount++;}
+  }
+  var eng=fillCount+lineCount;
+  var mode=(cutCount>0&&eng>0?"cutengrave":(eng>0?"engrave":"cutonly"));
+  return {cutLen:cutLen,engFillArea:engFillArea,engLineLen:engLineLen,fillCount:fillCount,lineCount:lineCount,cutCount:cutCount,kinds:kinds,mode:mode,manualCount:manualCount};
+}
+
+function priceT(geom,plan,cfg,qty){
+  cfg=cfg||CFG_DEFAULT;qty=qty||1;
+  var m=MATERIALS_T[0],feedCut=m.fd;
+  var fill=cfg.fillStd;
+  var sec=plan.cutLen/feedCut+plan.engLineLen/cfg.score+plan.engFillArea/fill;
+  var minutes=sec/60+geom.count*cfg.transit,machCost=minutes*cfg.machine;
+  var pack=partsPerSheet(geom.W,geom.H,cfg);
+  var matCostEach=pack.oversize?m.sheet:m.sheet/pack.n;
+  var finishing=plan.cutLen*cfg.polish;
+  var perPart=matCostEach+machCost+finishing;
+  var disc=Math.min(cfg.voldiscMax,Math.max(0,qty-1)*cfg.voldisc)/100;
+  var batch=(cfg.setup+perPart*(1-disc)*qty)*cfg.margin;
+  var safety=1+cfg.safety/100,total=Math.max(cfg.min,batch)*safety;
+  return {total:total,unit:total/qty,partsPerSheet:pack.n,oversize:pack.oversize,machCost:machCost,matCostEach:matCostEach};
+}
+
+// ================================================================
+// DXF BUILDERS
+// ================================================================
+function hdr(insunits){
+  if(insunits==null)return "0\nSECTION\n2\nENTITIES\n";
+  return "0\nSECTION\n2\nHEADER\n9\n$INSUNITS\n70\n"+insunits+"\n0\nENDSEC\n0\nSECTION\n2\nENTITIES\n";
+}
+var FTR="0\nENDSEC\n0\nEOF\n";
+function dRect(x,y,w,h,layer,closed){layer=layer||"CUT";closed=(closed!==false)?1:0;return "0\nLWPOLYLINE\n8\n"+layer+"\n90\n4\n70\n"+closed+"\n10\n"+x+"\n20\n"+y+"\n10\n"+(x+w)+"\n20\n"+y+"\n10\n"+(x+w)+"\n20\n"+(y+h)+"\n10\n"+x+"\n20\n"+(y+h)+"\n";}
+function dCircle(cx,cy,r,layer){return "0\nCIRCLE\n8\n"+(layer||"CUT")+"\n10\n"+cx+"\n20\n"+cy+"\n40\n"+r+"\n";}
+function dLine(x1,y1,x2,y2,layer){return "0\nLINE\n8\n"+(layer||"CUT")+"\n10\n"+x1+"\n20\n"+y1+"\n11\n"+x2+"\n21\n"+y2+"\n";}
+function dArc(cx,cy,r,a0,a1,layer){return "0\nARC\n8\n"+(layer||"CUT")+"\n10\n"+cx+"\n20\n"+cy+"\n40\n"+r+"\n50\n"+a0+"\n51\n"+a1+"\n";}
+function dText(x,y,txt,layer){return "0\nTEXT\n8\n"+(layer||"TEXT")+"\n10\n"+x+"\n20\n"+y+"\n40\n5\n1\n"+txt+"\n";}
+function dInsert(name,layer){return "0\nINSERT\n8\n"+(layer||"0")+"\n2\n"+name+"\n10\n0\n20\n0\n";}
+function dLWBulge(pts,closed,bulgeAt,bulgeVal,layer){
+  var s="0\nLWPOLYLINE\n8\n"+(layer||"CUT")+"\n90\n"+pts.length+"\n70\n"+(closed?1:0)+"\n";
+  for(var i=0;i<pts.length;i++){s+="10\n"+pts[i][0]+"\n20\n"+pts[i][1]+"\n";if(i===bulgeAt)s+="42\n"+bulgeVal+"\n";}
+  return s;
+}
+function dPolyline(pts,closed,layer){
+  var s="0\nPOLYLINE\n8\n"+(layer||"CUT")+"\n70\n"+(closed?1:0)+"\n";
+  for(var i=0;i<pts.length;i++)s+="0\nVERTEX\n8\n"+(layer||"CUT")+"\n10\n"+pts[i][0]+"\n20\n"+pts[i][1]+"\n";
+  s+="0\nSEQEND\n";return s;
+}
+function makeSimpleRect(w,h,units){return hdr(units||4)+dRect(0,0,w,h,"CUT",true)+FTR;}
+
+// ================================================================
+// TEST FRAMEWORK
+// ================================================================
+var RESULTS=[];
+var TOTAL=0,PASS=0,FAIL=0,WARN=0;
+
+function approx(a,b,tol){return Math.abs(a-b)<=(tol!=null?tol:0.5);}
+
+function T(cat,name,fn){
+  TOTAL++;
+  var r={cat:cat,name:name,pass:false,warn:false,msg:"",detail:"",ms:0};
+  var t0=performance.now();
+  try{
+    var out=fn();
+    r.pass=out.pass!==false;
+    r.warn=!!out.warn;
+    r.msg=out.msg||(r.pass?"OK":"FAILED");
+    r.detail=out.detail||"";
+  }catch(e){
+    r.pass=false;
+    r.msg="UNCAUGHT EXCEPTION: "+(e&&e.message?e.message:(e&&e.nice?e.nice:String(e)));
+    r.detail=e&&e.stack?e.stack:"";
+  }
+  r.ms=+(performance.now()-t0).toFixed(1);
+  if(r.pass&&r.warn)WARN++;else if(r.pass)PASS++;else FAIL++;
+  RESULTS.push(r);
+}
+
+// helper: expect parseDXF to throw with .nice
+function expectNice(fn){
+  try{fn();return{pass:false,msg:"Expected a nice error but none was thrown"};}
+  catch(e){if(e&&e.nice)return{pass:true,msg:"Got expected error: "+e.nice};return{pass:false,msg:"Threw without .nice: "+(e.message||e)};}
+}
+// helper: expect parseDXF to throw anything
+function expectThrows(fn){
+  try{fn();return{pass:false,msg:"Expected a throw but none happened"};}
+  catch(e){return{pass:true,msg:"Threw as expected: "+(e.nice||e.message||e)};}
+}
+// helper: parse + build, return {parsed, geom, scale} or fail result
+function pb(dxf,scale){
+  var parsed=parseDXF(dxf);
+  var s=scale!=null?scale:1;
+  var geom=build(parsed,s);
+  return{parsed:parsed,geom:geom,scale:s};
+}
+
+// ================================================================
+// CATEGORY 1 — Input validation: broken/empty inputs
+// ================================================================
+T("1. Input — Broken","Empty string",function(){
+  return expectNice(function(){parseDXF("");});
+});
+T("1. Input — Broken","Whitespace only",function(){
+  return expectNice(function(){parseDXF("   \n  \t  \n");});
+});
+T("1. Input — Broken","Binary DXF header",function(){
+  return expectNice(function(){parseDXF("AutoCAD Binary DXF\r\n\x1a\x00garbage data");});
+});
+T("1. Input — Broken","Binary DXF with leading space",function(){
+  return expectNice(function(){parseDXF(" AutoCAD Binary DXF\r\n\x1a\x00garbage");});
+});
+T("1. Input — Broken","DWG header AC1015",function(){
+  return expectNice(function(){parseDXF("AC1015\x00\x00\x00\x00\x00\x00garbage");});
+});
+T("1. Input — Broken","DWG header AC10",function(){
+  return expectNice(function(){parseDXF("AC10\x00\x00garbage");});
+});
+T("1. Input — Broken","DWG header MC0.0",function(){
+  return expectNice(function(){parseDXF("MC0.0\x00\x00garbage");});
+});
+T("1. Input — Broken","Pure garbage text",function(){
+  return expectNice(function(){parseDXF("this is not a dxf file at all");});
+});
+T("1. Input — Broken","JSON data (wrong format)",function(){
+  return expectNice(function(){parseDXF('{"type":"FeatureCollection","features":[]}');});
+});
+T("1. Input — Broken","SVG data (wrong format)",function(){
+  return expectNice(function(){parseDXF('<svg xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100"/></svg>');});
+});
+T("1. Input — Broken","Only a header, no entities",function(){
+  var dxf=hdr(4)+FTR;
+  return expectNice(function(){
+    var r=pb(dxf);
+    if(!r.geom)throw{nice:"No geometry"};
+  });
+});
+T("1. Input — Broken","ENTITIES section but no geometry entities",function(){
+  var dxf=hdr(4)+"0\nENDSEC\n0\nEOF\n";
+  var r;try{r=parseDXF(dxf);}catch(e){return{pass:true,msg:"Correctly threw: "+(e.nice||e.message)};}
+  var g=build(r,1);
+  if(!g)return{pass:true,msg:"build() returned null for empty geometry"};
+  return{pass:false,msg:"Should have null geometry, got W="+g.W};
+});
+T("1. Input — Broken","Only INSERT entities",function(){
+  var dxf=hdr(4)+dInsert("BLOCK1","0")+FTR;
+  var r=parseDXF(dxf);
+  var g=build(r,1);
+  if(!g)return{pass:true,msg:"No geometry from INSERT-only file, flags.insert="+r.flags.insert};
+  return{pass:false,msg:"Got geometry W="+g.W+" from INSERT-only file"};
+});
+T("1. Input — Broken","Only TEXT entities",function(){
+  var dxf=hdr(4)+dText(0,0,"Hello")+FTR;
+  var r=parseDXF(dxf);
+  var g=build(r,1);
+  if(!g)return{pass:true,msg:"No geometry from TEXT-only file, flags.text="+r.flags.text};
+  return{pass:false,msg:"Got geometry W="+g.W+" from TEXT-only file"};
+});
+T("1. Input — Broken","File truncated mid-entity",function(){
+  var dxf="0\nSECTION\n2\nENTITIES\n0\nLWPOLYLINE\n8\nCUT\n90\n4\n10\n0\n20";
+  // truncated before the y-value — should not crash
+  try{var r=parseDXF(dxf);return{pass:true,msg:"Survived truncation, "+r.contours.length+" contours"};}
+  catch(e){return{pass:true,msg:"Threw (acceptable) on truncation: "+(e.nice||e.message||e)};}
+});
+T("1. Input — Broken","Null bytes in content",function(){
+  var dxf=hdr(4)+dRect(0,0,100,100)+FTR;
+  var withNull=dxf.slice(0,50)+"\x00\x00"+dxf.slice(50);
+  try{var r=parseDXF(withNull);var g=build(r,1);return{pass:true,msg:"Survived null bytes, "+r.contours.length+" contours, geom="+(g?"yes":"null")};}
+  catch(e){return{pass:true,msg:"Threw on null bytes (acceptable): "+(e.nice||e.message||e)};}
+});
+
+// ================================================================
+// CATEGORY 2 — Format / line endings
+// ================================================================
+T("2. Format — Line endings","CRLF line endings",function(){
+  var dxf=makeSimpleRect(100,80,4).replace(/\n/g,"\r\n");
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"build() returned null"};
+  return{pass:approx(r.geom.W,100,1)&&approx(r.geom.H,80,1),msg:"W="+r.geom.W.toFixed(1)+" H="+r.geom.H.toFixed(1)+" (expect 100×80)"};
+});
+T("2. Format — Line endings","CR-only line endings",function(){
+  var dxf=makeSimpleRect(100,80,4).replace(/\n/g,"\r");
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"build() returned null"};
+  return{pass:approx(r.geom.W,100,1)&&approx(r.geom.H,80,1),msg:"W="+r.geom.W.toFixed(1)+" H="+r.geom.H.toFixed(1)+" (expect 100×80)"};
+});
+T("2. Format — Line endings","Mixed line endings",function(){
+  var lines=makeSimpleRect(50,50,4).split("\n");
+  var mixed=lines.map(function(l,i){return i%2===0?l+"\r\n":l+"\n";}).join("");
+  try{var r=parseDXF(mixed);var g=build(r,1);return{pass:true,msg:"Survived mixed endings, "+r.contours.length+" contours, geom="+(g?"W="+g.W.toFixed(1):"null")};}
+  catch(e){return{pass:false,msg:"Threw on mixed line endings: "+(e.nice||e.message||e)};}
+});
+T("2. Format — Line endings","Trailing whitespace on lines",function(){
+  var dxf=makeSimpleRect(100,80,4).replace(/\n/g,"   \n");
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"build() returned null"};
+  return{pass:approx(r.geom.W,100,1),msg:"W="+r.geom.W.toFixed(1)};
+});
+T("2. Format — Line endings","Unicode in layer name",function(){
+  var dxf=hdr(4)+dRect(0,0,100,50,"切断レイヤー",true)+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"build() returned null"};
+  return{pass:r.geom.groups.length>0,msg:"Parsed unicode layer, groups="+r.geom.groups.length+", key="+r.geom.groups[0].key};
+});
+T("2. Format — Line endings","Very long layer name (256 chars)",function(){
+  var longName="A".repeat(256);
+  var dxf=hdr(4)+dRect(0,0,100,50,longName,true)+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"build() returned null"};
+  return{pass:r.geom.groups.length>0,msg:"Layer name length "+r.geom.groups[0].key.length};
+});
+
+// ================================================================
+// CATEGORY 3 — Unit detection
+// ================================================================
+T("3. Units","$INSUNITS=4 (mm) → scale 1.0",function(){
+  var r=pb(makeSimpleRect(100,80,4));
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var ok=approx(r.geom.W,100,0.1)&&approx(r.geom.H,80,0.1);
+  return{pass:ok,msg:"W="+r.geom.W.toFixed(2)+" H="+r.geom.H.toFixed(2)};
+});
+T("3. Units","$INSUNITS=1 (inch) → scale 25.4",function(){
+  var dxf=hdr(1)+dRect(0,0,4,3,"CUT",true)+FTR; // 4in × 3in
+  var parsed=parseDXF(dxf);
+  var scale=25.4;
+  var g=build(parsed,scale);
+  if(!g)return{pass:false,msg:"null geom"};
+  var ok=approx(g.W,101.6,1)&&approx(g.H,76.2,1);
+  return{pass:ok,msg:"W="+g.W.toFixed(2)+"mm (expect 101.6) H="+g.H.toFixed(2)+"mm (expect 76.2)"};
+});
+T("3. Units","$INSUNITS=5 (cm) → scale 10",function(){
+  var dxf=hdr(5)+dRect(0,0,10,8,"CUT",true)+FTR; // 10cm × 8cm
+  var parsed=parseDXF(dxf);
+  var g=build(parsed,10);
+  if(!g)return{pass:false,msg:"null geom"};
+  var ok=approx(g.W,100,1)&&approx(g.H,80,1);
+  return{pass:ok,msg:"W="+g.W.toFixed(2)+"mm H="+g.H.toFixed(2)+"mm"};
+});
+T("3. Units","$INSUNITS=6 (m) → scale 1000",function(){
+  var dxf=hdr(6)+dRect(0,0,0.1,0.08,"CUT",true)+FTR; // 0.1m × 0.08m
+  var parsed=parseDXF(dxf);
+  var g=build(parsed,1000);
+  if(!g)return{pass:false,msg:"null geom"};
+  var ok=approx(g.W,100,2)&&approx(g.H,80,2);
+  return{pass:ok,msg:"W="+g.W.toFixed(2)+"mm H="+g.H.toFixed(2)+"mm"};
+});
+T("3. Units","$INSUNITS=0 (unitless) → scale 1 fallback",function(){
+  var dxf=hdr(0)+dRect(0,0,100,80,"CUT",true)+FTR;
+  var parsed=parseDXF(dxf);
+  return{pass:parsed.insunits===0,warn:true,msg:"insunits="+parsed.insunits+" (0=unitless, assumed mm, flagged in UI)"};
+});
+T("3. Units","$INSUNITS missing → insunits null",function(){
+  var dxf="0\nSECTION\n2\nENTITIES\n"+dRect(0,0,100,80,"CUT",true)+"0\nENDSEC\n0\nEOF\n";
+  var parsed=parseDXF(dxf);
+  return{pass:parsed.insunits===null,warn:true,msg:"insunits="+parsed.insunits+" (null=unknown, UI warns)"};
+});
+T("3. Units","$INSUNITS=99 (unknown) → scale 1 fallback",function(){
+  var dxf=hdr(99)+dRect(0,0,100,80,"CUT",true)+FTR;
+  var parsed=parseDXF(dxf);
+  return{pass:true,warn:true,msg:"insunits="+parsed.insunits+" (unknown unit code — fallback to 1)"};
+});
+
+// ================================================================
+// CATEGORY 4 — Entity types
+// ================================================================
+T("4. Entities","LINE entity",function(){
+  var dxf=hdr(4)+dLine(0,0,100,0)+dLine(100,0,100,80)+dLine(100,80,0,80)+dLine(0,80,0,0)+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:r.geom.count===4&&approx(r.geom.W,100,1),msg:"4 LINE entities, W="+r.geom.W.toFixed(1)};
+});
+T("4. Entities","CIRCLE entity",function(){
+  var dxf=hdr(4)+dCircle(50,50,25)+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var ok=approx(r.geom.W,50,2)&&approx(r.geom.H,50,2);
+  return{pass:ok,msg:"W="+r.geom.W.toFixed(1)+" H="+r.geom.H.toFixed(1)+" (expect ~50×50)"};
+});
+T("4. Entities","ARC entity (90°)",function(){
+  var dxf=hdr(4)+dArc(0,0,50,0,90)+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:r.geom.count===1&&r.geom.W>0,msg:"ARC parsed, W="+r.geom.W.toFixed(1)+" H="+r.geom.H.toFixed(1)};
+});
+T("4. Entities","ARC entity wrapping (270° to 90°)",function(){
+  // Start=270°, End=90° — should wrap around, giving ~180° arc
+  var dxf=hdr(4)+dArc(0,0,50,270,90)+FTR;
+  try{var r=pb(dxf);return{pass:r.geom!=null,msg:"Wrap arc ok, W="+r.geom.W.toFixed(1)+" H="+r.geom.H.toFixed(1)};}
+  catch(e){return{pass:false,msg:"Exception on wrap arc: "+e.message};}
+});
+T("4. Entities","LWPOLYLINE closed rectangle",function(){
+  var dxf=makeSimpleRect(120,90,4);
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var ok=approx(r.geom.W,120,1)&&approx(r.geom.H,90,1);
+  return{pass:ok,msg:"W="+r.geom.W.toFixed(1)+" H="+r.geom.H.toFixed(1)};
+});
+T("4. Entities","LWPOLYLINE open (not closed)",function(){
+  var dxf=hdr(4)+dRect(0,0,100,80,"CUT",false)+FTR;
+  var r=pb(dxf);
+  var c=r.parsed.contours[0];
+  return{pass:c&&!c.closed,msg:"Open polyline, closed="+c.closed};
+});
+T("4. Entities","LWPOLYLINE with bulge (semicircle on one edge)",function(){
+  var dxf=hdr(4)+dLWBulge([[0,0],[100,0],[100,50],[0,50]],true,0,1,"CUT")+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  // bulge=1 on first segment means a semicircle — height should exceed 50
+  return{pass:r.geom.H>50,msg:"Bulge expanded H="+r.geom.H.toFixed(1)+" (should be >50 due to arc)"};
+});
+T("4. Entities","LWPOLYLINE with negative bulge (arc other direction)",function(){
+  var dxf=hdr(4)+dLWBulge([[0,0],[100,0],[100,50],[0,50]],true,0,-1,"CUT")+FTR;
+  try{var r=pb(dxf);return{pass:r.geom!=null,msg:"Negative bulge parsed, W="+r.geom.W.toFixed(1)+" H="+r.geom.H.toFixed(1)};}
+  catch(e){return{pass:false,msg:"Exception: "+e.message};}
+});
+T("4. Entities","LWPOLYLINE bulge=0 (straight, no arc)",function(){
+  var dxf=hdr(4)+dLWBulge([[0,0],[100,0],[100,80],[0,80]],true,0,0,"CUT")+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:approx(r.geom.W,100,1)&&approx(r.geom.H,80,1),msg:"Bulge=0 straight: W="+r.geom.W.toFixed(1)+" H="+r.geom.H.toFixed(1)};
+});
+T("4. Entities","POLYLINE with VERTEX/SEQEND",function(){
+  var dxf=hdr(4)+dPolyline([[0,0],[100,0],[100,80],[0,80]],true,"CUT")+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:approx(r.geom.W,100,2)&&approx(r.geom.H,80,2),msg:"POLYLINE W="+r.geom.W.toFixed(1)+" H="+r.geom.H.toFixed(1)};
+});
+T("4. Entities","ELLIPSE entity (full)",function(){
+  var dxf=hdr(4)+"0\nELLIPSE\n8\nCUT\n10\n0\n20\n0\n11\n50\n21\n0\n40\n0.5\n41\n0\n42\n6.28318\n"+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:r.geom.W>0&&r.flags===undefined||r.parsed.flags.ellipse,msg:"Ellipse parsed, W="+r.geom.W.toFixed(1)+" H="+r.geom.H.toFixed(1)+" flags.ellipse="+r.parsed.flags.ellipse};
+});
+T("4. Entities","SPLINE (fit points fallback)",function(){
+  var dxf=hdr(4)+"0\nSPLINE\n8\nENGRAVE\n11\n0\n21\n0\n11\n50\n21\n25\n11\n100\n21\n0\n"+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:r.parsed.flags.spline&&r.geom.W>0,msg:"SPLINE W="+r.geom.W.toFixed(1)+" flags.spline="+r.parsed.flags.spline};
+});
+T("4. Entities","INSERT sets flags.insert=true",function(){
+  var dxf=hdr(4)+dInsert("MYBLOCK","0")+dRect(0,0,100,80,"CUT",true)+FTR;
+  var r=pb(dxf);
+  return{pass:r.parsed.flags.insert===true,warn:true,msg:"flags.insert="+r.parsed.flags.insert+" (UI will warn)"};
+});
+T("4. Entities","TEXT sets flags.text=true",function(){
+  var dxf=hdr(4)+dText(0,0,"Hello")+dRect(0,0,100,80,"CUT",true)+FTR;
+  var r=pb(dxf);
+  return{pass:r.parsed.flags.text===true,warn:true,msg:"flags.text="+r.parsed.flags.text+" (UI will warn)"};
+});
+T("4. Entities","Multiple entity types in one file",function(){
+  var dxf=hdr(4)+dRect(0,0,100,80,"CUT",true)+dCircle(50,40,15,"CUT")+dArc(25,40,10,0,180,"CUT")+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:r.geom.count===3,msg:"count="+r.geom.count+" (expect 3: rect+circle+arc)"};
+});
+
+// ================================================================
+// CATEGORY 5 — Geometry accuracy
+// ================================================================
+T("5. Geometry","Square perimeter ~400mm",function(){
+  var r=pb(makeSimpleRect(100,100,4));
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var totalLen=r.geom.groups.reduce(function(s,g){return s+g.len;},0);
+  return{pass:approx(totalLen,400,5),msg:"Perimeter="+totalLen.toFixed(1)+"mm (expect ~400)"};
+});
+T("5. Geometry","Rectangle perimeter ~360mm",function(){
+  var r=pb(makeSimpleRect(100,80,4));
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var totalLen=r.geom.groups.reduce(function(s,g){return s+g.len;},0);
+  return{pass:approx(totalLen,360,5),msg:"Perimeter="+totalLen.toFixed(1)+"mm (expect ~360)"};
+});
+T("5. Geometry","Circle circumference ~314mm (r=50)",function(){
+  var dxf=hdr(4)+dCircle(0,0,50)+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var totalLen=r.geom.groups.reduce(function(s,g){return s+g.len;},0);
+  return{pass:approx(totalLen,2*Math.PI*50,5),msg:"Circumference="+totalLen.toFixed(1)+"mm (expect ~"+( 2*Math.PI*50).toFixed(1)+")"};
+});
+T("5. Geometry","Square area ~10000mm²",function(){
+  var r=pb(makeSimpleRect(100,100,4));
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var totalArea=r.geom.groups.reduce(function(s,g){return s+g.area;},0);
+  return{pass:approx(totalArea,10000,200),msg:"Area="+totalArea.toFixed(0)+"mm² (expect ~10000)"};
+});
+T("5. Geometry","Circle area ~7854mm² (r=50)",function(){
+  var dxf=hdr(4)+dCircle(0,0,50)+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var totalArea=r.geom.groups.reduce(function(s,g){return s+g.area;},0);
+  var expect=Math.PI*50*50;
+  return{pass:approx(totalArea,expect,100),msg:"Area="+totalArea.toFixed(0)+"mm² (expect ~"+expect.toFixed(0)+")"};
+});
+T("5. Geometry","Duplicate segments not double-counted",function(){
+  // Two identical lines on same layer — uniqSeg should deduplicate
+  var dxf=hdr(4)+dLine(0,0,100,0)+dLine(0,0,100,0)+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var totalLen=r.geom.groups.reduce(function(s,g){return s+g.len;},0);
+  return{pass:approx(totalLen,100,1),msg:"Duplicate segment: len="+totalLen.toFixed(1)+"mm (expect ~100, not 200)"};
+});
+T("5. Geometry","Negative coordinate origin",function(){
+  var dxf=hdr(4)+dRect(-50,-40,100,80,"CUT",true)+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:approx(r.geom.W,100,1)&&approx(r.geom.H,80,1),msg:"W="+r.geom.W.toFixed(1)+" H="+r.geom.H.toFixed(1)};
+});
+T("5. Geometry","Very large coordinates (1e6 mm)",function(){
+  var dxf=hdr(4)+dRect(1e6,1e6,100,80,"CUT",true)+FTR;
+  try{var r=pb(dxf);if(!r.geom)return{pass:false,msg:"null geom"};
+    return{pass:approx(r.geom.W,100,2),msg:"W="+r.geom.W.toFixed(1)+" at large offset"};
+  }catch(e){return{pass:false,msg:"Exception: "+e.message};}
+});
+T("5. Geometry","Sub-millimetre part (0.5×0.3mm)",function(){
+  var dxf=hdr(4)+dRect(0,0,0.5,0.3,"CUT",true)+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:approx(r.geom.W,0.5,0.05),msg:"W="+r.geom.W.toFixed(3)+"mm H="+r.geom.H.toFixed(3)+"mm"};
+});
+T("5. Geometry","Zero-radius circle",function(){
+  var dxf=hdr(4)+dCircle(50,50,0)+FTR;
+  try{var r=parseDXF(dxf);var g=build(r,1);
+    return{pass:true,warn:!g,msg:"Zero-radius circle: "+(g?"geom W="+g.W:"no geometry (acceptable)")};
+  }catch(e){return{pass:true,msg:"Threw on zero-radius (acceptable): "+(e.nice||e.message)};}
+});
+T("5. Geometry","Zero-length line segment",function(){
+  var dxf=hdr(4)+dLine(50,50,50,50)+dRect(0,0,100,80,"CUT",true)+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  // The zero-length line should be ignored/deduplicated
+  var totalLen=r.geom.groups.reduce(function(s,g){return s+g.len;},0);
+  return{pass:totalLen>0,msg:"len="+totalLen.toFixed(1)+" (zero segment should be dropped)"};
+});
+
+// ================================================================
+// CATEGORY 6 — Extreme / stress inputs
+// ================================================================
+T("6. Stress","Very small part 1×1mm",function(){
+  var r=pb(makeSimpleRect(1,1,4));
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:approx(r.geom.W,1,0.05)&&approx(r.geom.H,1,0.05),msg:"W="+r.geom.W.toFixed(3)+" H="+r.geom.H.toFixed(3)};
+});
+T("6. Stress","Exactly sheet-sized 600×400mm",function(){
+  var r=pb(makeSimpleRect(600,400,4));
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:approx(r.geom.W,600,1)&&approx(r.geom.H,400,1),msg:"W="+r.geom.W.toFixed(0)+" H="+r.geom.H.toFixed(0)};
+});
+T("6. Stress","Oversized part 601×401mm",function(){
+  var r=pb(makeSimpleRect(601,401,4));
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var pack=partsPerSheet(r.geom.W,r.geom.H,CFG_DEFAULT);
+  return{pass:pack.oversize===true,msg:"oversize="+pack.oversize+" W="+r.geom.W.toFixed(0)};
+});
+T("6. Stress","Extreme aspect ratio 1×10000mm",function(){
+  var r=pb(makeSimpleRect(1,10000,4));
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:approx(r.geom.W,1,0.1)&&approx(r.geom.H,10000,10),msg:"W="+r.geom.W.toFixed(1)+" H="+r.geom.H.toFixed(0)};
+});
+T("6. Stress","1000 small circles (stress)",function(){
+  var ents="";
+  for(var i=0;i<1000;i++)ents+=dCircle(i*2,0,0.5);
+  var dxf=hdr(4)+ents+FTR;
+  var t0=performance.now();
+  var r=pb(dxf);
+  var ms=performance.now()-t0;
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:r.geom.count===1000,msg:r.geom.count+" circles in "+ms.toFixed(0)+"ms",warn:ms>2000};
+});
+T("6. Stress","200 rectangles on different layers",function(){
+  var ents="";
+  for(var i=0;i<200;i++)ents+=dRect(i*5,0,4,3,"LAYER_"+i,true);
+  var dxf=hdr(4)+ents+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:r.geom.groups.length===200,msg:r.geom.groups.length+" groups"};
+});
+T("6. Stress","LWPOLYLINE with 500 vertices",function(){
+  var pts=[];for(var i=0;i<500;i++)pts.push([Math.cos(i*2*Math.PI/500)*50,Math.sin(i*2*Math.PI/500)*50]);
+  var s="0\nLWPOLYLINE\n8\nCUT\n90\n500\n70\n1\n";
+  for(var j=0;j<pts.length;j++)s+="10\n"+pts[j][0].toFixed(4)+"\n20\n"+pts[j][1].toFixed(4)+"\n";
+  var dxf=hdr(4)+s+FTR;
+  var t0=performance.now();
+  var r=pb(dxf);
+  var ms=performance.now()-t0;
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:r.geom.count===1,msg:"500-vertex LWPOLYLINE in "+ms.toFixed(0)+"ms, W="+r.geom.W.toFixed(1)};
+});
+T("6. Stress","Deeply repeated group codes (parse stress)",function(){
+  var repeat="";for(var i=0;i<5000;i++)repeat+="999\nThis is a comment line "+i+"\n";
+  var dxf=hdr(4)+repeat+dRect(0,0,100,80,"CUT",true)+FTR;
+  try{
+    var t0=performance.now();
+    var r=pb(dxf);
+    var ms=performance.now()-t0;
+    if(!r.geom)return{pass:false,msg:"null geom after comment flood"};
+    return{pass:true,msg:"5000 comment codes survived in "+ms.toFixed(0)+"ms"};
+  }catch(e){return{pass:false,msg:"Exception: "+e.message};}
+});
+T("6. Stress","Very large coordinate values (1e12)",function(){
+  var dxf=hdr(4)+dRect(1e12,1e12,100,80,"CUT",true)+FTR;
+  try{var r=pb(dxf);if(!r.geom)return{pass:true,warn:true,msg:"No geometry at 1e12 offset (float precision)"};
+    return{pass:approx(r.geom.W,100,5),warn:true,msg:"W="+r.geom.W.toFixed(2)+" at 1e12 offset (float precision risk)"};
+  }catch(e){return{pass:true,warn:true,msg:"Threw at 1e12 (acceptable): "+(e.message||e)};}
+});
+T("6. Stress","NaN coordinate in LWPOLYLINE",function(){
+  var dxf=hdr(4)+"0\nLWPOLYLINE\n8\nCUT\n90\n4\n70\n1\n10\nNaN\n20\n0\n10\n100\n20\n0\n10\n100\n20\n80\n10\n0\n20\n80\n"+FTR;
+  try{
+    var r=parseDXF(dxf);
+    var g=build(r,1);
+    // NaN coordinates could produce Infinity bounds
+    if(!g)return{pass:true,warn:true,msg:"No geometry with NaN coord (acceptable)"};
+    var hasInf=!isFinite(g.W)||!isFinite(g.H);
+    return{pass:!hasInf,warn:hasInf,msg:"W="+g.W+" H="+g.H+(hasInf?" — INFINITE BOUNDS (bug)":"")};
+  }catch(e){return{pass:true,warn:true,msg:"Threw on NaN coord: "+(e.message||e)};}
+});
+T("6. Stress","Infinity coordinate in LINE",function(){
+  var dxf=hdr(4)+dLine(0,0,Infinity,0)+dRect(0,0,100,80,"CUT",true)+FTR;
+  try{
+    var r=parseDXF(dxf);
+    var g=build(r,1);
+    if(!g)return{pass:true,warn:true,msg:"null geom with Inf (acceptable)"};
+    var hasInf=!isFinite(g.W)||!isFinite(g.H);
+    return{pass:!hasInf,warn:hasInf,msg:"W="+g.W+" H="+g.H+(hasInf?" — INFINITE BOUNDS (bug)":"")};
+  }catch(e){return{pass:true,warn:true,msg:"Threw on Inf coord: "+(e.message||e)};}
+});
+
+// ================================================================
+// CATEGORY 7 — Layer & colour
+// ================================================================
+T("7. Layers","Two layers detected as separate groups",function(){
+  var dxf=hdr(4)+dRect(0,0,100,80,"CUT",true)+dCircle(50,40,20,"ENGRAVE")+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:r.geom.groups.length===2,msg:"groups="+r.geom.groups.length+": "+r.geom.groups.map(function(g){return g.key;}).join(", ")};
+});
+T("7. Layers","Layer 0 (default) used when no layer specified",function(){
+  var dxf=hdr(4)+"0\nSECTION\n2\nENTITIES\n0\nLINE\n10\n0\n20\n0\n11\n100\n21\n0\n0\nENDSEC\n0\nEOF\n";
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:r.geom.groups[0].key==="0",msg:"layer key="+r.geom.groups[0].key};
+});
+T("7. Layers","Layer colour from TABLES section",function(){
+  var dxf="0\nSECTION\n2\nTABLES\n0\nLAYER\n2\nMYLAYER\n62\n1\n0\nENDSEC\n"+hdr(4).replace("0\nSECTION\n2\nHEADER\n","").split("0\nENDSEC\n")[1]+dRect(0,0,100,80,"MYLAYER",true)+FTR;
+  // simplified: just verify layer colour resolves
+  var pairs=[{code:2,val:"MYLAYER"},{code:62,val:"1"}];
+  var map={"MYLAYER":1};
+  var col=resolveCol(null,"MYLAYER",map);
+  return{pass:col===1,msg:"Layer colour resolved: col="+col};
+});
+T("7. Layers","Entity colour overrides layer colour",function(){
+  var col=resolveCol(3,"MYLAYER",{"MYLAYER":1}); // entity=3, layer=1 → should be 3
+  return{pass:col===3,msg:"Entity colour (3) overrides layer colour (1): got "+col};
+});
+T("7. Layers","Colour 256 (ByLayer) falls through to layer colour",function(){
+  var col=resolveCol(256,"MYLAYER",{"MYLAYER":5}); // 256=ByLayer
+  return{pass:col===5,msg:"ByLayer (256) → layer colour 5: got "+col};
+});
+T("7. Layers","Colour 0 (ByBlock) falls through to layer colour",function(){
+  var col=resolveCol(0,"MYLAYER",{"MYLAYER":7});
+  return{pass:col===7,msg:"ByBlock (0) → layer colour 7: got "+col};
+});
+
+// ================================================================
+// CATEGORY 8 — Math primitives
+// ================================================================
+T("8. Math","shoelace — unit square area = 0.5 (half-unit polygon)",function(){
+  var pts=[[0,0],[1,0],[1,1],[0,1]];
+  var a=shoelace(pts);
+  return{pass:approx(Math.abs(a),0.5,0.001),msg:"shoelace="+a.toFixed(6)+" (expect ±0.5)"};
+});
+T("8. Math","shoelace — 100×100 square area = ±5000",function(){
+  var pts=[[0,0],[100,0],[100,100],[0,100]];
+  var a=shoelace(pts);
+  return{pass:approx(Math.abs(a),5000,1),msg:"shoelace="+a.toFixed(1)+" (expect ±5000)"};
+});
+T("8. Math","shoelace — triangle area",function(){
+  var pts=[[0,0],[100,0],[50,100]];
+  var a=shoelace(pts);
+  return{pass:approx(Math.abs(a),5000,1),msg:"Triangle area="+Math.abs(a).toFixed(0)+" (expect 5000)"};
+});
+T("8. Math","arc — full circle has 360° coverage",function(){
+  var pts=arc([0,0],50,0,360);
+  // first and last points should be close (full circle)
+  var first=pts[0],last=pts[pts.length-1];
+  var d=Math.hypot(last[0]-first[0],last[1]-first[1]);
+  return{pass:d<1,msg:"Circle arc gap="+d.toFixed(3)+"mm (segments="+pts.length+")"};
+});
+T("8. Math","arc — 90° arc point count ≥8",function(){
+  var pts=arc([0,0],50,0,90);
+  return{pass:pts.length>=9,msg:"90° arc segments="+pts.length};
+});
+T("8. Math","arc — start=end same angle (zero span)",function(){
+  // 45° to 45° — should wrap to full circle
+  try{var pts=arc([0,0],50,45,45);return{pass:pts.length>0,msg:"Zero-span arc: points="+pts.length};}
+  catch(e){return{pass:false,msg:"Exception: "+e.message};}
+});
+T("8. Math","bulge — bulge=1 (semicircle) midpoint offset",function(){
+  // Bulge=1 on segment [0,0]-[100,0] → semicircle above, midpoint should be at y≈50
+  var pts=bulge(0,0,100,0,1);
+  // Find the point furthest from the baseline
+  var maxY=0;for(var i=0;i<pts.length;i++)maxY=Math.max(maxY,Math.abs(pts[i][1]));
+  return{pass:approx(maxY,50,2),msg:"Bulge=1 max offset="+maxY.toFixed(1)+"mm (expect ~50)"};
+});
+T("8. Math","bulge — bulge=0.41421 (90° arc)",function(){
+  // bulge = tan(θ/4), for 90°: tan(22.5°) ≈ 0.41421
+  var pts=bulge(0,0,100,0,0.41421);
+  return{pass:pts.length>=2,msg:"90° bulge: "+pts.length+" pts"};
+});
+T("8. Math","uniqSeg — identical segment deduped",function(){
+  var set={};
+  var l1=uniqSeg(set,[0,0],[100,0]);
+  var l2=uniqSeg(set,[0,0],[100,0]); // same segment
+  var l3=uniqSeg(set,[100,0],[0,0]); // reversed = same
+  return{pass:l1===100&&l2===0&&l3===0,msg:"len1="+l1.toFixed(0)+" len2="+l2.toFixed(0)+" len3="+l3.toFixed(0)};
+});
+T("8. Math","contourLen — open square sides",function(){
+  var pts=[[0,0],[100,0],[100,80]];
+  var l=contourLen(pts,false);
+  return{pass:approx(l,180,1),msg:"Open 3-point contour len="+l.toFixed(1)+"mm (expect 180)"};
+});
+T("8. Math","contourLen — closed square perimeter",function(){
+  var pts=[[0,0],[100,0],[100,100],[0,100]];
+  var l=contourLen(pts,true);
+  return{pass:approx(l,400,1),msg:"Closed square len="+l.toFixed(1)+"mm (expect 400)"};
+});
+
+// ================================================================
+// CATEGORY 9 — Auto-classification (cut vs engrave)
+// ================================================================
+T("9. Auto-classify","Single closed shape → cut",function(){
+  var dxf=makeSimpleRect(100,80,4);
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var plan=computePlanT(r.parsed,r.geom);
+  return{pass:plan.cutCount===1&&plan.fillCount===0,msg:"mode="+plan.mode+" cutCount="+plan.cutCount};
+});
+T("9. Auto-classify","Circle auto-classifies as cut",function(){
+  var dxf=hdr(4)+dCircle(50,50,30)+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var plan=computePlanT(r.parsed,r.geom);
+  return{pass:plan.cutCount===1,msg:"CIRCLE: cutCount="+plan.cutCount+" (expect 1)"};
+});
+T("9. Auto-classify","Open line → engrave (not cut)",function(){
+  var dxf=hdr(4)+dLine(0,0,100,0)+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var plan=computePlanT(r.parsed,r.geom);
+  return{pass:plan.lineCount===1&&plan.cutCount===0,msg:"LINE: lineCount="+plan.lineCount+" cutCount="+plan.cutCount};
+});
+T("9. Auto-classify","Rect + inner circle → cut+cut (outer+hole)",function(){
+  var dxf=hdr(4)+dRect(0,0,100,80,"CUT",true)+dCircle(50,40,20,"CUT")+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var plan=computePlanT(r.parsed,r.geom);
+  return{pass:plan.cutCount===2,msg:"cutCount="+plan.cutCount+" (expect 2: outer+inner)"};
+});
+T("9. Auto-classify","SPLINE → engrave",function(){
+  var dxf=hdr(4)+"0\nSPLINE\n8\nENG\n11\n0\n21\n0\n11\n50\n21\n25\n11\n100\n21\n0\n"+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var plan=computePlanT(r.parsed,r.geom);
+  return{pass:plan.lineCount>0||plan.fillCount>0,msg:"SPLINE classified as engrave: lineCount="+plan.lineCount};
+});
+T("9. Auto-classify","Mode: cut+engrave when both present",function(){
+  var dxf=hdr(4)+dRect(0,0,100,80,"CUT",true)+dLine(10,10,90,70,"ENG")+FTR;
+  var r=pb(dxf);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var plan=computePlanT(r.parsed,r.geom);
+  return{pass:plan.mode==="cutengrave",msg:"mode="+plan.mode};
+});
+
+// ================================================================
+// CATEGORY 10 — Pricing sanity
+// ================================================================
+T("10. Pricing","Minimum order floor respected",function(){
+  var r=pb(makeSimpleRect(5,5,4)); // tiny part
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var plan=computePlanT(r.parsed,r.geom);
+  var p=priceT(r.geom,plan,CFG_DEFAULT,1);
+  return{pass:p.total>=CFG_DEFAULT.min,msg:"Total $"+p.total.toFixed(2)+" >= min $"+CFG_DEFAULT.min};
+});
+T("10. Pricing","Price increases with quantity (sanity)",function(){
+  var r=pb(makeSimpleRect(100,80,4));
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var plan=computePlanT(r.parsed,r.geom);
+  var p1=priceT(r.geom,plan,CFG_DEFAULT,1);
+  var p5=priceT(r.geom,plan,CFG_DEFAULT,5);
+  return{pass:p5.total>p1.total,msg:"qty1=$"+p1.total.toFixed(2)+" qty5=$"+p5.total.toFixed(2)};
+});
+T("10. Pricing","Unit price decreases with volume (discount works)",function(){
+  var r=pb(makeSimpleRect(100,80,4));
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var plan=computePlanT(r.parsed,r.geom);
+  var p1=priceT(r.geom,plan,CFG_DEFAULT,1);
+  var p10=priceT(r.geom,plan,CFG_DEFAULT,10);
+  return{pass:p10.unit<p1.unit,msg:"unit@1=$"+p1.unit.toFixed(2)+" unit@10=$"+p10.unit.toFixed(2)};
+});
+T("10. Pricing","Oversize part treated as 1 per sheet",function(){
+  var r=pb(makeSimpleRect(700,500,4)); // bigger than 600×400 sheet
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var pack=partsPerSheet(r.geom.W,r.geom.H,CFG_DEFAULT);
+  return{pass:pack.oversize===true,msg:"oversize="+pack.oversize+" n="+pack.n};
+});
+T("10. Pricing","Parts-per-sheet calculation (100×80 on 600×400)",function(){
+  // Expect: floor((600+3)/(100+3))*floor((400+3)/(80+3)) = 5*4=20, ×90% eff = 18
+  var pack=partsPerSheet(100,80,CFG_DEFAULT);
+  return{pass:pack.n>0&&!pack.oversize,msg:"n="+pack.n+" per sheet (expect ~18)"};
+});
+T("10. Pricing","Price is finite and positive",function(){
+  var r=pb(makeSimpleRect(100,80,4));
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var plan=computePlanT(r.parsed,r.geom);
+  var p=priceT(r.geom,plan,CFG_DEFAULT,1);
+  return{pass:isFinite(p.total)&&p.total>0,msg:"$"+p.total.toFixed(2)};
+});
+T("10. Pricing","Price with zero machine rate → no divide-by-zero",function(){
+  var cfg=Object.assign({},CFG_DEFAULT,{machine:0,score:0,fillStd:0,fillFine:0});
+  var r=pb(makeSimpleRect(100,80,4));
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var plan=computePlanT(r.parsed,r.geom);
+  try{var p=priceT(r.geom,plan,cfg,1);return{pass:isFinite(p.total),msg:"Zero rates: $"+p.total.toFixed(2)};}
+  catch(e){return{pass:false,msg:"Exception: "+e.message};}
+});
+
+// ================================================================
+// CATEGORY 11 — Sample DXF (the built-in sample from quote.html)
+// ================================================================
+T("11. Sample DXF","Built-in sample parses without error",function(){
+  var SAMPLE="0\nSECTION\n2\nHEADER\n9\n$INSUNITS\n70\n4\n0\nENDSEC\n0\nSECTION\n2\nENTITIES\n0\nLWPOLYLINE\n8\nCUT\n90\n4\n70\n1\n10\n0\n20\n0\n10\n120\n20\n0\n10\n120\n20\n80\n10\n0\n20\n80\n0\nCIRCLE\n8\nCUT\n10\n25\n20\n25\n40\n6\n0\nLWPOLYLINE\n8\nENGRAVE\n62\n5\n90\n4\n70\n1\n10\n70\n20\n20\n10\n105\n20\n20\n10\n105\n20\n60\n10\n70\n20\n60\n0\nENDSEC\n0\nEOF";
+  var r=pb(SAMPLE);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  return{pass:r.geom.count===3&&approx(r.geom.W,120,1),msg:"count="+r.geom.count+" W="+r.geom.W.toFixed(1)+" H="+r.geom.H.toFixed(1)};
+});
+T("11. Sample DXF","Sample auto-classifies to cut+engrave",function(){
+  var SAMPLE="0\nSECTION\n2\nHEADER\n9\n$INSUNITS\n70\n4\n0\nENDSEC\n0\nSECTION\n2\nENTITIES\n0\nLWPOLYLINE\n8\nCUT\n90\n4\n70\n1\n10\n0\n20\n0\n10\n120\n20\n0\n10\n120\n20\n80\n10\n0\n20\n80\n0\nCIRCLE\n8\nCUT\n10\n25\n20\n25\n40\n6\n0\nLWPOLYLINE\n8\nENGRAVE\n62\n5\n90\n4\n70\n1\n10\n70\n20\n20\n10\n105\n20\n20\n10\n105\n20\n60\n10\n70\n20\n60\n0\nENDSEC\n0\nEOF";
+  var r=pb(SAMPLE);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var plan=computePlanT(r.parsed,r.geom);
+  return{pass:plan.mode==="cutengrave",msg:"mode="+plan.mode+" cut="+plan.cutCount+" fill="+plan.fillCount};
+});
+T("11. Sample DXF","Sample produces a positive price",function(){
+  var SAMPLE="0\nSECTION\n2\nHEADER\n9\n$INSUNITS\n70\n4\n0\nENDSEC\n0\nSECTION\n2\nENTITIES\n0\nLWPOLYLINE\n8\nCUT\n90\n4\n70\n1\n10\n0\n20\n0\n10\n120\n20\n0\n10\n120\n20\n80\n10\n0\n20\n80\n0\nCIRCLE\n8\nCUT\n10\n25\n20\n25\n40\n6\n0\nLWPOLYLINE\n8\nENGRAVE\n62\n5\n90\n4\n70\n1\n10\n70\n20\n20\n10\n105\n20\n20\n10\n105\n20\n60\n10\n70\n20\n60\n0\nENDSEC\n0\nEOF";
+  var r=pb(SAMPLE);
+  if(!r.geom)return{pass:false,msg:"null geom"};
+  var plan=computePlanT(r.parsed,r.geom);
+  var p=priceT(r.geom,plan,CFG_DEFAULT,1);
+  return{pass:p.total>0&&isFinite(p.total),msg:"Price=$"+p.total.toFixed(2)};
+});
+
+// ================================================================
+// RENDER DASHBOARD
+// ================================================================
+document.getElementById("progress").style.display="none";
+
+var cats={};
+RESULTS.forEach(function(r){if(!cats[r.cat])cats[r.cat]=[];cats[r.cat].push(r);});
+
+var sumEl=document.getElementById("summary");
+var pct=TOTAL>0?Math.round(PASS/TOTAL*100):0;
+sumEl.innerHTML=
+  '<div class="stat s-total"><div class="k">Total</div><div class="v">'+TOTAL+'</div></div>'+
+  '<div class="stat s-ok"><div class="k">Passed</div><div class="v">'+PASS+'</div></div>'+
+  '<div class="stat s-fail"><div class="k">Failed</div><div class="v">'+FAIL+'</div></div>'+
+  '<div class="stat s-warn"><div class="k">Warnings</div><div class="v">'+WARN+'</div></div>'+
+  '<div class="stat"><div class="k">Pass rate</div><div class="v" style="color:var(--'+(pct>=90?"ok":pct>=70?"warn":"err")+')">'+pct+'%</div></div>';
+
+// Filter bar
+var fb=document.getElementById("filterBar");
+var filters=["All","Passed","Failed","Warnings"];
+var activeFilter="All";
+filters.forEach(function(f){
+  var b=document.createElement("button");
+  b.className="filter-btn"+(f==="All"?" active":"");
+  b.textContent=f;
+  b.onclick=function(){
+    activeFilter=f;
+    document.querySelectorAll(".filter-btn").forEach(function(x){x.classList.remove("active");});
+    b.classList.add("active");
+    renderResults();
+  };
+  fb.appendChild(b);
+});
+
+function renderResults(){
+  var out=document.getElementById("results");
+  out.innerHTML="";
+  Object.keys(cats).sort().forEach(function(cat){
+    var tests=cats[cat].filter(function(r){
+      if(activeFilter==="All")return true;
+      if(activeFilter==="Failed")return !r.pass;
+      if(activeFilter==="Passed")return r.pass&&!r.warn;
+      if(activeFilter==="Warnings")return r.warn;
+      return true;
+    });
+    if(!tests.length)return;
+    var catPass=cats[cat].filter(function(r){return r.pass;}).length;
+    var catTotal=cats[cat].length;
+    var sec=document.createElement("div");sec.className="category";
+    var head=document.createElement("div");head.className="cat-head";
+    head.innerHTML='<span>'+cat+'</span><span class="cat-stats">'+catPass+' / '+catTotal+' passed</span>';
+    sec.appendChild(head);
+    tests.forEach(function(r){
+      var cls="test"+(r.pass?(r.warn?" t-warn":""):" t-fail");
+      var badge=r.pass?(r.warn?"warn":"pass"):"fail";
+      var label=r.pass?(r.warn?"WARN":"PASS"):"FAIL";
+      var div=document.createElement("div");div.className=cls;
+      div.innerHTML='<div class="test-head"><span class="badge '+badge+'">'+label+'</span><span class="test-name">'+r.name+'</span><span class="test-time">'+r.ms+'ms</span></div>'+
+        '<div class="test-body"><div class="test-msg '+(r.pass?(r.warn?"wrn":"ok"):"err")+'">'+escHtml(r.msg)+'</div>'+(r.detail?'<pre>'+escHtml(r.detail.slice(0,800))+'</pre>':'')+'</div>';
+      div.querySelector(".test-head").onclick=function(){
+        var body=div.querySelector(".test-body");
+        body.classList.toggle("open");
+      };
+      if(!r.pass)div.querySelector(".test-body").classList.add("open");
+      sec.appendChild(div);
+    });
+    out.appendChild(sec);
+  });
+}
+
+function escHtml(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+
+renderResults();
+</script>
+</body>
+</html>

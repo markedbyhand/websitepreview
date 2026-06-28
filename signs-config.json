@@ -1,0 +1,15 @@
+{
+  "_comment": "Acrylic Signs pricing — PLACEHOLDER rates, tune to real costs. Mirrors PRICING in signs.html. All $ AUD.",
+  "currency": "$",
+  "sheetW": 600,
+  "sheetH": 400,
+  "minOffcut": 150,
+  "kerf": 4,
+  "boardRatePerCm2": 0.05,
+  "colourSurcharge": 18,
+  "labour": 20,
+  "perPiece": 0.6,
+  "minPrice": 35,
+  "gstIncluded": true,
+  "token": "mbh-2026-laser"
+}

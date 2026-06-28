@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marked By Hand — Quote Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+  .page-hero{padding:28px 0 22px;border-bottom:1px solid var(--line);margin-bottom:24px}
+  .page-hero h1{font-size:clamp(24px,4vw,38px);margin:8px 0 0;letter-spacing:-.4px}
+
+  .filter-bar{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;align-items:center}
+  .filter-bar .lab{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-right:4px}
+  .fbtn{background:var(--panel);border:1px solid var(--line);color:var(--muted);font-family:var(--mono);font-size:12px;padding:7px 14px;border-radius:8px;cursor:pointer}
+  .fbtn.active{background:var(--amber);color:var(--primary-ink);border-color:var(--amber)}
+  .fbtn:hover:not(.active){border-color:var(--amber);color:var(--bone)}
+
+  .orders-grid{display:grid;grid-template-columns:1fr;gap:10px}
+
+  .order-card{background:var(--graphite-2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .order-card.approved{border-color:var(--ok);opacity:.75}
+  .order-card.declined{border-color:var(--warn);opacity:.6}
+
+  .card-summary{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;flex-wrap:wrap;user-select:none}
+  .card-summary:hover{background:rgba(255,255,255,.03)}
+  .order-id{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:1px;color:var(--amber);background:rgba(164,120,100,.12);padding:3px 8px;border-radius:5px;border:1px solid rgba(164,120,100,.25);white-space:nowrap}
+  .order-type{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);background:var(--panel);padding:3px 8px;border-radius:5px;border:1px solid var(--line);white-space:nowrap}
+  .status-badge{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;padding:3px 8px;border-radius:5px;border:1px solid;white-space:nowrap}
+  .status-badge.pending{color:var(--warn);border-color:rgba(200,137,47,.35);background:rgba(200,137,47,.1)}
+  .status-badge.approved{color:var(--ok);border-color:rgba(94,140,106,.35);background:rgba(94,140,106,.1)}
+  .status-badge.declined{color:var(--muted);border-color:var(--line)}
+  .status-badge.bounced{color:#e74c3c;border-color:rgba(231,76,60,.35);background:rgba(231,76,60,.1)}
+  .status-badge.closed{color:var(--muted);border-color:var(--line)}
+  .status-badge.completed{color:var(--ok);border-color:rgba(94,140,106,.5);background:rgba(94,140,106,.15);font-weight:700}
+  .ban-item{display:flex;align-items:center;gap:10px;padding:9px 13px;background:var(--graphite-2);border:1px solid var(--line);border-radius:8px;flex-wrap:wrap}
+  .ban-email{font-family:var(--mono);font-size:12px;color:var(--bone);font-weight:600}
+  .ban-name{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .ban-date{font-family:var(--mono);font-size:10px;color:var(--muted)}
+  .ban-section{margin-top:40px;padding-top:24px;border-top:1px solid var(--line)}
+  .summ-name{font-size:13px;font-weight:600;color:var(--bone)}
+  .summ-email{font-family:var(--mono);font-size:11px;color:var(--amber-soft)}
+  .summ-mat{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .summ-est{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--amber)}
+  .summ-date{font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:auto}
+  .summ-actions{display:flex;gap:6px;align-items:center}
+  .expand-btn{font-family:var(--mono);font-size:10px;color:var(--muted);padding:3px 7px;border:1px solid var(--line);border-radius:5px;transition:transform .2s;flex-shrink:0}
+  .order-card.expanded .expand-btn{transform:rotate(180deg)}
+  .price-ok{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:5px;border:1px solid;white-space:nowrap}
+  .price-ok.ok{color:var(--ok);border-color:rgba(94,140,106,.35);background:rgba(94,140,106,.1)}
+  .price-ok.mismatch{color:#fff;border-color:#c0392b;background:#c0392b;font-weight:700}
+  .price-ok.unknown{color:var(--muted);border-color:var(--line)}
+
+  .card-detail{display:none;border-top:1px solid var(--line);grid-template-columns:220px 1fr}
+  .order-card.expanded .card-detail{display:grid}
+  @media(max-width:800px){.card-detail{grid-template-columns:1fr}}
+
+  .card-preview{background:var(--panel);display:flex;align-items:center;justify-content:center;min-height:160px;border-right:1px solid var(--line)}
+  .card-preview img{width:100%;height:100%;object-fit:contain;display:block;padding:10px;max-height:200px}
+  .card-preview .no-preview{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center;padding:16px}
+  @media(max-width:800px){.card-preview{border-right:none;border-bottom:1px solid var(--line);min-height:120px}}
+
+  .card-body{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+
+  .specs{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px}
+  .spec{background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:7px 9px}
+  .spec .k{font-family:var(--mono);font-size:9px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+  .spec .v{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--bone)}
+  .spec .v.big{font-size:15px;color:var(--amber)}
+
+  .quote-message{font-size:12px;color:var(--lede);background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:9px 11px;white-space:pre-wrap;max-height:80px;overflow-y:auto;font-family:var(--mono);line-height:1.5}
+
+  .card-links{display:flex;gap:6px;flex-wrap:wrap}
+  .card-links a{font-family:var(--mono);font-size:11px;color:var(--amber-soft);padding:5px 9px;border:1px solid var(--line);border-radius:6px;display:inline-flex;align-items:center;gap:4px}
+  .card-links a:hover{border-color:var(--amber);text-decoration:none;color:var(--amber)}
+
+  .empty-state{text-align:center;padding:60px 20px;color:var(--muted);font-family:var(--mono);font-size:13px}
+  .empty-state .big{font-size:38px;margin-bottom:12px}
+
+  .loading{text-align:center;padding:40px;font-family:var(--mono);font-size:13px;color:var(--muted)}
+
+  /* Modal */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+  .modal-box{background:var(--graphite-2);border:1px solid var(--line);border-radius:16px;padding:28px;width:100%;max-width:480px;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+  .modal-box h2{margin:0 0 6px;font-size:20px}
+  .modal-box .sub{color:var(--muted);font-family:var(--mono);font-size:12px;margin:0 0 16px}
+  .modal-box textarea{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--bone);border-radius:9px;padding:10px 12px;font-family:var(--disp);font-size:14px;resize:vertical;min-height:110px;line-height:1.5}
+  .modal-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .btn-approve{background:var(--ok);color:#fff}
+  .btn-decline{background:var(--op-cut);color:#fff}
+
+  /* Lightbox */
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:300;display:flex;align-items:center;justify-content:center;cursor:zoom-out;padding:20px}
+  .lightbox img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+
+  /* Access denied */
+  .denied{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;gap:12px}
+  .denied .ico{font-size:48px}
+  .denied h2{margin:0;font-size:24px}
+  .denied p{color:var(--muted);font-family:var(--mono);font-size:13px;margin:0}
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div id="access-denied" style="display:none">
+  <main class="wrap">
+    <div class="denied">
+      <div class="ico">🔒</div>
+      <h2>Access restricted</h2>
+      <p>Add <code>?owner=mbh</code> to the URL to access this page.</p>
+    </div>
+  </main>
+</div>
+
+<div id="app" style="display:none">
+  <main class="wrap">
+    <div class="page-hero">
+      <p class="eyebrow">// Internal tool</p>
+      <h1>Quote review</h1>
+    </div>
+
+    <div class="filter-bar">
+      <span class="lab">Show</span>
+      <button class="fbtn active" data-status="pending">Pending</button>
+      <button class="fbtn" data-status="bounced">Bounced</button>
+      <button class="fbtn" data-status="approved">Approved</button>
+      <button class="fbtn" data-status="completed">Completed</button>
+      <button class="fbtn" data-status="declined">Declined</button>
+      <button class="fbtn" data-status="all">All</button>
+      <button class="fbtn" id="refreshBtn" style="margin-left:auto">↻ Refresh</button>
+    </div>
+
+    <div id="orders-container">
+      <div class="loading">Loading orders…</div>
+    </div>
+
+    <div class="ban-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <p class="eyebrow" style="margin:0">// Banned</p>
+        <button class="fbtn" onclick="loadBans()" style="font-size:11px">↻ Refresh</button>
+      </div>
+      <div id="ban-list"><div class="loading" style="padding:10px;text-align:left">Loading…</div></div>
+    </div>
+  </main>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" style="display:none" onclick="document.getElementById('lightbox').style.display='none'">
+  <img id="lightbox-img" src="" alt="Preview">
+</div>
+
+<!-- Approve / Decline modal -->
+<div class="modal-bg" id="modal" style="display:none">
+  <div class="modal-box">
+    <h2 id="modal-title">Approve order</h2>
+    <p class="sub" id="modal-sub">Optional message to customer</p>
+    <textarea id="modal-note" placeholder="Add a message for the customer (optional)…"></textarea>
+    <div class="modal-actions">
+      <button class="btn" id="modal-confirm">Send</button>
+      <button class="btn ghost" id="modal-cancel">Cancel</button>
+    </div>
+    <div id="modal-status" style="font-family:var(--mono);font-size:12px;margin-top:10px;min-height:16px"></div>
+  </div>
+</div>
+
+<div id="site-footer"></div>
+<script src="site.js"></script>
+<script>
+"use strict";
+
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz02fhIttHEOjcmG6mUIGym-wB-vYvCMFNjHc8w2DigSV6J3oQIJrEiuVyD8TzGe3VQ/exec";
+var TOKEN      = "mbh-2026-laser";
+
+/* ---- Access control ---- */
+var params  = new URLSearchParams(location.search);
+var ownerOk = params.get("owner") === "mbh";
+document.getElementById(ownerOk ? "app" : "access-denied").style.display = "";
+
+if (!ownerOk) { throw new Error("access denied"); }
+
+/* ---- State ---- */
+var currentStatus = "pending";
+var pendingAction = null; // { action, order }
+
+/* ---- Load orders via fetch ---- */
+function loadOrders(status) {
+  currentStatus = status || "pending";
+  document.getElementById("orders-container").innerHTML = '<div class="loading">Loading orders…</div>';
+  fetch(SCRIPT_URL + "?token=" + TOKEN + "&status=" + currentStatus)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data && data.ok) renderOrders(data.orders || []);
+      else document.getElementById("orders-container").innerHTML = '<div class="loading" style="color:var(--warn)">Script error: ' + JSON.stringify(data) + '</div>';
+    })
+    .catch(function(err) {
+      document.getElementById("orders-container").innerHTML = '<div class="loading" style="color:var(--warn)">Error: ' + err.message + '</div>';
+    });
+}
+
+/* ---- Render ---- */
+function esc(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function money(v) { return v || "—"; }
+
+function renderOrders(orders) {
+  var el = document.getElementById("orders-container");
+  if (!orders.length) {
+    el.innerHTML = '<div class="empty-state"><div class="big">✓</div>No ' + currentStatus + ' orders</div>';
+    return;
+  }
+  // newest first
+  orders = orders.slice().reverse();
+  el.innerHTML = '<div class="orders-grid">' + orders.map(renderCard).join("") + '</div>';
+}
+
+function priceBadge(o) {
+  if (o.priceOk === "ok")       return '<span class="price-ok ok">✓ price verified</span>';
+  if (o.priceOk === "mismatch") return '<span class="price-ok mismatch">⚠ PRICE MISMATCH — submitted ' + esc(o.estimate) + ' vs our calc ' + esc(o.serverEstimate) + '</span>';
+  return '<span class="price-ok unknown">price unverified</span>';
+}
+
+function toggleCard(id) {
+  var card = document.getElementById("card-" + id);
+  if (card) card.classList.toggle("expanded");
+}
+
+function renderCard(o) {
+  var oJson   = esc(JSON.stringify(o));
+  var oid     = esc(o.orderId);
+  var matStr  = [o.material, o.quantity ? "× " + o.quantity : ""].filter(Boolean).join(" ");
+
+  var summActions = "";
+  if (o.status === "pending") {
+    var isMismatch = o.priceOk === "mismatch";
+    summActions = '<div class="summ-actions" onclick="event.stopPropagation()">'
+      + '<button class="btn btn-approve" style="font-size:11px;padding:5px 10px" onclick="openModal(\'approve\',' + oJson + ')">✓ Approve</button>'
+      + '<button class="btn btn-decline" style="font-size:11px;padding:5px 10px" onclick="openModal(\'decline\',' + oJson + ')">' + (isMismatch ? '⚠ Decline' : '✕ Decline') + '</button>'
+      + (isMismatch ? '<button class="btn" style="font-size:11px;padding:5px 10px;background:#c0392b;color:#fff" onclick="openModal(\'ban\',' + oJson + ')">🚫 Decline + Ban</button>' : '')
+      + '</div>';
+  } else if (o.status === "bounced") {
+    summActions = '<div class="summ-actions" onclick="event.stopPropagation()">'
+      + '<button class="btn" style="font-size:11px;padding:5px 10px;background:var(--panel)" onclick="closeOrder(' + oJson + ')">✕ Close</button>'
+      + '</div>';
+  } else if (o.status === "approved") {
+    summActions = '<div class="summ-actions" onclick="event.stopPropagation()">'
+      + '<button class="btn btn-approve" style="font-size:11px;padding:5px 10px" onclick="markComplete(' + oJson + ')">✓ Mark Complete</button>'
+      + '</div>';
+  }
+
+  var previewSrc = o.previewData || o.previewUrl || "";
+  var preview = previewSrc
+    ? '<img src="' + previewSrc + '" alt="Preview" loading="lazy" style="cursor:zoom-in" onclick="event.stopPropagation();zoomPreview(this.src)">'
+    : '<div class="no-preview">No preview</div>';
+
+  var links = "";
+  if (o.folderUrl) links += '<a href="' + esc(o.folderUrl) + '" target="_blank" onclick="event.stopPropagation()">📁 Drive folder</a>';
+  if (o.dxfUrl)    links += '<a href="' + esc(o.dxfUrl)    + '" target="_blank" onclick="event.stopPropagation()">⬇ Source file</a>';
+
+  var msgHtml = o.message ? '<div class="quote-message">' + esc(o.message) + '</div>' : "";
+
+  return '<div class="order-card ' + esc(o.status) + '" id="card-' + oid + '">'
+    + '<div class="card-summary" onclick="toggleCard(\'' + oid + '\')">'
+    +   '<span class="order-id">' + oid + '</span>'
+    +   '<span class="order-type">' + esc(o.type) + '</span>'
+    +   '<span class="status-badge ' + esc(o.status) + '">' + esc(o.status) + '</span>'
+    +   '<span class="summ-name">' + esc(o.name) + '</span>'
+    +   '<a class="summ-email" href="mailto:' + esc(o.email) + '" onclick="event.stopPropagation()">' + esc(o.email) + '</a>'
+    +   (matStr  ? '<span class="summ-mat">' + esc(matStr) + '</span>' : '')
+    +   (o.estimate ? '<span class="summ-est">' + esc(o.estimate) + '</span>' : '')
+    +   (o.date ? '<span class="summ-date">' + esc(o.date) + '</span>' : '')
+    +   priceBadge(o)
+    +   summActions
+    +   '<span class="expand-btn">▼</span>'
+    + '</div>'
+    + '<div class="card-detail">'
+    +   '<div class="card-preview">' + preview + '</div>'
+    +   '<div class="card-body">'
+    +     '<div class="specs">'
+    +       spec("Material", o.material)
+    +       spec("Quantity", o.quantity)
+    +       spec("Estimate", money(o.estimate), true)
+    +       spec("Dimensions", o.dimensions)
+    +     '</div>'
+    +     msgHtml
+    +     (links ? '<div class="card-links">' + links + '</div>' : "")
+    +   '</div>'
+    + '</div>'
+    + '</div>';
+}
+
+function spec(label, value, big) {
+  if (!value) return "";
+  return '<div class="spec"><div class="k">' + esc(label) + '</div><div class="v' + (big?" big":"") + '">' + esc(value) + '</div></div>';
+}
+
+/* ---- Modal ---- */
+function openModal(action, order) {
+  pendingAction = { action: action, order: order };
+  var isBan = action === "ban";
+  document.getElementById("modal-title").textContent = action === "approve" ? "Approve order " + order.orderId : (isBan ? "Decline + Ban — " : "Decline — ") + order.orderId;
+  document.getElementById("modal-sub").textContent   = action === "approve"
+    ? "Optional message to " + order.name + ":"
+    : "Reason for declining (sent to " + order.name + "):";
+  document.getElementById("modal-confirm").textContent = action === "approve" ? "✓ Send approval" : (isBan ? "🚫 Decline + Ban email" : "✕ Send decline");
+  document.getElementById("modal-confirm").className   = "btn " + (action === "approve" ? "btn-approve" : "btn-decline");
+  if (isBan) document.getElementById("modal-confirm").style.background = "#c0392b";
+  else document.getElementById("modal-confirm").style.background = "";
+  document.getElementById("modal-note").value   = "";
+  document.getElementById("modal-status").textContent = "";
+  document.getElementById("modal").style.display = "";
+}
+
+document.getElementById("modal-cancel").onclick = function() {
+  document.getElementById("modal").style.display = "none";
+  pendingAction = null;
+};
+
+document.getElementById("modal-confirm").onclick = function() {
+  if (!pendingAction) return;
+  var o      = pendingAction.order;
+  var action = pendingAction.action;
+  var note   = document.getElementById("modal-note").value.trim();
+  var st     = document.getElementById("modal-status");
+
+  st.style.color = "var(--muted)";
+  st.textContent = "Sending…";
+
+  var fd = new FormData();
+  fd.append("token",          TOKEN);
+  fd.append("action",         action === "ban" ? "ban" : action);
+  fd.append("rowIndex",       String(o.rowIndex));
+  fd.append("order_id",       o.orderId);
+  fd.append("customer_name",  o.name);
+  fd.append("customer_email", o.email);
+  fd.append("note",           note);
+
+  fetch(SCRIPT_URL, { method: "POST", body: fd, mode: "no-cors" })
+    .then(function() {
+      st.style.color = "var(--ok)";
+      st.textContent = "Sent!";
+      // update card in DOM
+      var card = document.getElementById("card-" + o.orderId);
+      if (card) {
+        var newStatus = action === "approve" ? "approved" : "declined";
+        card.classList.remove("pending");
+        card.classList.add(newStatus);
+        var actEl = card.querySelector(".summ-actions");
+        if (actEl) actEl.remove();
+        card.querySelectorAll(".status-badge").forEach(function(b) {
+          b.className = "status-badge " + newStatus;
+          b.textContent = newStatus;
+        });
+      }
+      setTimeout(function() {
+        document.getElementById("modal").style.display = "none";
+        pendingAction = null;
+      }, 800);
+    })
+    .catch(function() {
+      st.style.color = "var(--warn)";
+      st.textContent = "Error — try again";
+    });
+};
+
+/* ---- Filter buttons ---- */
+document.querySelectorAll(".fbtn[data-status]").forEach(function(btn) {
+  btn.onclick = function() {
+    document.querySelectorAll(".fbtn[data-status]").forEach(function(b){ b.classList.remove("active"); });
+    btn.classList.add("active");
+    loadOrders(btn.dataset.status);
+  };
+});
+
+document.getElementById("refreshBtn").onclick = function() { loadOrders(currentStatus); };
+
+/* ---- Close modal on background click ---- */
+document.getElementById("modal").addEventListener("click", function(e) {
+  if (e.target === this) { this.style.display = "none"; pendingAction = null; }
+});
+
+/* ---- Mark complete ---- */
+function markComplete(o) {
+  var card = document.getElementById("card-" + o.orderId);
+  if (card) card.style.opacity = "0.4";
+  var fd = new FormData();
+  fd.append("token",    TOKEN);
+  fd.append("action",   "complete");
+  fd.append("rowIndex", String(o.rowIndex));
+  fetch(SCRIPT_URL, { method: "POST", body: fd, mode: "no-cors" })
+    .then(function() { if (card) card.remove(); });
+}
+
+/* ---- Ban list ---- */
+function loadBans() {
+  document.getElementById("ban-list").innerHTML = '<div class="loading" style="padding:10px;text-align:left">Loading…</div>';
+  fetch(SCRIPT_URL + "?token=" + TOKEN + "&action=bans")
+    .then(function(r) { return r.json(); })
+    .then(function(data) { renderBans(data.banned || []); })
+    .catch(function() { document.getElementById("ban-list").innerHTML = '<div class="loading" style="padding:10px;text-align:left;color:var(--muted)">Could not load.</div>'; });
+}
+
+function renderBans(list) {
+  var el = document.getElementById("ban-list");
+  if (!list.length) {
+    el.innerHTML = '<div class="loading" style="padding:10px;text-align:left;color:var(--muted)">No banned emails.</div>';
+    return;
+  }
+  el.innerHTML = '<div style="display:grid;gap:6px">' + list.map(function(b) {
+    return '<div class="ban-item">'
+      + '<span class="ban-email">' + esc(b.email) + '</span>'
+      + (b.name ? '<span class="ban-name">— ' + esc(b.name) + '</span>' : '')
+      + '<span class="ban-date" style="margin-left:auto">' + esc(b.date || "") + '</span>'
+      + '<button class="btn ghost" style="font-size:11px;padding:4px 10px" onclick="unban(\'' + esc(b.email) + '\')">Remove ban</button>'
+      + '</div>';
+  }).join("") + '</div>';
+}
+
+function unban(email) {
+  var fd = new FormData();
+  fd.append("token",          TOKEN);
+  fd.append("action",         "unban");
+  fd.append("customer_email", email);
+  fetch(SCRIPT_URL, { method: "POST", body: fd, mode: "no-cors" })
+    .then(function() { setTimeout(loadBans, 600); });
+}
+
+/* ---- Close bounced order ---- */
+function closeOrder(o) {
+  var card = document.getElementById("card-" + o.orderId);
+  if (card) card.style.opacity = "0.4";
+  var fd = new FormData();
+  fd.append("token",    TOKEN);
+  fd.append("action",   "close");
+  fd.append("rowIndex", String(o.rowIndex));
+  fetch(SCRIPT_URL, { method: "POST", body: fd, mode: "no-cors" })
+    .then(function() { if (card) card.remove(); })
+    .catch(function() { if (card) card.style.opacity = "1"; });
+}
+
+/* ---- Lightbox ---- */
+function zoomPreview(src) {
+  document.getElementById("lightbox-img").src = src;
+  document.getElementById("lightbox").style.display = "flex";
+}
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") document.getElementById("lightbox").style.display = "none";
+});
+
+/* ---- Init ---- */
+loadOrders("pending");
+loadBans();
+</script>
+</body>
+</html>

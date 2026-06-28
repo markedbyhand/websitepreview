@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="theme.css">
 <style>
+  .top-inner{padding:0 18px}  /* compact header — match homepage */
   .owrap{max-width:1240px;margin:0 auto;padding:0 18px}
   .obar{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,var(--graphite-2),var(--graphite));border-bottom:1px solid var(--line)}
   .obar-in{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 0}
@@ -81,7 +82,7 @@
 <div class="obar">
   <div class="owrap">
     <div class="obar-in">
-      <a href="index.html" aria-label="Home" style="text-decoration:none;display:inline-flex;align-items:center;gap:10px;color:inherit"><span class="mark" style="width:26px;height:26px"></span><span class="ttl" style="font-family:'Bricolage Grotesque',sans-serif">Owner settings<small id="tabFile">quote-config.json</small></span></a>
+      <a href="index.html" aria-label="Home" style="text-decoration:none;display:inline-flex;align-items:center;gap:10px;color:inherit"><img class="mark" src="mbh-logo.svg" alt="" style="width:26px;height:26px"><span class="ttl" style="font-family:'Bricolage Grotesque',sans-serif">Owner settings<small id="tabFile">quote-config.json</small></span></a>
       <div class="sp"></div>
       <span class="status" id="status">Loading…</span>
       <button class="btn ghost" id="openBtn">Open file…</button>
@@ -92,6 +93,7 @@
       <button class="tab-btn on" data-tab="laser">✂ Laser Cutter</button>
       <button class="tab-btn" data-tab="print">⬡ 3D Printer</button>
       <button class="tab-btn" data-tab="nightlight">🌙 Night Light</button>
+      <button class="tab-btn" data-tab="signs">▦ Acrylic Signs</button>
     </div>
   </div>
 </div>
@@ -404,6 +406,49 @@
     </div><!-- /nightlight olayout -->
   </div><!-- /nightlight tabpane -->
 
+  <div class="tabpane" data-pane="signs">
+    <div class="olayout">
+      <div>
+        <div class="card">
+          <h2>Backing material (sheet yield)</h2>
+          <p class="sub">Backing cost scales with the sheet area a sign actually consumes. Any offcut smaller than the reuse size counts as waste — so a big sign that scraps a sheet pays for the whole sheet.</p>
+          <div class="frow three">
+            <div class="f"><label>Stock sheet width (mm)</label><div class="ig"><input type="number" id="s_sheetW" step="10" min="50" value="600"></div></div>
+            <div class="f"><label>Stock sheet height (mm)</label><div class="ig"><input type="number" id="s_sheetH" step="10" min="50" value="400"></div></div>
+            <div class="f"><label>Min reusable offcut (mm)</label><div class="ig"><input type="number" id="s_minOffcut" step="5" min="0" value="150"></div></div>
+            <div class="f"><label>Cut spacing / kerf (mm)</label><div class="ig"><input type="number" id="s_kerf" step="1" min="0" value="4"></div></div>
+            <div class="f"><label>Backing rate ($ / cm²)</label><div class="ig"><span class="pre">$</span><input type="number" id="s_boardRatePerCm2" step="0.005" min="0" value="0.05"></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Lettering &amp; labour</h2>
+          <p class="sub">Each extra finish colour is a separate sheet + cut + glue. Per-piece covers assembly time (≈ one per letter/shape).</p>
+          <div class="frow">
+            <div class="f"><label>Extra colour surcharge</label><div class="ig"><span class="pre">$</span><input type="number" id="s_colourSurcharge" step="1" min="0" value="18"></div></div>
+            <div class="f"><label>Setup / labour base</label><div class="ig"><span class="pre">$</span><input type="number" id="s_labour" step="1" min="0" value="20"></div></div>
+            <div class="f"><label>Per cut piece (assembly)</label><div class="ig"><span class="pre">$</span><input type="number" id="s_perPiece" step="0.1" min="0" value="0.6"></div></div>
+            <div class="f"><label>Minimum order</label><div class="ig"><span class="pre">$</span><input type="number" id="s_minPrice" step="1" min="0" value="35"></div></div>
+          </div>
+          <label style="margin-top:12px;display:flex;gap:8px;align-items:center;font-size:13px;color:var(--bone)"><input type="checkbox" id="s_gstIncluded" checked> Prices shown include GST</label>
+        </div>
+      </div>
+      <aside class="side">
+        <div class="card" style="margin:0">
+          <h2>Price preview</h2>
+          <p class="sub">Example signs at current settings (1 colour, ≈10 letters).</p>
+          <div class="nl-matrix" id="signsPreview"></div>
+        </div>
+        <div class="card" style="margin:0">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <h2 style="margin:0">Live JSON — signs</h2>
+            <button class="minibtn" id="copySignsJson">Copy</button>
+          </div>
+          <pre class="json" id="sJsonOut">{}</pre>
+        </div>
+      </aside>
+    </div>
+  </div><!-- /signs tabpane -->
+
 </main>
 
 <div class="toast" id="toast"></div>
@@ -473,9 +518,11 @@ var DEFAULT_NIGHTLIGHT={
 /* ======================================================
    STATE
    ====================================================== */
+var DEFAULT_SIGNS={currency:"$",sheetW:600,sheetH:400,minOffcut:150,kerf:4,boardRatePerCm2:0.05,colourSurcharge:18,labour:20,perPiece:0.6,minPrice:35,gstIncluded:true,token:"mbh-2026-laser"};
+
 var CURTAB="laser";
-var fileHandles={laser:null,print:null,nightlight:null};
-var dirty={laser:false,print:false,nightlight:false};
+var fileHandles={laser:null,print:null,nightlight:null,signs:null};
+var dirty={laser:false,print:false,nightlight:false,signs:false};
 var canFS=("showOpenFilePicker" in window);
 var SAVE_ENDPOINT="";
 
@@ -826,9 +873,52 @@ function refreshActive(){
     $("pJsonOut").textContent=JSON.stringify(gatherPrint(),null,2);
     fillPrintMatSelect();
     printPreview();
+  }else if(CURTAB==="signs"){
+    signsPreview();
   }else{
     nightLightPreview();
   }
+}
+
+/* ======================================================
+   ACRYLIC SIGNS — flat config (matches PRICING in signs.html)
+   ====================================================== */
+function gatherSigns(){
+  var n=function(id){return parseFloat($(id).value)||0;};
+  return {
+    currency:"$",
+    sheetW:n("s_sheetW"), sheetH:n("s_sheetH"), minOffcut:n("s_minOffcut"), kerf:n("s_kerf"),
+    boardRatePerCm2:n("s_boardRatePerCm2"), colourSurcharge:n("s_colourSurcharge"),
+    labour:n("s_labour"), perPiece:n("s_perPiece"), minPrice:n("s_minPrice"),
+    gstIncluded:$("s_gstIncluded").checked, token:DEFAULT_SIGNS.token
+  };
+}
+function populateSigns(cfg){
+  cfg=cfg||DEFAULT_SIGNS; var d=DEFAULT_SIGNS, g=function(k){return cfg[k]!=null?cfg[k]:d[k];};
+  ["sheetW","sheetH","minOffcut","kerf","boardRatePerCm2","colourSurcharge","labour","perPiece","minPrice"].forEach(function(k){if($("s_"+k))$("s_"+k).value=g(k);});
+  if($("s_gstIncluded"))$("s_gstIncluded").checked=!!g("gstIncluded");
+}
+/* mirror of signs.html billableBoardMm2 + computePrice */
+function signsBillMm2(w,h,c){
+  var k=c.kerf,Sw=c.sheetW,Sh=c.sheetH,mo=c.minOffcut;
+  function fit(w,h,sw,sh){var W2=w+k,H2=h+k;if(W2>sw||H2>sh)return null;var Rw=sw-W2,Th=sh-H2;
+    var rw=(Rw>=mo&&sh>=mo)?0:Rw*sh, tw=(W2>=mo&&Th>=mo)?0:W2*Th;return W2*H2+rw+tw;}
+  var b=fit(w,h,Sw,Sh),r=fit(h,w,Sw,Sh);
+  if(r!=null&&(b==null||r<b))b=r;
+  if(b==null)b=Math.max(Sw*Sh,(w+k)*(h+k));
+  return b;
+}
+function signsPriceOf(w,h,c,colours,pieces){
+  var bill=signsBillMm2(w,h,c)/100, board=bill*c.boardRatePerCm2, colourC=(colours-1)*c.colourSurcharge, assembly=pieces*c.perPiece;
+  return Math.max(c.minPrice, c.labour+board+colourC+assembly);
+}
+function signsPreview(){
+  var c=gatherSigns(); $("sJsonOut").textContent=JSON.stringify(c,null,2);
+  var ex=[[250,125],[300,200],[380,560],[400,600]];
+  $("signsPreview").innerHTML='<table class="mt"><tbody>'+ex.map(function(e){
+    var p=signsPriceOf(e[0],e[1],c,1,10), area=Math.round(e[0]*e[1]/100), bill=Math.round(signsBillMm2(e[0],e[1],c)/100);
+    return '<tr><td class="rowhead">'+e[0]+'×'+e[1]+' mm</td><td class="rowhead" style="font-size:11px">'+area+'→'+bill+' cm²</td><td>'+c.currency+p.toFixed(2)+'</td></tr>';
+  }).join('')+'</tbody></table>';
 }
 
 /* ======================================================
@@ -848,6 +938,7 @@ document.addEventListener("input",function(e){
   else if(e.target.closest('[data-pane="laser"]')){markDirty("laser");}
   else if(e.target.closest('[data-pane="print"]')){markDirty("print");}
   else if(e.target.closest('[data-pane="nightlight"]')){markDirty("nightlight");}
+  else if(e.target.closest('[data-pane="signs"]')){markDirty("signs");}
   refreshActive();
 });
 
@@ -857,11 +948,13 @@ document.addEventListener("input",function(e){
 function currentFileName(){
   if(CURTAB==="laser")return "quote-config.json";
   if(CURTAB==="print")return "print-quote-config.json";
+  if(CURTAB==="signs")return "signs-config.json";
   return "night-light-config.json";
 }
 function currentJson(){
   if(CURTAB==="laser")return JSON.stringify(gatherLaser(),null,2);
   if(CURTAB==="print")return JSON.stringify(gatherPrint(),null,2);
+  if(CURTAB==="signs")return JSON.stringify(gatherSigns(),null,2);
   return JSON.stringify(gatherNightLight(),null,2);
 }
 
@@ -873,6 +966,7 @@ $("openBtn").onclick=async function(){
     var f=await h.getFile(),txt=await f.text(),parsed=JSON.parse(txt);
     if(CURTAB==="laser")populateLaser(parsed);
     else if(CURTAB==="print")populatePrint(parsed);
+    else if(CURTAB==="signs")populateSigns(parsed);
     else populateNightLight(parsed);
     dirty[CURTAB]=false;setStatus("Opened "+h.name,"saved");
     toast("Loaded "+h.name+" — edits will save back to it.");
@@ -910,15 +1004,16 @@ $("dlBtn").onclick=function(){download(currentJson());};
 $("copyLaserJson").onclick=function(){navigator.clipboard.writeText($("lJsonOut").textContent).then(function(){toast("JSON copied");});};
 $("copyPrintJson").onclick=function(){navigator.clipboard.writeText($("pJsonOut").textContent).then(function(){toast("JSON copied");});};
 $("copyNLJson").onclick=function(){navigator.clipboard.writeText($("nlJsonOut").textContent).then(function(){toast("JSON copied");});};
+$("copySignsJson").onclick=function(){navigator.clipboard.writeText($("sJsonOut").textContent).then(function(){toast("JSON copied");});};
 
 function toast(msg){var t=$("toast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2200);}
-window.addEventListener("beforeunload",function(e){if(dirty.laser||dirty.print||dirty.nightlight){e.preventDefault();e.returnValue="";}});
+window.addEventListener("beforeunload",function(e){if(dirty.laser||dirty.print||dirty.nightlight||dirty.signs){e.preventDefault();e.returnValue="";}});
 
 /* ======================================================
    BOOT — load all three JSON files
    ====================================================== */
 (function(){
-  var loaded=0, total=3;
+  var loaded=0, total=4;
   function done(){loaded++;if(loaded>=total){setStatus(canFS?"Ready · open a file to enable direct save":"Ready","saved");}}
   if(typeof fetch==="function"){
     fetch("quote-config.json",{cache:"no-store"})
@@ -933,9 +1028,13 @@ window.addEventListener("beforeunload",function(e){if(dirty.laser||dirty.print||
       .then(function(r){if(!r.ok)throw 0;return r.json();})
       .then(function(j){populateNightLight(j);done();})
       .catch(function(){populateNightLight(DEFAULT_NIGHTLIGHT);dirty.nightlight=true;done();});
+    fetch("signs-config.json",{cache:"no-store"})
+      .then(function(r){if(!r.ok)throw 0;return r.json();})
+      .then(function(j){populateSigns(j);done();})
+      .catch(function(){populateSigns(DEFAULT_SIGNS);dirty.signs=true;done();});
   }else{
-    populateLaser(DEFAULT_LASER);populatePrint(DEFAULT_PRINT);populateNightLight(DEFAULT_NIGHTLIGHT);
-    dirty.laser=true;dirty.print=true;dirty.nightlight=true;
+    populateLaser(DEFAULT_LASER);populatePrint(DEFAULT_PRINT);populateNightLight(DEFAULT_NIGHTLIGHT);populateSigns(DEFAULT_SIGNS);
+    dirty.laser=true;dirty.print=true;dirty.nightlight=true;dirty.signs=true;
     setStatus("Defaults","dirty");refreshActive();
   }
 })();

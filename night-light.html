@@ -3,30 +3,34 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Night Light DXF Builder — Marked By Hand</title>
+<title>Night Light — Marked By Hand</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Fredoka:wght@400;600&family=Baloo+2:wght@700&family=Pacifico&family=Caveat:wght@700&family=Poppins:wght@600&family=Bebas+Neue&family=Lobster&family=Bangers&family=Luckiest+Guy&family=Righteous&family=Permanent+Marker&family=Satisfy&family=Sigmar+One&family=Chewy&family=Monoton&family=Bungee&family=Shrikhand&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
 <style>
+  .top-inner{padding:0 18px}  /* compact header — match homepage */
   :root{
-    --bg:#F5EFE7;--panel:#FCF8F2;--panel-2:#EAE0D4;--line:#D9CCBA;--ink:#3B2F26;--muted:#8E7D6B;
-    --amber:#A47864;--amber-soft:#EAD9CD;--led:#7A9A8B;--cut:#C25E6E;--ok:#5A7E5C;--radius:14px;
-    --mono:'JetBrains Mono',ui-monospace,"SF Mono",Menlo,Consolas,monospace;--sans:'Space Grotesk',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    /* Aliases — map tool-internal names to canonical theme.css tokens */
+    --bg:var(--graphite); --panel-light:var(--graphite-2); --panel-2:var(--panel);
+    --ink:var(--bone); --led:var(--cyan); --cut:var(--op-cut);
+    --radius:var(--r); --sans:var(--disp);
+    --amber-soft:#EAD9CD; /* light amber tint — used for panel highlights in this tool */
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45}
-  .wrap{max-width:1180px;margin:0 auto;padding:22px clamp(14px,3vw,30px) 60px}
-  header{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin:6px 0 4px}
-  header h1{font-size:20px;letter-spacing:-.01em;margin:0;font-weight:650}
-  header .tag{font-family:var(--mono);font-size:11px;color:var(--amber);border:1px solid var(--panel-2);
-    background:var(--panel-2);padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.08em}
-  header p{color:var(--muted);margin:2px 0 18px;font-size:13.5px;width:100%}
-  .grid{display:grid;grid-template-columns:330px 1fr;gap:16px;align-items:start}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45;display:flex;flex-direction:column;min-height:100vh}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 clamp(14px,3vw,30px)}
+  .grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;align-items:start}
   @media(max-width:860px){.grid{grid-template-columns:1fr}.preview-col{position:static!important}}
-  .preview-col{position:sticky;top:10px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:13px;margin-bottom:10px}
+  .preview-col{position:sticky;top:72px;order:-1}
+  .card{background:var(--panel-light);border:1px solid var(--line);border-radius:var(--radius);padding:13px;margin-bottom:10px}
   .card:last-child{margin-bottom:0}
-  .card h2{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 12px;font-weight:600}
+  .card h2{font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:0 0 12px;font-weight:500}
+  /* ===== HERO ===== */
+  .hero{padding:0 0 10px}
+  .hero h1{font-family:var(--brand);font-size:clamp(28px,5vw,46px);line-height:1.04;margin:0 0 12px;font-weight:700;letter-spacing:-.5px}
+  .hero h1 .ghost{color:var(--muted)}
+  .hero .lede{max-width:560px;color:var(--lede);font-size:16px;margin:0}
   .field{margin-bottom:10px}.field:last-child{margin-bottom:0}
   label.lab{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:var(--muted);margin-bottom:6px}
   label.lab b{color:var(--ink);font-family:var(--mono);font-weight:500;font-size:12px}
@@ -35,7 +39,7 @@
     border-radius:9px;padding:9px 10px;font:inherit;font-size:14px}
   .contact-wrap{display:flex;flex-direction:column;gap:8px;margin-top:8px}
   .sendstat{font-size:12px;min-height:18px;text-align:center;margin-top:6px}
-  .sent-box{background:color-mix(in srgb,var(--ok) 12%,var(--panel));border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);border-radius:9px;padding:12px 14px;font-size:13px;color:var(--ink);line-height:1.5;margin-top:10px;text-align:center}
+  .sent-box{background:color-mix(in srgb,var(--ok) 12%,var(--panel-light));border:1px solid color-mix(in srgb,var(--ok) 40%,transparent);border-radius:9px;padding:12px 14px;font-size:13px;color:var(--ink);line-height:1.5;margin-top:10px;text-align:center}
   select{appearance:none;cursor:pointer}
   .row{display:flex;gap:8px}.row>*{flex:1}
   .drop{border:1.5px dashed var(--line);border-radius:11px;padding:20px 14px;text-align:center;cursor:pointer;
@@ -73,22 +77,25 @@
   .pricerow .pl{font-size:13px;color:var(--muted)}
   .pricerow .pv{font-family:var(--mono);font-weight:700;font-size:22px;color:var(--amber)}
   .warn{margin:0 0 10px;padding:9px 12px;border-radius:9px;font-size:12.5px;line-height:1.45;
-    background:color-mix(in srgb,var(--cut) 12%,var(--panel));border:1px solid color-mix(in srgb,var(--cut) 40%,transparent);color:#9B3B3B}
-.home-brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);margin:0 0 10px;width:100%}
-  .home-brand svg{width:26px;height:26px;display:block;flex:none}
-  .home-brand b{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;letter-spacing:.1px}
-  .home-brand small{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-left:2px}
-  header h1{font-family:'Bricolage Grotesque',sans-serif}
+    background:color-mix(in srgb,var(--cut) 12%,var(--panel-light));border:1px solid color-mix(in srgb,var(--cut) 40%,transparent);color:#9B3B3B}
+  /* ===== empty-stage artwork — edge-lit MBH glowing on the dark stage (keeps the 'lit' feel) ===== */
+  .nl-art{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+  .nl-art .nl-corner{position:absolute;top:12px;font-family:var(--mono);font-size:10px;letter-spacing:1px;color:rgba(180,222,236,.5)}
+  .nl-art .nl-corner.tl{left:14px}.nl-art .nl-corner.tr{right:14px}
+  .nl-art .nl-cap{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:11.5px;color:rgba(180,222,236,.6);padding:0 26px;line-height:1.5}
+  @keyframes nlPulse{0%,100%{opacity:.7}50%{opacity:1}}
+  #nlGlowG{animation:nlPulse 3s ease-in-out infinite}
+  @media (prefers-reduced-motion: reduce){#nlGlowG{animation:none;opacity:1}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <a href="index.html" class="home-brand"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="7" y="7" width="50" height="50" rx="13" fill="none" stroke="#A47864" stroke-width="2.5"/><path d="M18 28 V18 H28" fill="none" stroke="#A47864" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 30 V34 M40 46 V50 M30 40 H34 M46 40 H50" fill="none" stroke="#A47864" stroke-width="1.8" stroke-linecap="round"/><path d="M40 33 L42.24 37.76 L47 40 L42.24 42.24 L40 47 L37.76 42.24 L33 40 L37.76 37.76 Z" fill="#7A9A8B"/></svg><span><b>Marked By Hand</b> <small>home</small></span></a>
-    <h1>Night Light DXF Builder</h1>
-    <span class="tag">Marked By Hand · phase 1</span>
-    <p>Drop clean cartoon or line art for the engrave, add a name, choose how the panel is cut, then export a layered DXF to quote and run. Drag the artwork or name in the preview — they snap to centre.</p>
-  </header>
+<div id="site-header"></div>
+<main class="wrap" style="padding-top:28px;padding-bottom:60px;flex:1 0 auto">
+  <section class="hero">
+    <p class="eyebrow">Night Light Builder</p>
+    <h1>Drop art &amp; a name.<br><span class="ghost">Get a layered DXF.</span></h1>
+    <p class="lede">Drop clean cartoon or line art for the engrave, add a name, choose how the panel is cut, then export a layered DXF to quote and run. Drag the artwork or name in the preview — they snap to centre.</p>
+  </section>
 
   <div class="grid">
     <!-- ===== CONTROLS ===== -->
@@ -222,10 +229,11 @@
               <button data-mode="blue" class="on">Blueprint</button>
               <button data-mode="lit">Lit</button>
             </div>
+            <button id="startOverNL" class="btn ghost" style="display:none;width:auto;margin:0;padding:6px 11px;font-size:12px;white-space:nowrap">Start over</button>
           </div>
         </div>
         <div id="warn" class="warn hide"></div>
-        <div id="stagebox" class="stage-blue"><div class="empty">Drop an image here, or use the box top-left, to begin.</div></div>
+        <div id="stagebox" class="stage-blue"></div>
         <div class="legend">
           <span><i style="background:var(--led)"></i>Engrave</span>
           <span><i style="background:var(--cut)"></i>Cut</span>
@@ -240,7 +248,7 @@
       </div>
     </div>
   </div>
-</div>
+</main>
 
 <script>
 const $=id=>document.getElementById(id);
@@ -578,10 +586,30 @@ function computeAround(engImg, engName){
   return cut;
 }
 
+/* edge-lit MBH shown on the empty stage — demonstrates the product and keeps the glow */
+const NL_ART=`<div class="nl-art">
+  <span class="nl-corner tl">LED · 5V</span>
+  <span class="nl-corner tr">ACRYLIC 3mm</span>
+  <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <defs><filter id="nlGlow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+    <rect x="84" y="48" width="232" height="150" rx="9" fill="rgba(140,210,230,.045)" stroke="rgba(150,215,235,.16)"/>
+    <g id="nlGlowG" fill="none" stroke="#dff6ff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" filter="url(#nlGlow)">
+      <path d="M104 178 V86 L132 134 L160 86 V178"/>
+      <path d="M186 86 V178 M186 86 C236 86 236 130 186 130 C240 130 240 178 186 178"/>
+      <path d="M250 86 V178 M300 86 V178 M250 132 H300"/>
+    </g>
+    <rect x="150" y="206" width="100" height="14" rx="4" fill="#0d1922" stroke="rgba(150,215,235,.22)"/>
+    <g fill="#9fe8ff"><circle cx="172" cy="213" r="2.3"/><circle cx="200" cy="213" r="2.3"/><circle cx="228" cy="213" r="2.3"/></g>
+  </svg>
+  <span class="nl-cap">Drop art or type a name to light it up.</span>
+</div>`;
+
 /* ---------------- render ---------------- */
 function render(){
   const box=$('stagebox');box.className=mode==='lit'?'stage-lit':'stage-blue';
-  if(!result||!result.engrave.length){box.innerHTML='<div class="empty">Drop an image, or type a name, to begin.</div>';return;}
+  var soNL=$('startOverNL');
+  if(!result||!result.engrave.length){box.innerHTML=NL_ART;if(soNL)soNL.style.display='none';return;}
+  if(soNL)soNL.style.display='inline-flex';
   const path=lp=>'M'+lp.map(p=>p[0].toFixed(2)+','+p[1].toFixed(2)).join('L')+'Z';
   const gb=ls=>{const[a,b,c,d]=bbox(ls);return`<rect x="${a}" y="${b}" width="${c-a}" height="${d-b}" fill="none" pointer-events="all"/>`;};
   let s='';
@@ -706,6 +734,19 @@ $('export').addEventListener('click',download);
 
 document.querySelectorAll('#modeSeg button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('#modeSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');mode=b.dataset.mode;render();}));
+$('startOverNL').addEventListener('click',resetNL);
+function resetNL(){
+  srcImg=null;imgLoops=null;imgW=0;imgH=0;imgScale=1;imgPos={x:0,y:0};result=null;
+  $('file').value='';
+  var n=$('name');if(n)n.value='';
+  var ex=$('export');if(ex)ex.disabled=true;
+  var w=$('warn');if(w)w.className='warn hide';
+  var ss=$('sendstat');if(ss)ss.textContent='';
+  var st=$('sent');if(st)st.classList.add('hide');
+  var sd=$('send');if(sd)sd.disabled=false;
+  ['sSize','sLen'].forEach(function(i){var el=$(i);if(el)el.textContent='—';});
+  render();
+}
 document.querySelectorAll('#cutSeg button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('#cutSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');cutMode=b.dataset.cut;
   $('aroundCtl').classList.toggle('hide',cutMode!=='around');$('shapeCtl').classList.toggle('hide',cutMode!=='shape');
@@ -746,6 +787,26 @@ function updatePrice(){
 }
 $('ledBase').addEventListener('change',updatePrice);
 $('sizeTier').addEventListener('change',updatePrice);
+/* same Apps Script endpoint + token as the laser & 3D-print tools (config can override) */
+const NL_SCRIPT_URL='https://script.google.com/macros/s/AKfycbz02fhIttHEOjcmG6mUIGym-wB-vYvCMFNjHc8w2DigSV6J3oQIJrEiuVyD8TzGe3VQ/exec';
+function nlSnapshot(cb){
+  const box=$('stagebox'),svg=box?box.querySelector('svg'):null;
+  if(!svg){cb(null);return;}
+  try{
+    const r=svg.getBoundingClientRect();
+    const vw=r.width||520,vh=r.height||390;           // on-screen size = true aspect
+    const scale=Math.min(1,560/vw);                   // cap width, keep aspect (no squish)
+    const w=Math.max(1,Math.round(vw*scale)),h=Math.max(1,Math.round(vh*scale));
+    const clone=svg.cloneNode(true);                  // give the SVG explicit px size so it rasterises 1:1
+    clone.setAttribute('width',vw);clone.setAttribute('height',vh);
+    const data=new XMLSerializer().serializeToString(clone);
+    const url=URL.createObjectURL(new Blob([data],{type:'image/svg+xml;charset=utf-8'}));
+    const img=new Image();
+    img.onload=function(){var cv=document.createElement('canvas');cv.width=w;cv.height=h;var ctx=cv.getContext('2d');ctx.fillStyle='#0a0f14';ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);URL.revokeObjectURL(url);cb(cv.toDataURL('image/png'));};
+    img.onerror=function(){URL.revokeObjectURL(url);cb(null);};
+    img.src=url;
+  }catch(e){cb(null);}
+}
 $('send').addEventListener('click',function(){
   const nm=$('sendName').value.trim(),em=$('sendEmail').value.trim();
   const stat=$('sendstat');
@@ -756,29 +817,38 @@ $('send').addEventListener('click',function(){
   const panelName=$('name').value.trim()||'(no name)';
   const paths=result?result.engrave.length:0,nodes=result?result.engrave.reduce((s,l)=>s+l.length,0):0;
   const sizeText=$('sSize').textContent,lenText=$('sLen').textContent;
-  const url=CONFIG.business.formUrl;
-  const fd=new FormData();
-  fd.append('name',nm);fd.append('email',em);
-  if(CONFIG.business.formKey)fd.append('access_key',CONFIG.business.formKey);
-  fd.append('subject','Marked By Hand — night light: '+panelName);
-  fd.append('panel_name',panelName);
-  fd.append('size',szOpt?szOpt.text:'');
-  fd.append('led_base',ledOpt?ledOpt.text:'');
-  fd.append('engrave_paths',String(paths));
-  fd.append('engrave_nodes',String(nodes));
-  fd.append('panel_size',sizeText);
-  fd.append('engrave_line',lenText);
-  fd.append('displayed_price','$'+price.toFixed(2));
-  fd.append('message','Night light order — '+panelName+'. LED: '+(ledOpt?ledOpt.text:'?')+'. Size: '+(szOpt?szOpt.text:'?')+'. Price: $'+price.toFixed(2)+'. Paths: '+paths+', nodes: '+nodes+', panel: '+sizeText+'.');
-  stat.textContent='Sending…';stat.style.color='var(--muted)';
-  if(!url){$('send').disabled=true;$('sent').classList.remove('hide');stat.textContent='';return;}
-  fetch(url,{method:'POST',body:fd,headers:{Accept:'application/json'}})
-    .then(r=>r.json())
-    .then(d=>{
-      if(d.success||d.ok||d.next){$('send').disabled=true;$('sent').classList.remove('hide');stat.textContent='';}
-      else{stat.textContent='Something went wrong — please try again.';stat.style.color='var(--cut)';}
-    })
-    .catch(()=>{stat.textContent='Network error — please try again.';stat.style.color='var(--cut)';});
+  const url=CONFIG.business.formUrl||NL_SCRIPT_URL;
+  const matText=(ledOpt?ledOpt.text:'?')+' · '+(szOpt?szOpt.text:'?');
+  const txt='MARKED BY HAND — night light order\nName:        '+nm+'\nEmail:       '+em+
+    '\nPanel name:  '+panelName+'\nSize:        '+(szOpt?szOpt.text:'?')+'\nLED base:    '+(ledOpt?ledOpt.text:'?')+
+    '\nPanel size:  '+sizeText+'\nEngrave:     '+lenText+' ('+paths+' paths, '+nodes+' nodes)\nESTIMATE:    $'+price.toFixed(2);
+  const btn=this;btn.disabled=true;stat.textContent='Sending…';stat.style.color='var(--muted)';
+  nlSnapshot(function(snapshot){
+    const fd=new FormData();
+    fd.append('name',nm);fd.append('email',em);
+    fd.append('order_type','Night Light');
+    fd.append('token','mbh-2026-laser');
+    fd.append('subject','Marked By Hand — night light: '+panelName);
+    fd.append('material',matText);
+    fd.append('quantity','1');
+    fd.append('nl_size_key',$('sizeTier').value);fd.append('nl_led_key',$('ledBase').value);
+    fd.append('displayed_estimate','$'+price.toFixed(2));
+    fd.append('panel_name',panelName);
+    fd.append('size',szOpt?szOpt.text:'');
+    fd.append('led_base',ledOpt?ledOpt.text:'');
+    fd.append('engrave_paths',String(paths));
+    fd.append('engrave_nodes',String(nodes));
+    fd.append('panel_size',sizeText);
+    fd.append('engrave_line',lenText);
+    fd.append('message',txt);
+    /* send the layered DXF (text) so it lands in the order's Drive folder, like the laser tool */
+    try{var dxf=toDXF();if(dxf&&dxf.length>40){fd.append('dxf_content',dxf);fd.append('dxf_filename',((panelName.replace(/[^a-z0-9]/gi,'_').toLowerCase())||'nightlight')+'_nightlight.dxf');}}catch(e){}
+    if(CONFIG.business.formKey)fd.append('access_key',CONFIG.business.formKey);
+    if(snapshot)fd.append('snapshot',snapshot);
+    fetch(url,{method:'POST',body:fd,mode:'no-cors'})
+      .then(function(){$('sent').classList.remove('hide');stat.textContent="Sent — we'll be in touch within one business day.";stat.style.color='var(--ok)';$('sendName').value='';$('sendEmail').value='';})
+      .catch(function(){stat.textContent="Couldn't send — please try again shortly.";stat.style.color='var(--cut)';btn.disabled=false;});
+  });
 });
 buildOptions();
 if(typeof fetch==='function'){
@@ -795,6 +865,9 @@ function setView(adv){
 }
 document.querySelectorAll('#viewSeg button').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.v==='adv')));
 setView(false);
+if($('stagebox')&&!$('stagebox').innerHTML.trim())$('stagebox').innerHTML=NL_ART;
 </script>
+<div id="site-footer"></div>
+<script src="site.js"></script>
 </body>
 </html>

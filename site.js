@@ -22,11 +22,11 @@
 
   // Tools dropdown — point these at your real tool files.
   const TOOLS = [
-    { label: "Instant quote", href: "quote.html", desc: "Drop a DXF, get a price on the spot", status: "live", icon: "tag" },
+    { label: "Laser cut quote", href: "quote.html", desc: "Drop a DXF, get a price on the spot", status: "live", icon: "tag" },
+    { label: "Acrylic sign designer", href: "signs.html", desc: "Design a raised-letter sign in 2D & 3D, get a price", status: "beta", icon: "sign" },
+    { label: "3D print quote", href: "print-quote.html", desc: "Drop an STL for an instant print estimate", status: "beta", icon: "cube" },
     { label: "Night light builder", href: "night-light.html", desc: "Turn line-art + a name into a layered DXF", status: "live", icon: "bulb" },
     { label: "Engraving previewer", href: "engrave-preview.html", desc: "See your text on the product before you order", status: "beta", icon: "eye" },
-    { label: "3D Printing Quote", href: "print-quote.html", desc: "We do 3D printing", status: "beta", icon: "eye" }, 
-    { label: "Owner Tools", href: "owner.html", desc: "SHH Secret", status: "beta", icon: "eye" }, 
   ];
 
   const SOCIAL = [
@@ -37,8 +37,10 @@
 
   const ico = {
     tag: '<path d="M3 7v5l8 8 6-6-8-8H3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7" cy="11" r="1.4" fill="currentColor"/>',
+    cube: '<path d="M12 3L3 8l9 5 9-5L12 3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M3 8v8l9 5v-8M21 8v8l-9 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
     bulb: '<path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.7.6 1 1.2 1 2h6c0-.8.3-1.4 1-2A6 6 0 0012 3z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
     eye: '<path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/>',
+    sign: '<rect x="3" y="6" width="18" height="12" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7 11h10M7 14h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>',
     chev: '<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
     cart: '<path d="M4 5h2l2 11h9l2-7H7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.3" fill="currentColor"/><circle cx="17" cy="20" r="1.3" fill="currentColor"/>',
     menu: '<path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
@@ -74,7 +76,7 @@
     <header class="top">
       <div class="wrap top-inner">
         <a class="brand" href="index.html">
-          <span class="mark" aria-hidden="true"></span>
+          <img src="mbh-logo.svg" class="mark" alt="">
           <span><b>Marked By Hand</b><small>Laser &amp; handmade · Sydney</small></span>
         </a>
         <nav class="nav" aria-label="Primary">
@@ -106,7 +108,7 @@
     <footer class="site-foot">
       <div class="wrap foot-top">
         <div class="foot-brand">
-          <a class="brand" href="index.html"><span class="mark" aria-hidden="true"></span>
+          <a class="brand" href="index.html"><img src="mbh-logo.svg" class="mark" alt="">
             <span><b>Marked By Hand</b><small>Built by hand, naturally</small></span></a>
           <h3>Custom, cut &amp; engraved in Sydney</h3>
           <p>A two-person home workshop. We design it, price it on the spot, and make it on a CO₂ laser — then post it to your door.</p>

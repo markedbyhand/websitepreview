@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acrylic Signs — Marked By Hand</title>
+<meta name="description" content="Design a raised-letter acrylic sign — pick fonts, finishes and clipart, see it in 2D and 3D, and get a price on the spot.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Marcellus&family=Cinzel:wght@500;600&family=Playfair+Display:wght@500;600&family=Cormorant+Garamond:wght@500;600&family=Prata&family=Italiana&family=Forum&family=Poiret+One&family=Questrial&family=Tenor+Sans&family=Josefin+Sans:wght@400;600&family=Jost:wght@400;500&family=Great+Vibes&family=Allura&family=Sacramento&family=Parisienne&family=Pinyon+Script&family=Alex+Brush&family=Pacifico&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+  :root{
+    /* aliases → canonical theme.css tokens (panel/line/muted/amber come straight from theme.css) */
+    --bg:var(--graphite); --surface:var(--graphite-2);
+    --ink:var(--bone); --sage:var(--cyan); --btn-ink:var(--primary-ink); --radius:var(--r);
+  }
+  *{box-sizing:border-box}
+  body{font-size:15px;line-height:1.45}   /* match night-light/quote exactly */
+  .top-inner{padding:0 18px}              /* compact header — match homepage + all tools */
+  main.wrap{width:100%;max-width:1180px;margin:0 auto;padding:24px 18px 70px}
+  /* override theme.css's homepage .hero so the tool header is compact like the other tools */
+  .hero{padding:0 0 12px;margin:0}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin:0 0 10px}
+  .hero h1{font-family:var(--brand);font-weight:700;font-size:clamp(28px,5vw,46px);line-height:1.04;letter-spacing:-.5px;margin:0 0 12px}
+  .hero h1 .ghost{color:var(--muted);font-weight:400}
+  .hero .lede{color:var(--lede);max-width:560px;font-size:16px;line-height:1.55;margin:0}
+  .proto-tag{display:inline-block;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;
+    text-transform:uppercase;color:var(--sage);border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:var(--surface)}
+
+  .layout{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:start}
+  @media(max-width:880px){.layout{grid-template-columns:1fr}.stagewrap{position:static!important}}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:13px;margin-bottom:11px}
+  .card h2{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);
+    font-weight:500;margin:0 0 12px;display:flex;justify-content:space-between;align-items:center}
+
+  label.fld{display:block;font-size:13px;color:var(--muted);margin:0 0 6px}
+  textarea,select,input[type=text]{width:100%;font-family:inherit;font-size:14px;color:var(--ink);background:var(--bg);
+    border:1px solid var(--line);border-radius:9px;padding:8px 10px}
+  .row{margin-bottom:14px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+  .btnt{border:1px solid var(--line);background:var(--bg);color:var(--ink);font-family:'JetBrains Mono',monospace;
+    font-size:11px;letter-spacing:.5px;text-transform:uppercase;padding:8px 10px;border-radius:9px;cursor:pointer}
+  .btnt:hover{border-color:var(--amber)}
+
+  .layer{border:1px solid var(--line);border-radius:9px;padding:8px;margin-bottom:8px;background:var(--bg)}
+  .layer.sel{border-color:var(--amber);box-shadow:0 0 0 2px rgba(164,120,100,.18)}
+  .layer .top{display:flex;gap:6px;margin-bottom:6px}
+  .layer .top input{flex:1}
+  .layer .top button{background:transparent;border:0;color:var(--muted);cursor:pointer;font-size:15px;padding:0 4px}
+  .layer select{font-size:12px;padding:5px 6px;margin-bottom:6px}
+  .meta{display:flex;align-items:center;gap:8px;margin-top:4px}
+  .meta .mlab{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);width:44px}
+  .meta input[type=range]{flex:1}
+  .meta .mval{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink);width:42px;text-align:right}
+  .addrow{display:flex;gap:8px;margin-top:4px}
+  .addrow .btnt{flex:1}
+  .presetgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:4px 0 12px}
+  .presetgrid.shapes{grid-template-columns:repeat(4,1fr)}
+  .pchip{border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:7px 8px;cursor:pointer;text-align:center;
+    font:inherit;font-size:12px;color:var(--ink);line-height:1.2}
+  .pchip:hover{border-color:var(--amber)}
+  .pchip.on{border-color:var(--amber);background:color-mix(in srgb,var(--amber) 12%,var(--bg))}
+  .pchip small{display:block;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--muted);margin-top:2px;letter-spacing:.2px}
+  .presetgrid.shapes .pchip{padding:7px 3px;font-size:11.5px}
+  .hintline{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.35}
+  .hintline.bumpcol{color:var(--amber);font-weight:500}
+  .lchip{display:inline-block;width:11px;height:11px;border-radius:3px;border:1px solid rgba(0,0,0,.18);vertical-align:middle;margin-right:5px}
+  .mfgstat{font-family:'JetBrains Mono',monospace;font-size:12px;margin-top:10px;padding:8px 10px;border-radius:8px;
+    background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+  .mfgstat.ok{color:#3a7a5c;border-color:#bcd9c8;background:#f0f7f2}
+  .mfgstat.bad{color:#b4503f;border-color:#e6c3bb;background:#fbf0ed}
+
+  .seg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px}
+  .seg button{border:0;background:transparent;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:12px;
+    letter-spacing:.5px;text-transform:uppercase;padding:7px 15px;border-radius:999px;cursor:pointer}
+  .seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .snaptog{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:12px;
+    letter-spacing:.5px;text-transform:uppercase;color:var(--muted);cursor:pointer;user-select:none}
+  .snaptog input{accent-color:var(--sage);cursor:pointer}
+
+  .swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+  .sw{cursor:pointer;border:2px solid transparent;border-radius:9px;padding:3px;text-align:center}
+  .sw.on{border-color:var(--amber)}
+  .sw .chip{height:30px;border-radius:6px;border:1px solid rgba(0,0,0,.12)}
+  .sw .nm{font-size:9px;color:var(--muted);margin-top:3px;line-height:1.1;font-family:'JetBrains Mono',monospace}
+
+  .range{display:flex;align-items:center;gap:10px}
+  .range input{flex:1}
+  .range .val{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink);min-width:60px;text-align:right}
+
+  .stagewrap{position:sticky;top:72px;order:-1}   /* canvas on the LEFT (wider), below the sticky header — matches the other tools */
+  .stagebar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px}
+  .stage{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  canvas{display:block;width:100%;height:auto;touch-action:none}
+  #g3d{width:100%}#g3d canvas{width:100%!important;height:auto!important}
+  .stage .corner{position:absolute;bottom:10px;left:14px;font-family:'JetBrains Mono',monospace;font-size:11px;
+    letter-spacing:1px;text-transform:uppercase;color:var(--muted);pointer-events:none}
+  .note{font-size:12px;color:var(--muted);margin-top:10px}
+  /* order card */
+  #orderCard input[type=text],#orderCard input[type=email]{width:100%;background:var(--panel);border:1px solid var(--line);
+    color:var(--ink);border-radius:9px;padding:9px 10px;font:inherit;font-size:14px}
+  .contact-wrap{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  .pricebreak{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:8px}
+  .pricebreak .pbline{display:flex;justify-content:space-between}
+  .pricerow{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);padding-top:10px;margin-top:2px}
+  .pricerow .pl{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+  .pricerow .pv{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:26px;color:var(--ink)}
+  .sendstat{font-size:12px;min-height:16px;text-align:center;margin-top:8px;color:var(--muted)}
+  .sent-box{background:color-mix(in srgb,var(--sage) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--sage) 40%,transparent);
+    border-radius:9px;padding:12px 14px;font-size:13px;color:var(--ink);line-height:1.5;margin-top:10px;text-align:center}
+  .hint{font-size:11.5px;color:var(--muted);line-height:1.45}
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<main class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">Acrylic signs · raised lettering</p>
+    <h1>Design your sign <span class="ghost">— and price it.</span></h1>
+    <p class="lede">Each line is its own layer — drag to move, resize, and pick its font and finish. See it as a flat proof, spin it in <strong>3D</strong>, then get a price and send it to us.</p>
+  </header>
+
+  <div class="layout">
+
+    <div class="controls">
+      <div class="card">
+        <h2>Board size &amp; shape</h2>
+        <label class="fld">Size preset</label>
+        <div class="presetgrid" id="sizePresets"></div>
+        <div class="grid2 row">
+          <div><label class="fld" for="wmm">Width (mm)</label><input type="number" id="wmm" min="50" max="600" step="5" value="380"></div>
+          <div><label class="fld" for="hmm">Height (mm)</label><input type="number" id="hmm" min="50" max="600" step="5" value="130"></div>
+        </div>
+        <label class="fld">Shape</label>
+        <div class="presetgrid shapes" id="shapeChips"></div>
+        <div id="bedWarn" class="hintline"></div>
+        <button class="btnt" id="resetCanvas" style="width:100%">Reset canvas</button>
+      </div>
+
+      <div class="card">
+        <h2>Layers <span><button class="btnt" id="resetLayout">Reset layout</button></span></h2>
+        <div id="layers"></div>
+        <div class="addrow">
+          <button class="btnt" id="addText">+ Text line</button>
+          <button class="btnt" id="addImage">+ Image</button>
+        </div>
+        <input type="file" id="imgFile" accept="image/*" hidden>
+        <input type="file" id="svgFile" accept=".svg,image/svg+xml,.dxf" hidden>
+      </div>
+
+      <div class="card">
+        <h2>Clipart &amp; logos</h2>
+        <div class="row">
+          <label class="fld" for="presetSel">Preset clipart</label>
+          <select id="presetSel"><option value="">Choose a design…</option></select>
+        </div>
+        <div class="addrow">
+          <button class="btnt" id="addSvg">⬆ Upload SVG / DXF</button>
+        </div>
+        <div class="hintline">Vector (SVG) recommended — it previews and cuts cleanly. DXF accepted for cut-ready files.</div>
+      </div>
+
+      <div class="card">
+        <h2>Manufacturing check <span><label class="snaptog" style="font-size:11px"><input type="checkbox" id="mfgOn" checked> On</label></span></h2>
+        <div class="meta"><span class="mlab">Min stroke</span>
+          <input type="range" id="mfgMin" min="0.5" max="4" step="0.1" value="1.5"><span class="mval" id="mfgMinV">1.5 mm</span></div>
+        <div id="mfgStatus" class="mfgstat">—</div>
+        <div class="hintline">Red areas are too fine to raise cleanly at this size — enlarge or simplify them.</div>
+      </div>
+
+      <div class="card"><h2>Base colour</h2><div class="swatches" id="baseSw"></div></div>
+      <div class="card">
+        <h2>Lettering finish <span id="finishTarget" style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--sage)">default</span></h2>
+        <div class="swatches" id="finishSw"></div>
+        <div id="coloursUsed" class="hintline">Colours used: 1 (included)</div>
+      </div>
+
+
+      <div class="card" id="orderCard">
+        <h2>Price &amp; order</h2>
+        <div id="priceBreak" class="pricebreak"></div>
+        <div class="pricerow"><span class="pl">Estimate</span><span class="pv" id="priceVal">$—</span></div>
+        <div class="contact-wrap">
+          <input type="text" id="sendName" placeholder="Your name">
+          <input type="email" id="sendEmail" placeholder="Your email (so we can reply)">
+          <input type="text" id="sendMsg" placeholder="Anything we should know? (optional)">
+        </div>
+        <button class="btn block cyan" id="send" style="margin-top:10px">Send for review</button>
+        <div id="sendstat" class="sendstat"></div>
+        <div class="sent-box" id="sent" style="display:none"><b>We've got your design!</b><br>We'll review it and get back to you within one business day.</div>
+        <div class="hint" style="margin-top:10px">Estimate is indicative — we confirm the final price when we review the design. Need the cut files? Use the <b>DXF</b> button on the preview.</div>
+      </div>
+    </div>
+
+    <div class="stagewrap">
+      <div class="stagebar">
+        <div class="seg" id="mode">
+          <button data-m="2d" class="on">2D</button>
+          <button data-m="3d">3D</button>
+        </div>
+        <label class="snaptog"><input type="checkbox" id="snap" checked> Snap</label>
+        <div class="seg"><button id="dl" style="cursor:pointer">PNG</button><button id="dxf" style="cursor:pointer">DXF</button></div>
+      </div>
+      <div class="stage">
+        <canvas id="cv" width="1600" height="1100"></canvas>
+        <div id="g3d" style="display:none"></div>
+        <div id="g3dstat" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;
+          flex-direction:column;gap:8px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);
+          background:#f3ece1;text-align:center;padding:20px"><div id="g3dmsg">Loading 3D…</div></div>
+        <div class="corner" id="cornerLbl">Workspace</div>
+      </div>
+      <p class="note" id="hint">Drag to move · corner dot to resize · snap guides keep things aligned (toggle “Snap”).</p>
+    </div>
+
+  </div>
+</main>
+<div id="site-footer"></div>
+
+<script src="signs-presets.js"></script>
+<script>
+/* ============ MATERIALS (sampled from Trotec range) ============ */
+const BASES = [
+  {id:'cloudwhite', name:'Cloud White', hex:'#F7F5F0'},
+  {id:'ivory',      name:'Ivory White', hex:'#FBFAF6'},
+  {id:'creambeige', name:'Cream Beige', hex:'#EFE4C8'},
+  {id:'matteblack', name:'Matte Black', hex:'#1C1B1A'},
+  {id:'charcoal',   name:'Charcoal',    hex:'#34322F'},
+  {id:'sage',       name:'Sage',        hex:'#8FA396'},
+  {id:'blush',      name:'Blush Pink',  hex:'#E9C9C4'},
+  {id:'navy',       name:'Navy Blue',   hex:'#27324F'},
+];
+const FINISHES = [
+  {id:'mirrorgold',  name:'Mirror Gold',   type:'mirror', metal:'gold'},
+  {id:'brushedgold', name:'Brushed Gold',  type:'metal',  metal:'gold'},
+  {id:'champagne',   name:'Champagne',     type:'metal',  metal:'champagne'},
+  {id:'rosegold',    name:'Rose Gold',     type:'mirror', metal:'rose'},
+  {id:'mirrorsilver',name:'Mirror Silver', type:'mirror', metal:'silver'},
+  {id:'brushedsilver',name:'Brushed Silver',type:'metal', metal:'silver'},
+  {id:'matteblack',  name:'Matte Black',   type:'matte',  flat:'#1b1b1b'},
+  {id:'glosswhite',  name:'Gloss White',   type:'matte',  flat:'#fbfbfb'},
+];
+const METAL = {
+  gold:['#8a5e12','#e7c163','#fff4cf','#d2a23a','#8a5e12'],
+  champagne:['#9a8458','#d9c79a','#f6efdc','#c4ad7f','#9a8458'],
+  rose:['#9c5b62','#e3a9b0','#fbe1e4','#cf8a93','#9c5b62'],
+  silver:['#7d7d7d','#cfcfcf','#ffffff','#b4b4b4','#7d7d7d'],
+};
+/* fonts — n=name, w=loaded weight, g=group */
+const FONTS = [
+  {n:'Marcellus',w:400,g:'Elegant / Serif'},
+  {n:'Cinzel',w:600,g:'Elegant / Serif'},
+  {n:'Playfair Display',w:600,g:'Elegant / Serif'},
+  {n:'Cormorant Garamond',w:600,g:'Elegant / Serif'},
+  {n:'Prata',w:400,g:'Elegant / Serif'},
+  {n:'Italiana',w:400,g:'Elegant / Serif'},
+  {n:'Forum',w:400,g:'Elegant / Serif'},
+  {n:'Poiret One',w:400,g:'Modern / Sans'},
+  {n:'Questrial',w:400,g:'Modern / Sans'},
+  {n:'Tenor Sans',w:400,g:'Modern / Sans'},
+  {n:'Josefin Sans',w:600,g:'Modern / Sans'},
+  {n:'Jost',w:500,g:'Modern / Sans'},
+  {n:'Space Grotesk',w:600,g:'Modern / Sans'},
+  {n:'Great Vibes',w:400,g:'Script / Swirly'},
+  {n:'Allura',w:400,g:'Script / Swirly'},
+  {n:'Sacramento',w:400,g:'Script / Swirly'},
+  {n:'Parisienne',w:400,g:'Script / Swirly'},
+  {n:'Pinyon Script',w:400,g:'Script / Swirly'},
+  {n:'Alex Brush',w:400,g:'Script / Swirly'},
+  {n:'Pacifico',w:400,g:'Script / Swirly'},
+  {n:'Tangerine',w:700,g:'Script / Swirly'},
+];
+const fontW = n => (FONTS.find(f=>f.n===n)||{w:400}).w;
+const METAL3D = {gold:0xd6ad4e, champagne:0xcdbb90, rose:0xc98a8f, silver:0xc9c9c9};
+// 2D shows a FLAT metallic design view (true colours, dimensions, mfg) — the raised shadow/bevel
+// depth cue lives on the 3D tab. Flip to false to bring the raised look back into 2D.
+const FLAT_2D = true;
+
+/* ============ default doc ============ */
+let uid=1;
+const defaultDoc = ()=>({
+  base:BASES[0], finish:FINISHES[1], shape:'round', wmm:380, hmm:130,
+  els:[
+    {id:uid++, type:'text', text:'MARKED BY HAND', font:'Marcellus', nx:.5, ny:.5, h:.32, rot:0, finish:FINISHES[1]},
+  ],
+  mode:'2d',
+});
+let state = defaultDoc();
+let sel = state.els[0].id;
+
+/* ============ canvas + offscreens ============ */
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const off=document.createElement('canvas'), octx=off.getContext('2d');     // per-element render
+const msk=document.createElement('canvas'), mctx=msk.getContext('2d');     // brushed mask
+
+function signRect(){
+  const W=cv.width,H=cv.height,pad=120;
+  const ratio = state.wmm/state.hmm;                 // aspect from the real mm dimensions
+  let sw=W-pad*2, sh=sw/ratio;
+  if(sh>H-pad*2){sh=H-pad*2; sw=sh*ratio;}
+  return {x:(W-sw)/2,y:(H-sh)/2,w:sw,h:sh,ratio};
+}
+function bedOK(){const a=Math.min(state.wmm,state.hmm),b=Math.max(state.wmm,state.hmm);return a<=400&&b<=600;}
+function updateBedWarn(){const el=document.getElementById('bedWarn');if(!el)return;
+  const area=Math.round(state.wmm*state.hmm/100);   // cm² — the basis for area pricing
+  if(bedOK()){el.className='hintline';el.textContent=state.wmm+' × '+state.hmm+' mm · '+area+' cm² · fits 400 × 600 bed';}
+  else{el.className='hintline bumpcol';el.textContent='⚠ '+state.wmm+' × '+state.hmm+' mm · '+area+' cm² · exceeds 400 × 600 laser bed';}}
+const cornerRadius = r =>
+  state.shape==='rect'?0 : (state.shape==='circle'||state.shape==='pill')?Math.min(r.w,r.h)/2 : Math.min(r.w,r.h)*0.10;
+function roundRectPath(c,x,y,w,h,rad){c.beginPath();c.moveTo(x+rad,y);
+  c.arcTo(x+w,y,x+w,y+h,rad);c.arcTo(x+w,y+h,x,y+h,rad);c.arcTo(x,y+h,x,y,rad);c.arcTo(x,y,x+w,y,rad);c.closePath();}
+
+/* ============ helpers ============ */
+const hx=h=>{h=h.replace('#','');return{r:parseInt(h.substr(0,2),16),g:parseInt(h.substr(2,2),16),b:parseInt(h.substr(4,2),16)};};
+const isDark=hex=>{const c=hx(hex);return (c.r*299+c.g*587+c.b*114)/1000<128;};
+const shade=(hex,p)=>{const c=hx(hex);const f=v=>Math.max(0,Math.min(255,Math.round(v*(1+p))));return`rgb(${f(c.r)},${f(c.g)},${f(c.b)})`;};
+const rad=d=>d*Math.PI/180;
+
+/* ============ per-element 2D render (upright into offscreen) ============ */
+function renderTextOffscreen(el,size,mockup){
+  const wgt=fontW(el.font);
+  octx.font=`${wgt} ${size}px '${el.font}'`;
+  const tw=octx.measureText(el.text||' ').width;
+  const pad=size*0.6;
+  const ow=Math.max(4,Math.ceil(tw+pad*2)), oh=Math.max(4,Math.ceil(size*1.5+pad*2));
+  off.width=ow; off.height=oh;                 // (resets octx state)
+  const c=octx, cx=ow/2, cy=oh/2;
+  c.clearRect(0,0,ow,oh);
+  c.font=`${wgt} ${size}px '${el.font}'`; c.textAlign='center'; c.textBaseline='middle';
+  if(!mockup){ c.fillStyle=isDark(state.base.hex)?'#EDE4D6':'#3B2F26'; c.fillText(el.text,cx,cy); return {ow,oh,tw,size}; }
+  const f=el.finish||state.finish;
+  if(!FLAT_2D){
+    // raised cues (off by default — 3D shows real depth): cast shadow + bevel wall
+    c.save();c.fillStyle='rgba(0,0,0,.34)';c.shadowColor='rgba(0,0,0,.4)';c.shadowBlur=size*0.10;c.shadowOffsetY=size*0.05;c.fillText(el.text,cx,cy);c.restore();
+    c.fillStyle=f.type==='matte'?shade(f.flat,-0.45):shade(METAL[f.metal][0],-0.3);
+    const offv=Math.max(2,size*0.03);c.fillText(el.text,cx+offv*0.4,cy+offv);
+  }
+  // face
+  if(f.type==='matte'){c.fillStyle=f.flat;c.fillText(el.text,cx,cy);}
+  else{
+    const m=METAL[f.metal],g=c.createLinearGradient(0,cy-size*0.5,0,cy+size*0.5);
+    if(f.type==='mirror'){g.addColorStop(0,m[0]);g.addColorStop(.34,m[1]);g.addColorStop(.49,m[2]);g.addColorStop(.51,'#ffffff');g.addColorStop(.6,m[3]);g.addColorStop(1,m[4]);}
+    else{g.addColorStop(0,m[3]);g.addColorStop(.34,m[1]);g.addColorStop(.55,m[2]);g.addColorStop(.78,m[1]);g.addColorStop(1,m[0]);}
+    c.fillStyle=g;c.fillText(el.text,cx,cy);
+    // 4 brushed texture, masked to glyphs
+    if(f.type==='metal'){
+      msk.width=ow;msk.height=oh;const mc=mctx;
+      mc.clearRect(0,0,ow,oh);mc.save();mc.strokeStyle='#ffffff';mc.lineWidth=1;
+      for(let y=0;y<oh;y+=2){mc.beginPath();mc.moveTo(0,y+Math.random()*.5);mc.lineTo(ow,y);mc.stroke();}
+      mc.globalCompositeOperation='destination-in';mc.fillStyle='#000';mc.textAlign='center';mc.textBaseline='middle';
+      mc.font=`${wgt} ${size}px '${el.font}'`;mc.fillText(el.text,cx,cy);mc.restore();
+      c.globalAlpha=.12;c.drawImage(msk,0,0);c.globalAlpha=1;
+    }
+    // 5 top highlight rim
+    c.globalAlpha=.45;c.fillStyle='rgba(255,255,255,.85)';c.fillText(el.text,cx,cy-Math.max(1,size*0.018));c.globalAlpha=1;
+  }
+  return {ow,oh,tw,size};
+}
+function drawText(el,r,mockup){
+  const size=el.h*r.h, info=renderTextOffscreen(el,size,mockup);
+  const cx=r.x+el.nx*r.w, cy=r.y+el.ny*r.h;
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(rad(el.rot||0));ctx.drawImage(off,-info.ow/2,-info.oh/2);ctx.restore();
+  el._bb={cx,cy,hw:info.tw/2+size*0.18,hh:size*0.62,rot:el.rot||0};
+}
+function drawImageEl(el,r){
+  const w=el.w*r.w, h=w/(el.aspect||1), cx=r.x+el.nx*r.w, cy=r.y+el.ny*r.h;
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(rad(el.rot||0));ctx.drawImage(el.img,-w/2,-h/2,w,h);ctx.restore();
+  el._bb={cx,cy,hw:w/2,hh:h/2,rot:el.rot||0};
+}
+function drawSelection(el){
+  if(el.id!==sel||state.mode!=='2d'||!el._bb)return;
+  const b=el._bb;
+  ctx.save();ctx.translate(b.cx,b.cy);ctx.rotate(rad(b.rot));
+  ctx.strokeStyle='#A47864';ctx.lineWidth=2;ctx.setLineDash([7,6]);ctx.strokeRect(-b.hw-6,-b.hh-6,(b.hw+6)*2,(b.hh+6)*2);ctx.setLineDash([]);
+  ctx.fillStyle='#A47864';ctx.beginPath();ctx.arc(b.hw+6,b.hh+6,11,0,7);ctx.fill();
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(b.hw+6,b.hh+6,4,0,7);ctx.fill();ctx.restore();
+}
+
+/* realistic coloured board (sits on the workspace surface) */
+function drawBoard(c,r,rd){
+  c.save();c.shadowColor='rgba(40,30,20,.22)';c.shadowBlur=30;c.shadowOffsetY=16;
+  roundRectPath(c,r.x,r.y,r.w,r.h,rd);c.fillStyle=state.base.hex;c.fill();c.restore();
+  c.save();roundRectPath(c,r.x,r.y,r.w,r.h,rd);c.clip();
+  const g=c.createLinearGradient(r.x,r.y,r.x+r.w,r.y+r.h);
+  const light=isDark(state.base.hex)?'rgba(255,255,255,.08)':'rgba(255,255,255,.5)';
+  g.addColorStop(0,light);g.addColorStop(.45,'rgba(255,255,255,0)');g.addColorStop(.9,'rgba(0,0,0,.035)');
+  c.fillStyle=g;c.fillRect(r.x,r.y,r.w,r.h);
+  c.strokeStyle='rgba(0,0,0,.10)';c.lineWidth=2;roundRectPath(c,r.x+1,r.y+1,r.w-2,r.h-2,Math.max(0,rd-1));c.stroke();c.restore();
+}
+/* dimension labels + extension ticks around the board */
+function drawDimensions(c,r){
+  c.save();c.fillStyle='#8A7A6B';c.strokeStyle='rgba(138,122,107,.5)';c.lineWidth=1;
+  c.font="500 24px 'JetBrains Mono'";c.textAlign='center';c.textBaseline='alphabetic';
+  const hmm=Math.round(state.hmm);
+  c.beginPath();
+  c.moveTo(r.x,r.y-36);c.lineTo(r.x,r.y-8); c.moveTo(r.x+r.w,r.y-36);c.lineTo(r.x+r.w,r.y-8);
+  c.moveTo(r.x-36,r.y);c.lineTo(r.x-8,r.y); c.moveTo(r.x-36,r.y+r.h);c.lineTo(r.x-8,r.y+r.h);
+  c.stroke();
+  c.fillText(state.wmm+' mm',r.x+r.w/2,r.y-16);
+  c.save();c.translate(r.x-18,r.y+r.h/2);c.rotate(-Math.PI/2);c.fillText(hmm+' mm',0,0);c.restore();
+  c.restore();
+}
+/* live alignment guides shown while dragging */
+function drawSnapGuides(c,r){
+  if(!snapGuides.length)return;
+  c.save();c.strokeStyle='#7A9A8B';c.lineWidth=1.5;c.setLineDash([7,6]);
+  for(const [o,t] of snapGuides){
+    if(o==='v'){const x=r.x+t*r.w;c.beginPath();c.moveTo(x,r.y-24);c.lineTo(x,r.y+r.h+24);c.stroke();}
+    else{const y=r.y+t*r.h;c.beginPath();c.moveTo(r.x-24,y);c.lineTo(r.x+r.w+24,y);c.stroke();}
+  }
+  c.setLineDash([]);c.restore();
+}
+
+/* ============ SVG / clipart layers ============ */
+const tintCv=document.createElement('canvas'), tintX=tintCv.getContext('2d');
+function svgTint(img,W,H,style){
+  tintCv.width=W;tintCv.height=H;tintX.globalCompositeOperation='source-over';tintX.clearRect(0,0,W,H);
+  tintX.drawImage(img,0,0,W,H);tintX.globalCompositeOperation='source-in';tintX.fillStyle=style;tintX.fillRect(0,0,W,H);
+  tintX.globalCompositeOperation='source-over';return tintCv;
+}
+function drawSvg(el,r){
+  const w=Math.max(2,el.w*r.w), h=Math.max(2,w/(el.aspect||1)), pad=Math.max(8,w*0.05);
+  const ow=Math.ceil(w+pad*2), oh=Math.ceil(h+pad*2), W=Math.ceil(w), H=Math.ceil(h), f=el.finish||state.finish;
+  off.width=ow;off.height=oh;const c=octx;c.clearRect(0,0,ow,oh);
+  if(!FLAT_2D){
+    // raised cues (off by default): cast shadow + bevel
+    c.save();c.shadowColor='rgba(0,0,0,.4)';c.shadowBlur=Math.max(3,h*0.04);c.shadowOffsetY=h*0.03;
+    c.drawImage(svgTint(el.img,W,H,'rgba(0,0,0,.5)'),pad,pad,w,h);c.restore();
+    c.drawImage(svgTint(el.img,W,H, f.type==='matte'?shade(f.flat,-0.45):shade(METAL[f.metal][0],-0.3)),pad+Math.max(1,w*0.008),pad+Math.max(2,h*0.015),w,h);
+  }
+  // face
+  let face;
+  if(f.type==='matte')face=f.flat;
+  else{const m=METAL[f.metal],g=tintX.createLinearGradient(0,0,0,H);
+    if(f.type==='mirror'){g.addColorStop(0,m[0]);g.addColorStop(.34,m[1]);g.addColorStop(.49,m[2]);g.addColorStop(.51,'#fff');g.addColorStop(.6,m[3]);g.addColorStop(1,m[4]);}
+    else{g.addColorStop(0,m[3]);g.addColorStop(.34,m[1]);g.addColorStop(.55,m[2]);g.addColorStop(.78,m[1]);g.addColorStop(1,m[0]);}
+    face=g;}
+  c.drawImage(svgTint(el.img,W,H,face),pad,pad,w,h);
+  const cx=r.x+el.nx*r.w, cy=r.y+el.ny*r.h;
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(rad(el.rot||0));ctx.drawImage(off,-ow/2,-oh/2);ctx.restore();
+  el._bb={cx,cy,hw:ow/2,hh:oh/2,rot:el.rot||0};
+}
+function loadSvgText(svgText,name){
+  const blob=new Blob([svgText],{type:'image/svg+xml'}), url=URL.createObjectURL(blob), img=new Image();
+  img.onload=()=>{const el={id:uid++,type:'svg',name:name||'Artwork',img,aspect:(img.width/img.height)||1,nx:.5,ny:.5,w:.3,rot:0,finish:state.finish};
+    state.els.push(el);sel=el.id;mfgLastSig='';renderLayers();buildSwatches();draw();URL.revokeObjectURL(url);};
+  img.onerror=()=>{alert('Could not load that SVG.');URL.revokeObjectURL(url);};
+  img.src=url;
+}
+
+/* ============ manufacturability (thin-feature) check ============ */
+const MFG={on:true, minStrokeMM:1.5};
+let mfgLastSig='';
+const mfgCv=document.createElement('canvas'), mfgX=mfgCv.getContext('2d');
+function edt1d(f){const n=f.length,d=new Float64Array(n),v=new Int32Array(n),z=new Float64Array(n+1);let k=0;v[0]=0;z[0]=-1e20;z[1]=1e20;
+  for(let q=1;q<n;q++){let s=((f[q]+q*q)-(f[v[k]]+v[k]*v[k]))/(2*q-2*v[k]);while(s<=z[k]){k--;s=((f[q]+q*q)-(f[v[k]]+v[k]*v[k]))/(2*q-2*v[k]);}k++;v[k]=q;z[k]=s;z[k+1]=1e20;}
+  k=0;for(let q=0;q<n;q++){while(z[k+1]<q)k++;d[q]=(q-v[k])*(q-v[k])+f[v[k]];}return d;}
+function edt(seed,W,H){const INF=1e12,f=new Float64Array(W*H);for(let i=0;i<W*H;i++)f[i]=seed[i]?0:INF;
+  const col=new Float64Array(H);for(let x=0;x<W;x++){for(let y=0;y<H;y++)col[y]=f[y*W+x];const d=edt1d(col);for(let y=0;y<H;y++)f[y*W+x]=d[y];}
+  const row=new Float64Array(W);for(let y=0;y<H;y++){for(let x=0;x<W;x++)row[x]=f[y*W+x];const d=edt1d(row);for(let x=0;x<W;x++)f[y*W+x]=Math.sqrt(d[x]);}
+  return f;}
+function analyzeThin(grid,W,H,rpx){
+  const seedBg=new Uint8Array(W*H);for(let i=0;i<W*H;i++)seedBg[i]=grid[i]?0:1;
+  const Dink=edt(seedBg,W,H);
+  const er=new Uint8Array(W*H);for(let i=0;i<W*H;i++)er[i]=Dink[i]>=rpx?1:0;
+  const Ddil=edt(er,W,H);
+  const thin=new Uint8Array(W*H);for(let i=0;i<W*H;i++)thin[i]=(grid[i]&&Ddil[i]>rpx)?1:0;
+  // drop tiny clusters (corner rounding); keep genuine thin strokes
+  const clusterMin=Math.max(24,rpx*rpx*1.3), seen=new Uint8Array(W*H);let badPx=0;
+  for(let i=0;i<W*H;i++){if(thin[i]&&!seen[i]){const comp=[i];seen[i]=1;let qi=0;
+    while(qi<comp.length){const p=comp[qi++],x=p%W;
+      if(x<W-1&&thin[p+1]&&!seen[p+1]){seen[p+1]=1;comp.push(p+1);}
+      if(x>0&&thin[p-1]&&!seen[p-1]){seen[p-1]=1;comp.push(p-1);}
+      if(p+W<W*H&&thin[p+W]&&!seen[p+W]){seen[p+W]=1;comp.push(p+W);}
+      if(p-W>=0&&thin[p-W]&&!seen[p-W]){seen[p-W]=1;comp.push(p-W);}}
+    if(comp.length<clusterMin){for(const p of comp)thin[p]=0;}else badPx+=comp.length;}}
+  return {mask:thin, badPx};
+}
+function gridFromCanvas(cnv,cx){const W=cnv.width,H=cnv.height,d=cx.getImageData(0,0,W,H).data,g=new Uint8Array(W*H);
+  for(let i=0;i<W*H;i++)g[i]=d[i*4+3]>128?1:0;return {grid:g,w:W,h:H};}
+function elementGrid(el,r){
+  if(el.type==='text'){ renderTextOffscreen(el, el.h*r.h, false); return gridFromCanvas(off,octx); }
+  if(el.type==='svg'){
+    const w=Math.max(2,el.w*r.w),h=Math.max(2,w/(el.aspect||1)),pad=Math.max(8,w*0.05),ow=Math.ceil(w+pad*2),oh=Math.ceil(h+pad*2);
+    mfgCv.width=ow;mfgCv.height=oh;mfgX.clearRect(0,0,ow,oh);mfgX.drawImage(el.img,pad,pad,w,h);return gridFromCanvas(mfgCv,mfgX);
+  }
+  return null; // raster images skipped
+}
+function runMfg(r){
+  const mmPerPx=state.wmm/r.w, rpx=Math.max(1,(MFG.minStrokeMM/mmPerPx)/2);let anyBad=false;
+  for(const el of state.els){
+    const g=elementGrid(el,r); if(!g){el._mfg=null;continue;}
+    const res=analyzeThin(g.grid,g.w,g.h,rpx);
+    if(res.badPx>4){anyBad=true;
+      const mc=document.createElement('canvas');mc.width=g.w;mc.height=g.h;const mx=mc.getContext('2d'),id=mx.createImageData(g.w,g.h);
+      for(let i=0;i<g.w*g.h;i++)if(res.mask[i]){id.data[i*4]=222;id.data[i*4+1]=64;id.data[i*4+2]=52;id.data[i*4+3]=160;}
+      mx.putImageData(id,0,0);el._mfg={canvas:mc,w:g.w,h:g.h};
+    }else el._mfg=null;
+  }
+  const s=document.getElementById('mfgStatus');
+  if(anyBad){s.className='mfgstat bad';s.textContent='⚠ Some detail is below '+MFG.minStrokeMM.toFixed(1)+' mm (red) — enlarge or simplify';}
+  else{s.className='mfgstat ok';s.textContent='✓ All detail ≥ '+MFG.minStrokeMM.toFixed(1)+' mm at this size';}
+}
+function drawMfgOverlay(){
+  for(const el of state.els){if(!el._mfg||!el._bb)continue;
+    ctx.save();ctx.translate(el._bb.cx,el._bb.cy);ctx.rotate(rad(el._bb.rot||0));
+    ctx.drawImage(el._mfg.canvas,-el._mfg.w/2,-el._mfg.h/2);ctx.restore();}
+}
+function mfgSig(){return state.wmm+'|'+state.hmm+'|'+state.shape+'|'+MFG.minStrokeMM+'|'+
+  state.els.map(e=>e.type+e.id+(e.text||'')+(e.font||'')+(e.h||'')+(e.w||'')+(e.aspect||'')).join(',');}
+
+function draw(){
+  const is3d=state.mode==='3d';
+  cv.style.display=is3d?'none':'block';
+  document.getElementById('g3d').style.display=is3d?'block':'none';
+  document.getElementById('cornerLbl').textContent =
+    is3d ? 'Drag to rotate · scroll to zoom' : `${state.base.name} · ${state.finish.name}`;
+  document.getElementById('hint').style.display = is3d?'none':'block';
+  if(typeof updatePrice==='function') updatePrice();
+  if(is3d){ ensure3D(); return; }
+  const r=signRect(), rd=cornerRadius(r);
+  ctx.clearRect(0,0,cv.width,cv.height);
+  // workspace surface + dot grid
+  ctx.fillStyle='#FCF8F2';ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.fillStyle='rgba(0,0,0,.04)';
+  for(let x=0;x<cv.width;x+=40)for(let y=0;y<cv.height;y+=40){ctx.beginPath();ctx.arc(x,y,1.3,0,7);ctx.fill();}
+  drawBoard(ctx,r,rd);
+  drawDimensions(ctx,r);
+  if(MFG.on){const sig=mfgSig();if(sig!==mfgLastSig){mfgLastSig=sig;runMfg(r);}}
+  else{state.els.forEach(e=>e._mfg=null);const ms=document.getElementById('mfgStatus');ms.className='mfgstat';ms.textContent='Off';}
+  state.els.forEach(el=> el.type==='text'?drawText(el,r,true): el.type==='svg'?drawSvg(el,r):drawImageEl(el,r));
+  if(MFG.on) drawMfgOverlay();
+  drawSnapGuides(ctx,r);
+  state.els.forEach(drawSelection);
+}
+
+/* ============ interaction ============ */
+let drag=null, snapOn=true, snapGuides=[];
+function toCanvas(e){const b=cv.getBoundingClientRect();return{x:(e.clientX-b.left)*(cv.width/b.width),y:(e.clientY-b.top)*(cv.height/b.height)};}
+function inEl(el,p){const b=el._bb;if(!b)return false;const a=-rad(b.rot),dx=p.x-b.cx,dy=p.y-b.cy;
+  const lx=dx*Math.cos(a)-dy*Math.sin(a),ly=dx*Math.sin(a)+dy*Math.cos(a);return Math.abs(lx)<=b.hw+10&&Math.abs(ly)<=b.hh+10;}
+function handlePos(el){const b=el._bb,a=rad(b.rot),hw=b.hw+6,hh=b.hh+6;
+  return{x:b.cx+hw*Math.cos(a)-hh*Math.sin(a),y:b.cy+hw*Math.sin(a)+hh*Math.cos(a)};}
+function hit(p){
+  const selEl=state.els.find(e=>e.id===sel);
+  if(selEl&&selEl._bb){const h=handlePos(selEl);if(Math.hypot(p.x-h.x,p.y-h.y)<18)return{el:selEl,mode:'resize'};}
+  for(let i=state.els.length-1;i>=0;i--){if(inEl(state.els[i],p))return{el:state.els[i],mode:'move'};}
+  return null;
+}
+cv.addEventListener('pointerdown',e=>{
+  if(state.mode!=='2d')return;
+  const p=toCanvas(e),h=hit(p);
+  if(!h){sel=null;renderLayers();buildSwatches();draw();return;}
+  sel=h.el.id;cv.setPointerCapture(e.pointerId);
+  const r=signRect();
+  drag={mode:h.mode,el:h.el,r,grab:{dx:h.el._bb.cx-p.x,dy:h.el._bb.cy-p.y},
+        startSize:h.el.type==='text'?h.el.h:h.el.w,
+        startDist:Math.hypot(p.x-h.el._bb.cx,p.y-h.el._bb.cy)||1};
+  cv.style.cursor=h.mode==='resize'?'nwse-resize':'grabbing';renderLayers();buildSwatches();draw();
+});
+cv.addEventListener('pointermove',e=>{
+  if(!drag){if(state.mode==='2d'){const h=hit(toCanvas(e));cv.style.cursor=h?(h.mode==='resize'?'nwse-resize':'grab'):'default';}return;}
+  const p=toCanvas(e),r=drag.r,el=drag.el;
+  if(drag.mode==='move'){
+    let nx=(p.x+drag.grab.dx-r.x)/r.w, ny=(p.y+drag.grab.dy-r.y)/r.h;
+    snapGuides=[];
+    if(snapOn){
+      const TH=0.012, mg=0.05;                           // threshold ~1.2% · edge margin 5%
+      const hwF=(el._bb?el._bb.hw:0)/r.w, hhF=(el._bb?el._bb.hh:0)/r.h; // half-extents for edge snapping
+      // each candidate = [centre target for this layer, where to draw the guide line]
+      const xc=[[0.5,0.5],[1/3,1/3],[2/3,2/3],[mg+hwF,mg],[1-mg-hwF,1-mg]];   // centre · thirds · L/R margins
+      const yc=[[0.5,0.5],[1/3,1/3],[2/3,2/3],[mg+hhF,mg],[1-mg-hhF,1-mg]];   // centre · thirds · top/bottom margins
+      state.els.forEach(o=>{if(o.id!==el.id){xc.push([o.nx,o.nx]);yc.push([o.ny,o.ny]);}}); // align to other layers' centres
+      for(const [t,g] of xc){if(Math.abs(nx-t)<TH){nx=t;snapGuides.push(['v',g]);break;}}
+      for(const [t,g] of yc){if(Math.abs(ny-t)<TH){ny=t;snapGuides.push(['h',g]);break;}}
+    }
+    el.nx=nx; el.ny=ny;
+  }else{const f=Math.hypot(p.x-el._bb.cx,p.y-el._bb.cy)/drag.startDist;
+    if(el.type==='text')el.h=Math.max(.04,Math.min(.8,drag.startSize*f));else el.w=Math.max(.05,Math.min(1,drag.startSize*f));
+    renderLayers();}
+  draw();
+});
+cv.addEventListener('pointerup',()=>{drag=null;snapGuides=[];cv.style.cursor='default';draw();});
+
+/* ============ panels ============ */
+function chipStyle(f){if(f.type==='matte')return`background:${f.flat}`;const m=METAL[f.metal];
+  return`background:linear-gradient(${f.type==='mirror'?'120deg':'90deg'},${m[0]},${m[1]},${m[2]},${m[3]},${m[4]})`;}
+function buildSwatches(){
+  const bw=document.getElementById('baseSw');bw.innerHTML='';
+  BASES.forEach(b=>{const el=document.createElement('div');el.className='sw'+(b.id===state.base.id?' on':'');
+    el.innerHTML=`<div class="chip" style="background:${b.hex}"></div><div class="nm">${b.name}</div>`;
+    el.onclick=()=>{state.base=b;buildSwatches();draw();};bw.appendChild(el);});
+  const fw=document.getElementById('finishSw');fw.innerHTML='';
+  const selEl=getEl(sel), editable=selEl&&selEl.type!=='image';
+  const cur=(editable&&selEl.finish)||state.finish;
+  FINISHES.forEach(f=>{const el=document.createElement('div');el.className='sw'+(f.id===cur.id?' on':'');
+    el.innerHTML=`<div class="chip" style="${chipStyle(f)}"></div><div class="nm">${f.name}</div>`;
+    el.onclick=()=>{ if(editable)selEl.finish=f; state.finish=f; buildSwatches(); draw(); };fw.appendChild(el);});
+  // finish target hint + colours-used (pricing lever)
+  const tgt=document.getElementById('finishTarget'); if(tgt) tgt.textContent = editable? ('layer: '+(selEl.type==='svg'?(selEl.name||'clipart'):'"'+(selEl.text||'')+'"')) : 'default (no layer selected)';
+  updateColours();
+}
+function updateColours(){
+  const c=document.getElementById('coloursUsed'); if(!c)return;
+  const set=new Set(state.els.filter(e=>e.type!=='image').map(e=>(e.finish||state.finish).id));
+  const n=set.size||1;
+  c.textContent = n===1 ? 'Colours used: 1 (included)' : ('Colours used: '+n+'  ·  +'+(n-1)+' colour surcharge');
+  c.className='hintline'+(n>1?' bumpcol':'');
+}
+function fontOptions(cur){let groups={},out='';FONTS.forEach(f=>{(groups[f.g]=groups[f.g]||[]).push(f);});
+  for(const g in groups){out+=`<optgroup label="${g}">`+groups[g].map(f=>`<option ${f.n===cur?'selected':''}>${f.n}</option>`).join('')+`</optgroup>`;}return out;}
+const getEl=id=>state.els.find(e=>e.id===id);
+function renderLayers(){
+  const box=document.getElementById('layers');box.innerHTML='';
+  state.els.forEach(el=>{
+    const row=document.createElement('div');row.className='layer'+(el.id===sel?' sel':'');
+    const isImg=el.type!=='text';
+    const sizePct=isImg?Math.round(el.w*100):Math.round(el.h*100);
+    const sizeMin=isImg?5:4, sizeMax=isImg?100:70;
+    const lbl=el.type==='svg'?('✶ '+(el.name||'Clipart')):'🖼 Image';
+    const chip=el.type==='image'?'':`<span class="lchip" style="${chipStyle(el.finish||state.finish)}"></span>`;
+    row.innerHTML=
+      (isImg
+        ? `<div class="top">${chip}<span style="font-size:12px;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${lbl}</span><button data-id="${el.id}" class="ldel" title="delete">✕</button></div>`
+        : `<div class="top">${chip}<input type="text" value="${(el.text||'').replace(/"/g,'&quot;')}" data-id="${el.id}" class="ltext"><button data-id="${el.id}" class="ldel" title="delete">✕</button></div>
+           <select data-id="${el.id}" class="lfont" style="width:100%">${fontOptions(el.font)}</select>`)
+      + `<div class="meta"><span class="mlab">Size</span><input type="range" class="lsize" data-id="${el.id}" min="${sizeMin}" max="${sizeMax}" step="1" value="${sizePct}"><span class="mval">${sizePct}%</span></div>`
+      + `<div class="meta"><span class="mlab">Rotate</span><input type="range" class="lrot" data-id="${el.id}" min="-90" max="90" step="1" value="${el.rot||0}"><span class="mval">${el.rot||0}°</span></div>`;
+    row.onclick=ev=>{if(ev.target.closest('.ldel')||ev.target.closest('input')||ev.target.closest('select'))return;sel=el.id;renderLayers();buildSwatches();draw();};
+    box.appendChild(row);
+  });
+  box.querySelectorAll('.ltext').forEach(i=>i.oninput=e=>{getEl(+e.target.dataset.id).text=e.target.value;draw();});
+  box.querySelectorAll('.lfont').forEach(s=>s.onchange=e=>{getEl(+e.target.dataset.id).font=e.target.value;draw();});
+  box.querySelectorAll('.lsize').forEach(s=>s.oninput=e=>{const el=getEl(+e.target.dataset.id);const v=+e.target.value;
+    if(el.type==='text')el.h=v/100;else el.w=v/100;e.target.nextElementSibling.textContent=v+'%';draw();});
+  box.querySelectorAll('.lrot').forEach(s=>s.oninput=e=>{const el=getEl(+e.target.dataset.id);el.rot=+e.target.value;e.target.nextElementSibling.textContent=el.rot+'°';draw();});
+  box.querySelectorAll('.ldel').forEach(b=>b.onclick=e=>{e.stopPropagation();const id=+e.currentTarget.dataset.id;
+    state.els=state.els.filter(x=>x.id!==id);if(sel===id)sel=state.els[0]?state.els[0].id:null;mfgLastSig='';renderLayers();buildSwatches();draw();});
+}
+
+/* ============ buttons ============ */
+document.getElementById('addText').onclick=()=>{const el={id:uid++,type:'text',text:'NEW LINE',font:'Marcellus',nx:.5,ny:.5,h:.16,rot:0,finish:state.finish};state.els.push(el);sel=el.id;renderLayers();buildSwatches();draw();};
+document.getElementById('addImage').onclick=()=>document.getElementById('imgFile').click();
+document.getElementById('imgFile').onchange=e=>{const file=e.target.files[0];if(!file)return;const img=new Image();
+  img.onload=()=>{const el={id:uid++,type:'image',img,aspect:img.width/img.height,nx:.5,ny:.5,w:.3,rot:0};state.els.push(el);sel=el.id;renderLayers();draw();};
+  img.src=URL.createObjectURL(file);e.target.value='';};
+document.getElementById('resetLayout').onclick=()=>{const texts=state.els.filter(e=>e.type==='text');const n=texts.length||1;
+  texts.forEach((el,i)=>{el.nx=.5;el.ny=(i+1)/(n+1);el.h=Math.min(.22,.7/n);el.rot=0;});renderLayers();draw();};
+document.getElementById('resetCanvas').onclick=()=>{if(!confirm('Reset the whole canvas to the default sign?'))return;
+  state=defaultDoc();sel=state.els[0].id;
+  document.getElementById('wmm').value=state.wmm;document.getElementById('hmm').value=state.hmm;updateBedWarn();
+  document.querySelectorAll('#mode button').forEach(b=>b.classList.toggle('on',b.dataset.m===state.mode));
+  mfgLastSig='';buildSwatches();renderLayers();buildSizePresets();buildShapeChips();draw();};
+function dimInput(id,key){const inp=document.getElementById(id);
+  inp.oninput=e=>{const v=+e.target.value;if(v>0){state[key]=Math.min(600,v);updateBedWarn();mfgLastSig='';highlightSizePresets();draw();}};
+  inp.onchange=e=>{state[key]=Math.max(50,Math.min(600,Math.round(+e.target.value)||50));e.target.value=state[key];updateBedWarn();mfgLastSig='';highlightSizePresets();draw();};}
+dimInput('wmm','wmm'); dimInput('hmm','hmm'); updateBedWarn();
+
+/* ===== board size presets + shape chips ===== */
+const SIZE_PRESETS=[
+  {name:'Door / room',w:250,h:80},
+  {name:'Small plaque',w:150,h:100},
+  {name:'Room sign',w:200,h:120},
+  {name:'House number',w:200,h:100},
+  {name:'Welcome',w:300,h:200},
+  {name:'Business sign',w:380,h:130},
+  {name:'Square',w:200,h:200},
+  {name:'Large',w:400,h:300},
+];
+const SHAPES=[{id:'round',name:'Rounded'},{id:'rect',name:'Sharp'},{id:'pill',name:'Pill'},{id:'circle',name:'Circle'}];
+function buildSizePresets(){
+  const box=document.getElementById('sizePresets');box.innerHTML='';
+  SIZE_PRESETS.forEach(p=>{const el=document.createElement('button');el.type='button';el.className='pchip';
+    el.innerHTML=p.name+'<small>'+p.w+'×'+p.h+'</small>';
+    el.onclick=()=>{state.wmm=p.w;state.hmm=p.h;document.getElementById('wmm').value=p.w;document.getElementById('hmm').value=p.h;
+      updateBedWarn();mfgLastSig='';highlightSizePresets();draw();};
+    box.appendChild(el);});
+  highlightSizePresets();
+}
+function highlightSizePresets(){const box=document.getElementById('sizePresets');if(!box)return;
+  [...box.children].forEach((el,i)=>{const p=SIZE_PRESETS[i];el.classList.toggle('on',!!p&&p.w===state.wmm&&p.h===state.hmm);});}
+function buildShapeChips(){
+  const box=document.getElementById('shapeChips');box.innerHTML='';
+  SHAPES.forEach(s=>{const el=document.createElement('button');el.type='button';el.className='pchip'+(state.shape===s.id?' on':'');
+    el.textContent=s.name; el.onclick=()=>{state.shape=s.id;buildShapeChips();draw();}; box.appendChild(el);});
+}
+buildSizePresets(); buildShapeChips();
+document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#mode button').forEach(x=>x.classList.remove('on'));b.classList.add('on');state.mode=b.dataset.m;draw();});
+document.getElementById('snap').onchange=e=>{snapOn=e.target.checked;};
+/* clipart / SVG + manufacturability controls */
+(function(){const sel=document.getElementById('presetSel');(window.MBH_PRESETS||[]).forEach((p,i)=>{const o=document.createElement('option');o.value=i;o.textContent=p.name;sel.appendChild(o);});})();
+document.getElementById('presetSel').onchange=e=>{const v=e.target.value;if(v==='')return;const p=(window.MBH_PRESETS||[])[+v];if(p)loadSvgText(p.svg,p.name);e.target.value='';};
+document.getElementById('addSvg').onclick=()=>document.getElementById('svgFile').click();
+document.getElementById('svgFile').onchange=e=>{const file=e.target.files[0];if(!file)return;
+  if(/\.dxf$/i.test(file.name)){alert('DXF support is coming soon — please upload an SVG for now.');e.target.value='';return;}
+  const reader=new FileReader();reader.onload=()=>loadSvgText(String(reader.result),file.name.replace(/\.svg$/i,''));reader.readAsText(file);e.target.value='';};
+document.getElementById('mfgOn').onchange=e=>{MFG.on=e.target.checked;mfgLastSig='';draw();};
+document.getElementById('mfgMin').oninput=e=>{MFG.minStrokeMM=+e.target.value;document.getElementById('mfgMinV').textContent=MFG.minStrokeMM.toFixed(1)+' mm';mfgLastSig='';draw();};
+document.getElementById('dl').onclick=()=>{let url; if(state.mode==='3d'&&G3.renderer){G3.renderer.render(G3.scene,G3.camera);url=G3.renderer.domElement.toDataURL('image/png');}else url=cv.toDataURL('image/png');
+  const a=document.createElement('a');a.download='mbh-sign.png';a.href=url;a.click();};
+
+/* ============ DXF export — BACK board + FRONT raised pieces (mm, vector outlines) ============ */
+const dxfCv=document.createElement('canvas'), dxfX=dxfCv.getContext('2d');
+function boardDims(){return {Wmm:state.wmm, Hmm:state.hmm};}
+function arcPts(cx,cy,rd,a0,a1,seg){const p=[];for(let i=0;i<=seg;i++){const a=(a0+(a1-a0)*i/seg)*Math.PI/180;p.push([cx+rd*Math.cos(a),cy+rd*Math.sin(a)]);}return p;}
+function boardOutline(){const {Wmm:W,Hmm:H}=boardDims();
+  let rd=state.shape==='rect'?0:(state.shape==='circle'||state.shape==='pill')?Math.min(W,H)/2:Math.min(W,H)*0.10;
+  if(rd<=0)return [[0,0],[W,0],[W,H],[0,H]];const s=14;
+  return [].concat(arcPts(W-rd,rd,rd,-90,0,s),arcPts(W-rd,H-rd,rd,0,90,s),arcPts(rd,H-rd,rd,90,180,s),arcPts(rd,rd,rd,180,270,s));}
+function rasterForDxf(el){
+  const {Wmm,Hmm}=boardDims();
+  if(el.type==='text'){const FS=512,wgt=fontW(el.font);dxfX.font=`${wgt} ${FS}px '${el.font}'`;dxfX.textBaseline='alphabetic';
+    const m=dxfX.measureText(el.text||' '),pad=Math.ceil(FS*0.2);
+    const L=Math.ceil(m.actualBoundingBoxLeft||0),R=Math.ceil(m.actualBoundingBoxRight||m.width),A=Math.ceil(m.actualBoundingBoxAscent||FS*0.8),D=Math.ceil(m.actualBoundingBoxDescent||FS*0.2);
+    const w=Math.max(1,L+R+2*pad),h=Math.max(1,A+D+2*pad);dxfCv.width=w;dxfCv.height=h;
+    dxfX.font=`${wgt} ${FS}px '${el.font}'`;dxfX.textBaseline='alphabetic';dxfX.fillStyle='#000';dxfX.clearRect(0,0,w,h);dxfX.fillText(el.text,L+pad,A+pad);
+    const g=gridFromCanvas(dxfCv,dxfX);g.mmPerPx=(el.h*Hmm)/FS;return g;
+  } else {const H=512,W=Math.max(2,Math.round(H*(el.aspect||1)));dxfCv.width=W;dxfCv.height=H;dxfX.clearRect(0,0,W,H);dxfX.drawImage(el.img,0,0,W,H);
+    const g=gridFromCanvas(dxfCv,dxfX);g.mmPerPx=(el.w*Wmm)/W;return g;}
+}
+function elementContoursMM(el){
+  const {Wmm,Hmm}=boardDims(), rr=rasterForDxf(el);
+  let rings=msRings(rr.grid,rr.w,rr.h).map(r=>dpRing(r,1.0)).filter(r=>r.length>=3&&Math.abs(ringArea(r))>4);
+  if(!rings.length)return [];
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;rings.forEach(r=>r.forEach(p=>{x0=Math.min(x0,p[0]);y0=Math.min(y0,p[1]);x1=Math.max(x1,p[0]);y1=Math.max(y1,p[1]);}));
+  const cxpx=(x0+x1)/2,cypx=(y0+y1)/2,mp=rr.mmPerPx,th=rad(el.rot||0),cs=Math.cos(th),sn=Math.sin(th),cxmm=el.nx*Wmm,cymm=el.ny*Hmm;
+  return rings.map(r=>r.map(p=>{const lx=(p[0]-cxpx)*mp,ly=(p[1]-cypx)*mp;return [cxmm+lx*cs-ly*sn, cymm+lx*sn+ly*cs];}));
+}
+function dxfDoc(polys){
+  const {Hmm}=boardDims();let s='0\nSECTION\n2\nHEADER\n9\n$INSUNITS\n70\n4\n0\nENDSEC\n0\nSECTION\n2\nENTITIES\n';
+  for(const pl of polys){const lay=(pl.layer||'0').replace(/[^A-Za-z0-9_]+/g,'_');
+    s+='0\nLWPOLYLINE\n8\n'+lay+'\n100\nAcDbEntity\n100\nAcDbPolyline\n90\n'+pl.points.length+'\n70\n1\n';
+    for(const p of pl.points)s+='10\n'+p[0].toFixed(3)+'\n20\n'+(Hmm-p[1]).toFixed(3)+'\n';}  // flip Y → DXF is y-up
+  return s+'0\nENDSEC\n0\nEOF\n';
+}
+function dlText(name,text){const b=new Blob([text],{type:'application/dxf'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1500);}
+function downloadDXF(){
+  const back=[{points:boardOutline(),layer:'BOARD'}];
+  const front=[];let skipped=0;
+  for(const el of state.els){ if(el.type==='image'){skipped++;continue;}
+    const lay=(el.finish||state.finish).name; elementContoursMM(el).forEach(pts=>front.push({points:pts,layer:lay})); }
+  dlText('mbh-sign-BACK.dxf', dxfDoc(back));
+  setTimeout(()=>dlText('mbh-sign-FRONT.dxf', dxfDoc(front)), 350);
+  setTimeout(()=>dlText('mbh-sign-COMBINED.dxf', dxfDoc(back.concat(front))), 700);   // board + pieces in one (for quoting/proof)
+  if(!front.length) alert('No vector text/clipart to export on the FRONT.');
+  else if(skipped) alert(skipped+' raster image layer(s) skipped — DXF needs vector text/SVG.');
+}
+document.getElementById('dxf').onclick=downloadDXF;
+
+/* ============ pricing (waste-aware) + order submission ============ */
+const SIGN_SCRIPT_URL='https://script.google.com/macros/s/AKfycbz02fhIttHEOjcmG6mUIGym-wB-vYvCMFNjHc8w2DigSV6J3oQIJrEiuVyD8TzGe3VQ/exec';
+const PRICING={currency:'$',sheetW:600,sheetH:400,minOffcut:150,kerf:4,boardRatePerCm2:0.05,colourSurcharge:18,labour:20,perPiece:0.6,minPrice:35,gstIncluded:true,formUrl:'',token:'mbh-2026-laser'};
+function distinctColours(){return new Set(state.els.filter(e=>e.type!=='image').map(e=>(e.finish||state.finish).id)).size||1;}
+function colourNames(){return [...new Set(state.els.filter(e=>e.type!=='image').map(e=>(e.finish||state.finish).name))];}
+function pieceCount(){return state.els.reduce((n,e)=>n+(e.type==='text'?(e.text||'').replace(/\s/g,'').length:e.type==='svg'?3:0),0);}
+function billableBoardMm2(){     // sign footprint + any offcut too small to reuse (sheet-yield aware)
+  const k=PRICING.kerf,Sw=PRICING.sheetW,Sh=PRICING.sheetH,mo=PRICING.minOffcut;
+  const fit=(w,h,sw,sh)=>{const W2=w+k,H2=h+k;if(W2>sw||H2>sh)return null;
+    const Rw=sw-W2,Th=sh-H2;
+    const rightWaste=(Rw>=mo&&sh>=mo)?0:Rw*sh;          // right strip scrap if too narrow
+    const topWaste=(W2>=mo&&Th>=mo)?0:W2*Th;            // top strip scrap if too short
+    return W2*H2+rightWaste+topWaste;};
+  let best=fit(state.wmm,state.hmm,Sw,Sh); const rot=fit(state.hmm,state.wmm,Sw,Sh);
+  if(rot!=null&&(best==null||rot<best))best=rot;
+  if(best==null)best=Math.max(Sw*Sh,(state.wmm+k)*(state.hmm+k));  // bigger than a sheet → bill ≥ a full sheet
+  return best;
+}
+function computePrice(){
+  const billCm2=billableBoardMm2()/100, colours=distinctColours(), pieces=pieceCount();
+  const board=billCm2*PRICING.boardRatePerCm2, colourC=(colours-1)*PRICING.colourSurcharge, assembly=pieces*PRICING.perPiece;
+  let total=Math.max(PRICING.minPrice, PRICING.labour+board+colourC+assembly);
+  const lines=[['Backing '+Math.round(billCm2)+' cm²',board],['Setup + assembly',PRICING.labour+assembly]];
+  if(colours>1)lines.push([(colours-1)+' extra colour'+(colours>2?'s':''),colourC]);
+  return {total,billCm2,colours,pieces,lines};
+}
+function updatePrice(){
+  const pv=document.getElementById('priceVal'); if(!pv)return null;
+  const p=computePrice();
+  pv.textContent=PRICING.currency+p.total.toFixed(2)+(PRICING.gstIncluded?' inc GST':'');
+  document.getElementById('priceBreak').innerHTML=p.lines.map(l=>`<div class="pbline"><span>${l[0]}</span><span>${PRICING.currency}${l[1].toFixed(2)}</span></div>`).join('');
+  return p;
+}
+document.getElementById('send').onclick=function(){
+  const nm=document.getElementById('sendName').value.trim(), em=document.getElementById('sendEmail').value.trim(), extra=document.getElementById('sendMsg').value.trim();
+  const stat=document.getElementById('sendstat');
+  if(!nm){stat.textContent='Please enter your name.';stat.style.color='var(--op-cut)';return;}
+  if(!em||!em.includes('@')){stat.textContent='Please enter a valid email.';stat.style.color='var(--op-cut)';return;}
+  if(!bedOK()){stat.textContent='Sign is larger than the 400×600 bed — reduce the size.';stat.style.color='var(--op-cut)';return;}
+  const p=updatePrice();
+  const cols=colourNames().join(', '), wording=state.els.filter(e=>e.type==='text').map(e=>e.text).filter(Boolean).join(' / ');
+  const dims=state.wmm+'×'+state.hmm+'mm';
+  const btn=this;btn.disabled=true;stat.textContent='Sending…';stat.style.color='var(--muted)';
+  const snapshot=(()=>{try{return cv.toDataURL('image/png');}catch(e){return null;}})();
+  let dxf='';try{const back=[{points:boardOutline(),layer:'BOARD'}],front=[];
+    for(const el of state.els){if(el.type==='image')continue;const lay=(el.finish||state.finish).name;elementContoursMM(el).forEach(pts=>front.push({points:pts,layer:lay}));}
+    dxf=dxfDoc(back.concat(front));}catch(e){}
+  const txt='MARKED BY HAND — acrylic sign order\nName:     '+nm+'\nEmail:    '+em+'\nWording:  '+(wording||'(none)')+
+    '\nBoard:    '+dims+' · '+state.shape+' · '+state.base.name+'\nFinishes: '+cols+'\nColours:  '+p.colours+'\nESTIMATE: $'+p.total.toFixed(2)+(extra?'\nNote:     '+extra:'');
+  const fd=new FormData();
+  fd.append('name',nm);fd.append('email',em);
+  fd.append('order_type','Acrylic Sign');
+  fd.append('token',PRICING.token);
+  fd.append('subject','Marked By Hand — acrylic sign: '+(wording||'custom'));
+  fd.append('material',state.base.name+' board · '+cols);
+  fd.append('quantity','1');
+  fd.append('displayed_estimate','$'+p.total.toFixed(2));
+  fd.append('dimensions',dims);
+  fd.append('geo_w_mm',String(state.wmm));     // → server price check + Sheet dimensions
+  fd.append('geo_h_mm',String(state.hmm));
+  fd.append('sign_colours_n',String(p.colours));
+  fd.append('sign_pieces',String(p.pieces));
+  fd.append('sign_shape',state.shape);
+  fd.append('sign_colours',cols);
+  fd.append('sign_wording',wording);
+  fd.append('message',txt);
+  if(dxf&&dxf.length>40){fd.append('dxf_content',dxf);fd.append('dxf_filename',(wording.replace(/[^a-z0-9]/gi,'_').toLowerCase()||'sign')+'_sign.dxf');}
+  if(snapshot)fd.append('snapshot',snapshot);
+  fetch(PRICING.formUrl||SIGN_SCRIPT_URL,{method:'POST',body:fd,mode:'no-cors'})
+    .then(function(){document.getElementById('sent').style.display='block';stat.textContent="Sent — we'll be in touch within one business day.";stat.style.color='var(--ok)';document.getElementById('sendName').value='';document.getElementById('sendEmail').value='';})
+    .catch(function(){stat.textContent="Couldn't send — please try again shortly.";stat.style.color='var(--op-cut)';btn.disabled=false;});
+};
+if(typeof fetch==='function'){fetch('signs-config.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json();}).then(j=>{Object.assign(PRICING,j);updatePrice();console.info('[MBH] loaded signs-config.json');}).catch(()=>{console.info('[MBH] using default signs pricing');});}
+
+/* ============================================================
+   3D VIEWER — extruded raised lettering (three.js r128 only).
+   Letters are rasterised from the loaded Google Font via canvas
+   fillText, traced (marching squares) into clean contours, then
+   extruded — so it handles every font (incl. scripts + variable
+   fonts) with NO external font libs or font-file downloads.
+   ============================================================ */
+const G3 = {ready:false, loading:false, token:0, userZoom:false, drag:null, autorot:true, theta:0.38, phi:1.42, radius:240};
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('load '+src));document.head.appendChild(s);});}
+function stat(msg){const s=document.getElementById('g3dstat');if(msg){s.style.display='flex';document.getElementById('g3dmsg').textContent=msg;}else s.style.display='none';}
+async function ensure3D(){
+  if(G3.ready){scheduleRebuild();return;}
+  if(G3.loading)return; G3.loading=true; stat('Loading 3D…');
+  try{
+    if(typeof THREE==='undefined') await loadScript('three.min.js');
+    if(document.fonts&&document.fonts.ready) await document.fonts.ready;   // need glyphs before rasterising
+    initScene(); G3.ready=true; G3.loading=false; await rebuild3D(); stat(null); renderLoop();
+  }catch(e){G3.loading=false;stat('3D failed to load — '+e.message);console.error(e);}
+}
+function initScene(){
+  const host=document.getElementById('g3d');const W=host.clientWidth||800,H=W*1100/1600;
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
+  renderer.setPixelRatio(Math.min(2,devicePixelRatio||1));renderer.setSize(W,H);
+  renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+  host.appendChild(renderer.domElement);
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(32,W/H,1,4000);
+  scene.add(new THREE.AmbientLight(0xffffff,0.35));
+  const key=new THREE.DirectionalLight(0xffffff,1.0);key.position.set(120,200,180);scene.add(key);
+  const fill=new THREE.DirectionalLight(0xcfe0ff,0.35);fill.position.set(-160,60,80);scene.add(fill);
+  const rim=new THREE.DirectionalLight(0xfff0d8,0.5);rim.position.set(-40,-60,-180);scene.add(rim);
+  const c=document.createElement('canvas');c.width=8;c.height=64;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,0,64);g.addColorStop(0,'#ffffff');g.addColorStop(.45,'#e7e1d6');g.addColorStop(.5,'#9a9286');g.addColorStop(1,'#4a443c');
+  x.fillStyle=g;x.fillRect(0,0,8,64);
+  const et=new THREE.CanvasTexture(c);et.mapping=THREE.EquirectangularReflectionMapping;
+  const pmrem=new THREE.PMREMGenerator(renderer);const env=pmrem.fromEquirectangular(et).texture;et.dispose();pmrem.dispose();scene.environment=env;
+  const group=new THREE.Group();scene.add(group);
+  Object.assign(G3,{renderer,scene,camera,group});
+  bindOrbit(renderer.domElement);
+  addEventListener('resize',()=>{if(state.mode!=='3d')return;const W=host.clientWidth,H=W*1100/1600;renderer.setSize(W,H);camera.aspect=W/H;camera.updateProjectionMatrix();});
+}
+function roundedRectShape(w,h,rd){const s=new THREE.Shape(),x=-w/2,y=-h/2;
+  s.moveTo(x+rd,y);s.lineTo(x+w-rd,y);s.quadraticCurveTo(x+w,y,x+w,y+rd);s.lineTo(x+w,y+h-rd);s.quadraticCurveTo(x+w,y+h,x+w-rd,y+h);
+  s.lineTo(x+rd,y+h);s.quadraticCurveTo(x,y+h,x,y+h-rd);s.lineTo(x,y+rd);s.quadraticCurveTo(x,y,x+rd,y);return s;}
+
+/* ---- rasterise a line of text (loaded webfont) to a 1-bit grid ---- */
+const traceCv=document.createElement('canvas'), tcx=traceCv.getContext('2d');
+const TRACE_FS=256;        // px the glyphs are rasterised at — also the size basis that matches the 2D view
+function rasterText(text,font,wgt){
+  const FS=TRACE_FS;       // resolution: enough to keep hairline script strokes alive without fattening
+  tcx.font=`${wgt} ${FS}px '${font}'`; tcx.textBaseline='alphabetic';
+  // size the canvas to the glyphs' ACTUAL ink bounds (not advance width) so script
+  // swashes/overhangs aren't clipped at the edges
+  const m=tcx.measureText(text||' '), pad=Math.ceil(FS*0.2);
+  const L=Math.ceil(m.actualBoundingBoxLeft||0), R=Math.ceil(m.actualBoundingBoxRight||m.width);
+  const A=Math.ceil(m.actualBoundingBoxAscent||FS*0.8), D=Math.ceil(m.actualBoundingBoxDescent||FS*0.2);
+  const w=Math.max(1,L+R+2*pad), h=Math.max(1,A+D+2*pad), ox=L+pad, oy=A+pad;
+  traceCv.width=w; traceCv.height=h;
+  tcx.font=`${wgt} ${FS}px '${font}'`; tcx.textAlign='left'; tcx.textBaseline='alphabetic'; tcx.fillStyle='#000';
+  tcx.clearRect(0,0,w,h); tcx.fillText(text,ox,oy);
+  const d=tcx.getImageData(0,0,w,h).data, grid=new Uint8Array(w*h);
+  for(let i=0;i<w*h;i++) grid[i]=d[i*4+3]>128?1:0;
+  return {grid,w,h};
+}
+/* ---- marching squares → closed rings ---- */
+function msRings(grid,W,H){
+  const get=(x,y)=>(x<0||y<0||x>=W||y>=H)?0:grid[y*W+x], segs=[];
+  for(let y=-1;y<H;y++)for(let x=-1;x<W;x++){
+    const c=(get(x,y)<<3)|(get(x+1,y)<<2)|(get(x+1,y+1)<<1)|get(x,y+1); if(!c||c===15)continue;
+    const N=[x+0.5,y],E=[x+1,y+0.5],S=[x+0.5,y+1],Wp=[x,y+0.5],a=(p,q)=>segs.push([p,q]);
+    switch(c){case 1:a(Wp,S);break;case 2:a(S,E);break;case 3:a(Wp,E);break;case 4:a(E,N);break;case 5:a(Wp,N);a(E,S);break;
+      case 6:a(S,N);break;case 7:a(Wp,N);break;case 8:a(N,Wp);break;case 9:a(N,S);break;case 10:a(N,E);a(S,Wp);break;
+      case 11:a(N,E);break;case 12:a(E,Wp);break;case 13:a(E,S);break;case 14:a(S,Wp);break;}
+  }
+  const key=p=>p[0].toFixed(1)+','+p[1].toFixed(1), start=new Map();
+  segs.forEach((s,i)=>{const k=key(s[0]);if(!start.has(k))start.set(k,[]);start.get(k).push(i);});
+  const used=new Set(), rings=[];
+  for(let i=0;i<segs.length;i++){if(used.has(i))continue;const ring=[];let ci=i,g=0;
+    while(ci!==undefined&&!used.has(ci)&&g++<500000){used.add(ci);ring.push(segs[ci][0]);const nk=key(segs[ci][1]),cand=start.get(nk);ci=undefined;if(cand)for(const c of cand)if(!used.has(c)){ci=c;break;}}
+    if(ring.length>2)rings.push(ring);}
+  return rings;
+}
+function dpRing(pts,eps){if(pts.length<5)return pts;const keep=new Array(pts.length).fill(false);keep[0]=keep[pts.length-1]=true;const st=[[0,pts.length-1]];
+  while(st.length){const [a,b]=st.pop();let md=0,idx=-1;const ax=pts[a][0],ay=pts[a][1],L=Math.hypot(pts[b][0]-ax,pts[b][1]-ay)||1,dx=pts[b][0]-ax,dy=pts[b][1]-ay;
+    for(let i=a+1;i<b;i++){const d=Math.abs((pts[i][0]-ax)*dy-(pts[i][1]-ay)*dx)/L;if(d>md){md=d;idx=i;}}
+    if(md>eps){keep[idx]=true;st.push([a,idx],[idx,b]);}}
+  const o=[];for(let i=0;i<pts.length;i++)if(keep[i])o.push(pts[i]);return o;}
+function ringArea(r){let a=0;for(let i=0,j=r.length-1;i<r.length;j=i++)a+=r[j][0]*r[i][1]-r[i][0]*r[j][1];return a/2;}
+function pip(pt,poly){let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i][0],yi=poly[i][1],xj=poly[j][0],yj=poly[j][1];if(((yi>pt[1])!==(yj>pt[1]))&&(pt[0]<(xj-xi)*(pt[1]-yi)/(yj-yi)+xi))c=!c;}return c;}
+
+/* ---- trace + extrude one text line into a single geometry ---- */
+function traceGridToGeometry(grid,w,h,k){
+  let rings=msRings(grid,w,h).map(r=>dpRing(r,1.1)).filter(r=>r.length>=3&&Math.abs(ringArea(r))>10);
+  if(!rings.length)return null;
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  rings.forEach(r=>r.forEach(p=>{x0=Math.min(x0,p[0]);y0=Math.min(y0,p[1]);x1=Math.max(x1,p[0]);y1=Math.max(y1,p[1]);}));
+  const cx=(x0+x1)/2, cy=(y0+y1)/2;                       // scale by k, centre, flip Y
+  const polys=rings.map(r=>r.map(p=>[(p[0]-cx)*k, -(p[1]-cy)*k]));
+  const depth=polys.map((p,i)=>{let d=0;for(let j=0;j<polys.length;j++)if(j!==i&&pip(p[0],polys[j]))d++;return d;});
+  const shapes=[], sf=new Array(polys.length).fill(null);
+  polys.forEach((p,i)=>{if(depth[i]%2===0){const s=new THREE.Shape(p.map(q=>new THREE.Vector2(q[0],q[1])));sf[i]=s;shapes.push(s);}});
+  polys.forEach((p,i)=>{if(depth[i]%2===1){let par=-1;for(let j=0;j<polys.length;j++)if(depth[j]===depth[i]-1&&pip(p[0],polys[j])){par=j;break;}if(par>=0&&sf[par])sf[par].holes.push(new THREE.Path(p.map(q=>new THREE.Vector2(q[0],q[1]))));}});
+  if(!shapes.length)return null;
+  const geo=new THREE.ExtrudeGeometry(shapes,{depth:3,bevelEnabled:true,bevelThickness:0.4,bevelSize:0.3,bevelSegments:1,curveSegments:1}); // ~3mm raise
+  geo.computeBoundingBox();const b=geo.boundingBox;geo.translate(-(b.max.x+b.min.x)/2,-(b.max.y+b.min.y)/2,0);return geo;
+}
+function buildLine(el,BH){const {grid,w,h}=rasterText(el.text||'',el.font,fontW(el.font));return traceGridToGeometry(grid,w,h,(el.h*BH)/TRACE_FS);}
+function buildSvg3D(el,BW){
+  const H=340,W=Math.max(2,Math.round(H*(el.aspect||1)));
+  traceCv.width=W;traceCv.height=H;tcx.clearRect(0,0,W,H);tcx.drawImage(el.img,0,0,W,H);
+  const d=tcx.getImageData(0,0,W,H).data,g=new Uint8Array(W*H);for(let i=0;i<W*H;i++)g[i]=d[i*4+3]>128?1:0;
+  return traceGridToGeometry(g,W,H,(el.w*BW)/W);
+}
+function finishMaterial(f){
+  f=f||state.finish;
+  if(f.type==='matte')return new THREE.MeshStandardMaterial({color:new THREE.Color(f.flat),metalness:0.1,roughness:0.55,envMapIntensity:0.6});
+  return new THREE.MeshStandardMaterial({color:new THREE.Color(METAL3D[f.metal]),metalness:0.95,roughness:f.type==='mirror'?0.12:0.42,envMapIntensity:1.15});
+}
+let rebuildPending=false;
+function scheduleRebuild(){if(rebuildPending||!G3.ready)return;rebuildPending=true;requestAnimationFrame(()=>{rebuildPending=false;rebuild3D();});}
+async function rebuild3D(){
+  const tok=++G3.token,r=signRect(),BH=120,BW=BH*r.ratio,BT=3;     // BT = 3mm base
+  const rd=state.shape==='rect'?0:(state.shape==='circle'||state.shape==='pill')?Math.min(BW,BH)/2:Math.min(BW,BH)*0.10;
+  while(G3.group.children.length){const m=G3.group.children.pop();m.geometry&&m.geometry.dispose();m.material&&m.material.dispose&&m.material.dispose();}
+  const boardGeo=new THREE.ExtrudeGeometry(roundedRectShape(BW,BH,rd),{depth:BT,bevelEnabled:true,bevelThickness:0.5,bevelSize:0.5,bevelSegments:1});
+  boardGeo.translate(0,0,-BT/2);
+  const gloss=!isDark(state.base.hex);
+  G3.group.add(new THREE.Mesh(boardGeo,new THREE.MeshStandardMaterial({color:new THREE.Color(state.base.hex),metalness:0,roughness:gloss?0.3:0.5,envMapIntensity:0.5})));
+  if(!G3.userZoom){                                  // frame the camera to actually fit the board
+    const vf=G3.camera.fov*Math.PI/180, asp=G3.camera.aspect, t=Math.tan(vf/2);
+    const rW=(BW*0.5*1.12)/(t*asp), rH=(BH*0.5*1.12)/t;
+    G3.radius=Math.max(rW,rH);
+  }
+  for(const el of state.els){
+    let geo=null;
+    try{ if(el.type==='text')geo=buildLine(el,BH); else if(el.type==='svg')geo=buildSvg3D(el,BW); else continue; }
+    catch(e){console.warn('3D build failed:',el.text||el.name,e.message);}
+    if(tok!==G3.token)return; if(!geo)continue;
+    const mesh=new THREE.Mesh(geo,finishMaterial(el.finish||state.finish));
+    mesh.position.set((el.nx-0.5)*BW,(0.5-el.ny)*BH,BT/2);
+    mesh.rotation.z=-rad(el.rot||0);
+    G3.group.add(mesh);
+  }
+}
+function bindOrbit(dom){
+  dom.style.cursor='grab';dom.style.touchAction='none';
+  dom.addEventListener('pointerdown',e=>{G3.drag={x:e.clientX,y:e.clientY,th:G3.theta,ph:G3.phi};G3.autorot=false;dom.setPointerCapture(e.pointerId);dom.style.cursor='grabbing';});
+  dom.addEventListener('pointermove',e=>{if(!G3.drag)return;G3.theta=G3.drag.th-(e.clientX-G3.drag.x)*0.01;G3.phi=Math.max(0.25,Math.min(Math.PI-0.25,G3.drag.ph-(e.clientY-G3.drag.y)*0.01));});
+  dom.addEventListener('pointerup',()=>{G3.drag=null;dom.style.cursor='grab';});
+  dom.addEventListener('wheel',e=>{e.preventDefault();G3.userZoom=true;G3.radius=Math.max(40,Math.min(900,G3.radius*(1+Math.sign(e.deltaY)*0.08)));},{passive:false});
+}
+function renderLoop(){
+  if(!G3.ready)return;requestAnimationFrame(renderLoop);if(state.mode!=='3d')return;
+  if(G3.autorot&&!G3.drag)G3.theta+=0.004;
+  const {camera,renderer,scene}=G3,r=G3.radius;
+  camera.position.set(r*Math.sin(G3.phi)*Math.sin(G3.theta),r*Math.cos(G3.phi),r*Math.sin(G3.phi)*Math.cos(G3.theta));
+  camera.lookAt(0,0,0);renderer.render(scene,camera);
+}
+
+/* ============ boot — wait for ALL fonts before first draw ============ */
+buildSwatches();renderLayers();draw();
+// once the real web fonts load, the glyph metrics change — invalidate the mfg cache so the
+// red overlay is recomputed against the correct shapes (otherwise it stays aligned to the fallback font)
+function redrawAfterFonts(){if(state.mode!=='3d'){mfgLastSig='';draw();}}
+if(document.fonts&&document.fonts.ready){
+  Promise.all(FONTS.map(f=>document.fonts.load(`${f.w} 60px '${f.n}'`).catch(()=>{}))).then(redrawAfterFonts);
+  document.fonts.ready.then(redrawAfterFonts);
+}
+window.addEventListener('load',redrawAfterFonts);
+</script>
+<script src="site.js"></script>
+</body>
+</html>

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Style Guide — Marked By Hand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+/* ============================================================
+   MBH TOOL COMPONENT LIBRARY
+   ─────────────────────────────────────────────────────────
+   Copy this entire <style> block into a new tool. Only keep
+   what you actually use; delete the rest. Everything inside
+   the "STYLE GUIDE ONLY" comment can be discarded.
+   ============================================================ */
+
+/* 0 · :root  ────────────────────────────────────────────────
+   Only define aliases to canonical theme.css tokens. Never
+   hardcode hex values here — change theme.css instead.     */
+:root{
+  /* Map common tool-internal names → canonical token names.
+     All other tokens (--amber, --muted, --bone, --ok…) come
+     from theme.css automatically — no need to redefine them. */
+  --btn-ink: var(--primary-ink);   /* text on filled buttons */
+  --acc-ink: var(--accent-ink);    /* text on cyan/sage buttons */
+}
+
+/* 1 · Hero  ─────────────────────────────────────────────────
+   Compact override of theme.css .hero for tool pages.      */
+.hero{padding:30px 0 10px}
+.hero h1{font-family:var(--brand);font-size:clamp(28px,5vw,46px);line-height:1.04;margin:0 0 12px;font-weight:700;letter-spacing:-.5px}
+.hero h1 .ghost{color:var(--muted)}
+.hero .lede{max-width:560px;color:var(--lede);font-size:16px;margin:0}
+
+/* 2 · Tool grid  ────────────────────────────────────────────
+   Controls (1fr) left · Preview (1.3fr, sticky) right.    */
+.tool-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:20px;align-items:start;margin-top:20px}
+@media(max-width:880px){.tool-grid{grid-template-columns:1fr}.preview-col{position:static!important}}
+.preview-col{position:sticky;top:72px}
+
+/* 3 · Simple / Advanced bar  ────────────────────────────────
+   Always FIRST child of the controls column, before cards. */
+.adv-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.adv-bar .advlab{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+body:not(.adv-on) .adv{display:none!important}
+
+/* 4 · Card  ─────────────────────────────────────────────────
+   Main panel unit. One concept per card.                   */
+.card{background:var(--graphite-2);border:1px solid var(--line);border-radius:var(--r);padding:16px 16px 18px;margin-bottom:14px}
+.card:last-child{margin-bottom:0}
+.card h2{font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:0 0 12px;font-weight:500}
+
+/* 5 · Field + label  ────────────────────────────────────────
+   .lab shows the label on left, current value (bold) right. */
+.field{margin-bottom:13px}.field:last-child{margin-bottom:0}
+label.lab{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--muted);margin-bottom:6px;font-family:var(--mono);letter-spacing:.5px;text-transform:uppercase}
+label.lab b{color:var(--bone);font-family:var(--mono);font-weight:500;font-size:13px}
+
+/* 6 · Inputs  ───────────────────────────────────────────────
+   Inputs sit inside cards (--graphite-2) so use --panel bg. */
+input[type=text],input[type=email],input[type=number],select{background:var(--panel)}
+input[type=range]{width:100%;accent-color:var(--amber);height:22px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.two>*{margin-bottom:0}
+
+/* 7 · Segmented control  ────────────────────────────────────
+   Add .on class via JS for the active option.              */
+.seg{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
+.seg button{flex:1;background:transparent;border:0;color:var(--muted);padding:7px 4px;border-radius:7px;font:inherit;font-size:12.5px;cursor:pointer}
+.seg button.on{background:var(--amber);color:var(--primary-ink);font-weight:600}
+
+/* 8 · Checkbox toggle  ──────────────────────────────────────*/
+.toggle{display:flex;align-items:center;gap:9px;cursor:pointer;font-size:13.5px;color:var(--bone);user-select:none}
+.toggle input{accent-color:var(--amber);width:16px;height:16px;cursor:pointer}
+
+/* 9 · Stat readout tiles  ───────────────────────────────────*/
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 11px}
+.stat .k{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+.stat .v{font-family:var(--mono);font-size:18px;font-weight:500;color:var(--bone);margin-top:2px}
+.stat .v small{font-size:11px;color:var(--muted)}
+
+/* 10 · Price row  ───────────────────────────────────────────*/
+.pricerow{display:flex;justify-content:space-between;align-items:baseline;margin:12px 0 4px}
+.pricerow .pl{font-size:13px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.5px}
+.pricerow .pv{font-family:var(--mono);font-weight:700;font-size:32px;color:var(--amber);letter-spacing:-1px}
+
+/* 11 · File drop zone  ──────────────────────────────────────*/
+.drop{border:2px dashed var(--line);border-radius:12px;padding:28px 20px;text-align:center;cursor:pointer;transition:.15s;color:var(--muted);font-size:14px;background:var(--panel)}
+.drop:hover,.drop.over{border-color:var(--amber);background:color-mix(in srgb,var(--amber) 8%,var(--graphite-2));color:var(--bone)}
+.drop b{color:var(--amber)}
+
+/* 12 · Tool buttons  ────────────────────────────────────────
+   Full-width variants used inside cards. The site-wide .btn
+   (theme.css) handles inline CTA buttons on non-tool pages. */
+.btn-t{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--amber);color:var(--primary-ink);border:0;border-radius:10px;padding:14px;font:inherit;font-weight:600;font-size:15px;cursor:pointer;margin-top:12px;transition:filter .15s}
+.btn-t:hover{filter:brightness(1.06)}.btn-t:active{transform:translateY(1px)}
+.btn-t:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.btn-t.ghost{background:transparent;color:var(--bone);border:1px solid var(--line);font-weight:500;margin-top:8px;padding:11px;font-size:14px}
+.btn-t.ghost:hover{border-color:var(--amber);filter:none}
+.btn-t.cyan{background:var(--cyan);color:var(--accent-ink)}
+
+/* 13 · Status & feedback  ───────────────────────────────────*/
+.hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+.warn-box{margin:0 0 12px;padding:9px 12px;border-radius:9px;font-size:12.5px;line-height:1.45;background:color-mix(in srgb,var(--warn) 12%,var(--graphite-2));border:1px solid color-mix(in srgb,var(--warn) 38%,transparent);color:#8a5a16}
+.sendstat{font-family:var(--mono);font-size:11px;text-align:center;margin-top:6px;min-height:1em}
+.sendstat.ok{color:var(--ok)}.sendstat.err{color:var(--warn)}
+.sent-box{background:color-mix(in srgb,var(--ok) 8%,var(--graphite-2));border:1px solid color-mix(in srgb,var(--ok) 35%,transparent);border-radius:10px;padding:14px;margin-top:10px;font-size:13px}
+.sent-box b{color:var(--ok)}
+.sent-box pre{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:pre-wrap;margin:8px 0 0;background:var(--panel);padding:10px;border-radius:8px;border:1px solid var(--line)}
+.contact-wrap{display:flex;flex-direction:column;gap:7px;margin-top:10px}
+
+/* 14 · Canvas / stage  ──────────────────────────────────────
+   4:3 inside preview-col. Swap background per tool.        */
+.stage{width:100%;aspect-ratio:4/3;border-radius:var(--r);overflow:hidden;position:relative;background:var(--panel);border:1px solid var(--line)}
+.stage-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13.5px;text-align:center;padding:30px;font-family:var(--mono)}
+
+/* ============================================================
+   STYLE GUIDE ONLY — delete from tool files
+   ============================================================ */
+.sg-page{max-width:var(--wrap);margin:0 auto;padding:0 18px}
+.sg-sect{border-top:1px solid var(--line);padding:36px 0 8px;margin-top:36px}
+.sg-sect:first-of-type{border-top:none;margin-top:0;padding-top:0}
+.sg-label{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin:0 0 20px;font-weight:500}
+.sg-sub{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px;font-weight:500;border-bottom:1px dashed var(--line);padding-bottom:6px}
+.sg-note{font-size:12.5px;color:var(--lede);margin:8px 0 16px;line-height:1.6;background:var(--panel);border-left:3px solid var(--cyan);border-radius:0 8px 8px 0;padding:10px 12px}
+.sg-note code{font-family:var(--mono);font-size:11px;background:var(--graphite-2);padding:1px 5px;border-radius:4px}
+.sg-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;margin-bottom:16px}
+.sg-cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:640px){.sg-cols{grid-template-columns:1fr}}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+.sw{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.sw .col{height:48px}
+.sw .meta{padding:6px 10px;background:var(--graphite-2)}
+.sw .n{font-family:var(--mono);font-size:10px;letter-spacing:.5px;color:var(--muted);text-transform:uppercase}
+.sw .h{font-family:var(--mono);font-size:11px;color:var(--bone);margin-top:2px}
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<main class="wrap" style="padding-top:30px;padding-bottom:60px;flex:1 0 auto">
+
+  <section class="hero" style="border-bottom:1px solid var(--line);padding-bottom:24px;margin-bottom:0">
+    <p class="eyebrow">Internal reference · not customer-facing</p>
+    <h1>MBH Style Guide<br><span class="ghost">Component Library.</span></h1>
+    <p class="lede">Source of truth for every Marked By Hand tool. When building something new, copy the <code style="font-family:var(--mono);font-size:13px;background:var(--panel);padding:2px 7px;border-radius:5px">&lt;style&gt;</code> block at the top of this file and delete what you don't need.</p>
+  </section>
+
+  <!-- ── A · COLOUR TOKENS ─────────────────────────────── -->
+  <div class="sg-sect">
+    <p class="sg-label">A · Colour Tokens</p>
+    <div class="sg-note">All defined in <code>theme.css</code>. Tools inherit automatically — never hardcode hex values in a tool. If a colour needs changing, change it once in theme.css.</div>
+
+    <div class="sg-sub">Surfaces</div>
+    <div class="swatches">
+      <div class="sw"><div class="col" style="background:var(--graphite)"></div><div class="meta"><div class="n">--graphite</div><div class="h">Page bg</div></div></div>
+      <div class="sw"><div class="col" style="background:var(--graphite-2);border-bottom:1px solid var(--line)"></div><div class="meta"><div class="n">--graphite-2</div><div class="h">Card / header</div></div></div>
+      <div class="sw"><div class="col" style="background:var(--panel)"></div><div class="meta"><div class="n">--panel</div><div class="h">Input / inset</div></div></div>
+      <div class="sw"><div class="col" style="background:var(--line)"></div><div class="meta"><div class="n">--line</div><div class="h">Borders</div></div></div>
+    </div>
+
+    <div class="sg-sub">Ink</div>
+    <div class="swatches">
+      <div class="sw"><div class="col" style="background:var(--bone)"></div><div class="meta"><div class="n">--bone</div><div class="h">Primary text</div></div></div>
+      <div class="sw"><div class="col" style="background:var(--lede)"></div><div class="meta"><div class="n">--lede</div><div class="h">Body copy</div></div></div>
+      <div class="sw"><div class="col" style="background:var(--muted)"></div><div class="meta"><div class="n">--muted</div><div class="h">Labels / captions</div></div></div>
+      <div class="sw"><div class="col" style="background:var(--faint)"></div><div class="meta"><div class="n">--faint</div><div class="h">Ghost data</div></div></div>
+    </div>
+
+    <div class="sg-sub">Accents</div>
+    <div class="swatches">
+      <div class="sw"><div class="col" style="background:var(--amber)"></div><div class="meta"><div class="n">--amber</div><div class="h">Primary action</div></div></div>
+      <div class="sw"><div class="col" style="background:var(--amber-soft)"></div><div class="meta"><div class="n">--amber-soft</div><div class="h">Links</div></div></div>
+      <div class="sw"><div class="col" style="background:var(--primary-ink)"></div><div class="meta"><div class="n">--primary-ink</div><div class="h">On amber buttons</div></div></div>
+      <div class="sw"><div class="col" style="background:var(--cyan)"></div><div class="meta"><div class="n">--cyan</div><div class="h">Sage / secondary</div></div></div>
+      <div class="sw"><div class="col" style="background:var(--accent-ink)"></div><div class="meta"><div class="n">--accent-ink</div><div class="h">On cyan buttons</div></div></div>
+      <div class="sw"><div class="col" style="background:var(--ok)"></div><div class="meta"><div class="n">--ok</div><div class="h">Success</div></div></div>
+      <div class="sw"><div class="col" style="background:var(--warn)"></div><div class="meta"><div class="n">--warn</div><div class="h">Warning</div></div></div>
+      <div class="sw"><div class="col" style="background:var(--op-cut)"></div><div class="meta"><div class="n">--op-cut</div><div class="h">Laser cut paths</div></div></div>
+      <div class="sw"><div class="col" style="background:var(--op-shade)"></div><div class="meta"><div class="n">--op-shade</div><div class="h">Engrave fill</div></div></div>
+    </div>
+  </div>
+
+  <!-- ── B · TYPOGRAPHY ────────────────────────────────── -->
+  <div class="sg-sect">
+    <p class="sg-label">B · Typography</p>
+    <div class="sg-cols">
+      <div>
+        <div class="sg-sub">Bricolage Grotesque — headings, eyebrow span</div>
+        <div style="font-family:var(--brand);font-size:36px;font-weight:700;letter-spacing:-.5px;line-height:1.1;margin-bottom:6px">Drop a file.<br><span style="color:var(--muted)">Get a price.</span></div>
+        <div style="font-family:var(--brand);font-size:20px;font-weight:700">Section heading</div>
+        <div class="sg-sub">JetBrains Mono — labels, data, prices</div>
+        <div style="font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">SECTION LABEL</div>
+        <div style="font-family:var(--mono);font-size:32px;font-weight:700;color:var(--amber);letter-spacing:-1px">$42.50</div>
+      </div>
+      <div>
+        <div class="sg-sub">Space Grotesk — body, UI</div>
+        <div style="font-size:15px;color:var(--lede);line-height:1.55;margin-bottom:12px">Body copy. Drop in a DXF and we measure it on the spot — size, cut length, engraving area, lead time — then price it from a live rate card. No three-day email chain.</div>
+        <div class="sg-sub">Hero pattern</div>
+        <p class="eyebrow">Custom acrylic · instant quote</p>
+        <h1 style="font-family:var(--brand);font-size:clamp(28px,5vw,46px);line-height:1.04;margin:0 0 10px;font-weight:700;letter-spacing:-.5px">Drop a file.<br><span style="color:var(--muted)">Get a price instantly.</span></h1>
+        <p style="max-width:560px;color:var(--lede);font-size:16px;margin:0">Lede text — one or two sentences, practical, no fluff.</p>
+      </div>
+    </div>
+    <div class="sg-note" style="margin-top:16px">
+      Use <code>&lt;p class="eyebrow"&gt;</code> · <code>&lt;h1&gt;…&lt;span class="ghost"&gt;…&lt;/span&gt;&lt;/h1&gt;</code> · <code>&lt;p class="lede"&gt;</code> — in that order, always inside <code>&lt;section class="hero"&gt;</code>.
+    </div>
+  </div>
+
+  <!-- ── C · BUTTONS ───────────────────────────────────── -->
+  <div class="sg-sect">
+    <p class="sg-label">C · Buttons</p>
+    <div class="sg-note">Use theme.css <code>.btn</code> for page-level CTAs. Use tool-local <code>.btn-t</code> for full-width card buttons. Same visual language, different sizing.</div>
+
+    <div class="sg-sub">Page-level (theme.css .btn)</div>
+    <div class="sg-row">
+      <a class="btn">Primary</a>
+      <a class="btn ghost">Ghost</a>
+      <a class="btn cyan">Sage / Cyan</a>
+      <a class="btn" style="opacity:.4;cursor:not-allowed;pointer-events:none">Disabled</a>
+    </div>
+    <div class="sg-row">
+      <span class="pill live"><span class="dot"></span>Live</span>
+      <span class="pill beta"><span class="dot"></span>Beta</span>
+      <span class="pill soon"><span class="dot"></span>Coming soon</span>
+      <span class="pill">Default</span>
+    </div>
+
+    <div class="sg-sub">Tool card buttons (.btn-t)</div>
+    <div style="max-width:280px">
+      <button class="btn-t">Send for review</button>
+      <button class="btn-t cyan" style="margin-top:8px">Confirm & order</button>
+      <button class="btn-t ghost">Download DXF</button>
+      <button class="btn-t" disabled>Disabled</button>
+    </div>
+  </div>
+
+  <!-- ── D · CARDS ─────────────────────────────────────── -->
+  <div class="sg-sect">
+    <p class="sg-label">D · Cards</p>
+    <div class="sg-note">One card per concept. The <code>h2</code> is always mono, 12px, uppercase, <code>--muted</code>, 500 weight, <code>0 0 12px</code> margin. Never deviate.</div>
+    <div class="sg-cols">
+      <div class="card">
+        <h2>1 · Material</h2>
+        <div class="field">
+          <label>Type &amp; thickness</label>
+          <select><option>Clear acrylic — 3mm</option><option>Colour acrylic — 3mm</option><option>Clear acrylic — 6mm</option></select>
+        </div>
+        <div class="field">
+          <label>Quantity</label>
+          <input type="number" value="1" min="1">
+        </div>
+        <button class="btn-t">Send for review</button>
+        <button class="btn-t ghost">Save for later</button>
+        <div class="hint">We confirm the exact price after reviewing your file before anything gets cut.</div>
+      </div>
+      <div class="card">
+        <h2>2 · Advanced</h2>
+        <div class="field">
+          <label class="lab">Infill <b>15%</b></label>
+          <input type="range" min="0" max="100" value="15">
+        </div>
+        <div class="field">
+          <label class="lab">Layer height <b>0.20 mm</b></label>
+          <input type="range" min="8" max="32" value="20" step="2">
+        </div>
+        <div class="field">
+          <label class="toggle"><input type="checkbox"> Needs supports</label>
+        </div>
+        <div class="field">
+          <div class="seg">
+            <button>Draft</button>
+            <button class="on">Standard</button>
+            <button>Fine</button>
+          </div>
+        </div>
+        <div class="warn-box"><b>Heads up.</b> This part is very tall — it may need supports. Enable the option above.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── E · FORM CONTROLS ─────────────────────────────── -->
+  <div class="sg-sect">
+    <p class="sg-label">E · Form Controls</p>
+    <div class="sg-cols">
+      <div>
+        <div class="sg-sub">Text inputs (theme.css + panel bg override)</div>
+        <div class="field"><label>Your name</label><input type="text" placeholder="Jane Smith"></div>
+        <div class="field"><label>Email</label><input type="email" placeholder="you@email.com"></div>
+        <div class="sg-sub">Contact wrap (always inside a card)</div>
+        <div class="card" style="margin-top:0">
+          <h2>Order · contact</h2>
+          <div class="contact-wrap">
+            <input type="text" placeholder="Your name">
+            <input type="email" placeholder="Your email (so we can reply)">
+          </div>
+          <button class="btn-t">Send for review</button>
+          <div class="sendstat ok">Sent — we'll be in touch shortly.</div>
+        </div>
+      </div>
+      <div>
+        <div class="sg-sub">Labelled field (.lab pattern)</div>
+        <div class="field">
+          <label class="lab">Infill <b>15%</b></label>
+          <input type="range" min="0" max="100" value="15">
+        </div>
+        <div class="field">
+          <label class="lab">Width <b>100 mm</b></label>
+          <input type="number" value="100" min="1">
+        </div>
+        <div class="field">
+          <label class="lab">Material <b>PLA</b></label>
+          <select><option>PLA</option><option>ABS</option><option>PETG</option></select>
+        </div>
+        <div class="sg-sub">Two-column row</div>
+        <div class="two">
+          <div class="field"><label>Width (mm)</label><input type="number" value="100"></div>
+          <div class="field"><label>Height (mm)</label><input type="number" value="80"></div>
+        </div>
+        <div class="sg-sub">Checkbox toggles</div>
+        <div class="field"><label class="toggle"><input type="checkbox" checked> I confirm this suits my use.</label></div>
+        <div class="field"><label class="toggle"><input type="checkbox"> Snap art to centre</label></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── F · SEGMENTED CONTROL ─────────────────────────── -->
+  <div class="sg-sect">
+    <p class="sg-label">F · Segmented Control</p>
+    <div class="sg-note">2–4 options. Active button gets class <code>.on</code> via JS (toggle <code>aria-pressed</code> too for accessibility). Never more than 4 options — use a <code>&lt;select&gt;</code> beyond that.</div>
+    <div style="max-width:400px">
+      <div class="field"><div class="seg"><button class="on">Simple</button><button>Advanced</button></div></div>
+      <div class="field"><div class="seg"><button class="on">Cut only</button><button>Cut + Engrave</button><button>Engrave only</button></div></div>
+      <div class="field"><div class="seg"><button>Draft</button><button class="on">Standard</button><button>Fine</button></div></div>
+      <div class="field"><div class="seg"><button class="on">Auto-detect</button><button>All shaded</button><button>All lines</button></div></div>
+    </div>
+  </div>
+
+  <!-- ── G · SIMPLE / ADVANCED ─────────────────────────── -->
+  <div class="sg-sect">
+    <p class="sg-label">G · Simple / Advanced Toggle</p>
+    <div class="sg-note">The <code>.adv-bar</code> is always the FIRST child of the controls column — never above the grid. Any element with class <code>.adv</code> is hidden until body has class <code>.adv-on</code>. Click the buttons below to try it.</div>
+    <div style="max-width:460px">
+      <div class="adv-bar">
+        <span class="advlab">View</span>
+        <div class="seg" style="max-width:200px">
+          <button id="sg-simple" class="on" onclick="document.body.classList.remove('adv-on');document.getElementById('sg-simple').classList.add('on');document.getElementById('sg-adv').classList.remove('on')">Simple</button>
+          <button id="sg-adv" onclick="document.body.classList.add('adv-on');document.getElementById('sg-adv').classList.add('on');document.getElementById('sg-simple').classList.remove('on')">Advanced</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Options</h2>
+        <div class="field"><label>Material</label><select><option>PLA</option></select></div>
+        <div class="field adv">
+          <label class="lab">Infill <b>15%</b></label>
+          <input type="range" min="0" max="100" value="15">
+        </div>
+        <div class="field adv"><label class="toggle"><input type="checkbox"> Needs supports</label></div>
+        <div class="hint adv">Advanced fields are hidden in Simple mode.</div>
+        <button class="btn-t">Send for review</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── H · STAT READOUTS ─────────────────────────────── -->
+  <div class="sg-sect">
+    <p class="sg-label">H · Stat Readouts</p>
+    <div class="sg-note">Use <code>.stats</code> + <code>.stat</code> tiles for measured/calculated values. Always mono. Large price goes in <code>.pricerow</code> below the stats, not inside a tile.</div>
+    <div class="sg-cols">
+      <div>
+        <div class="stats">
+          <div class="stat"><div class="k">Width</div><div class="v">120 <small>mm</small></div></div>
+          <div class="stat"><div class="k">Height</div><div class="v">80 <small>mm</small></div></div>
+          <div class="stat"><div class="k">Cut length</div><div class="v">682 <small>mm</small></div></div>
+          <div class="stat"><div class="k">Contours</div><div class="v">14</div></div>
+        </div>
+        <div class="pricerow">
+          <span class="pl">Estimate · inc GST</span>
+          <span class="pv">$38.50</span>
+        </div>
+        <div style="font-family:var(--mono);font-size:11.5px;color:var(--cyan);margin-top:4px">▣ Ready in ~3 business days</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--warn);margin-top:2px">▲ auto-classified — confirmed at review</div>
+      </div>
+      <div>
+        <div class="sent-box">
+          <b>Quote received.</b> We'll review and be in touch within one business day.
+          <pre>MARKED BY HAND — quote
+Material: Clear acrylic 3mm
+Size:     120 × 80 mm
+ESTIMATE: $38.50</pre>
+        </div>
+        <div class="warn-box" style="margin-top:12px"><b>Out of stock.</b> We'll have more in ~2 weeks — leave your details to be notified.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── I · DROP ZONE ─────────────────────────────────── -->
+  <div class="sg-sect">
+    <p class="sg-label">I · Drop Zone</p>
+    <div class="sg-note">File drop target — used as the first interaction. Add <code>.over</code> class on dragenter via JS, remove on dragleave / drop.</div>
+    <div style="max-width:360px">
+      <div class="drop">Drop a <b>.dxf</b> here or <b>browse</b><br><span style="font-size:11.5px;margin-top:4px;display:block">measured instantly, on your device</span></div>
+    </div>
+  </div>
+
+  <!-- ── J · CANVAS / STAGE ────────────────────────────── -->
+  <div class="sg-sect">
+    <p class="sg-label">J · Canvas / Stage</p>
+    <div class="sg-note"><code>.stage</code> lives in the right column (<code>.preview-col</code>). It is always <code>aspect-ratio:4/3</code> and <code>width:100%</code>. The empty state div is <code>position:absolute;inset:0</code>. Replace the background to match the tool (grid texture, dark 3D scene, checkerboard, etc.).</div>
+    <div style="max-width:420px">
+      <div class="stage">
+        <div class="stage-empty">Drop a file to see the preview</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── K · FULL TOOL LAYOUT ─────────────────────────── -->
+  <div class="sg-sect">
+    <p class="sg-label">K · Full Tool Layout (live)</p>
+    <div class="sg-note">Controls (1fr) left, preview (1.3fr sticky) right. Stacks single-column below 880px. The <code>.adv-bar</code> is first in the controls div. This is the default layout — see <code>quote.html</code> for the canvas-left variant.</div>
+    <div class="tool-grid">
+      <div>
+        <div class="adv-bar">
+          <span class="advlab">View</span>
+          <div class="seg" style="max-width:200px">
+            <button class="on" onclick="setLayout(false,this)">Simple</button>
+            <button onclick="setLayout(true,this)">Advanced</button>
+          </div>
+        </div>
+        <div class="card">
+          <h2>1 · File</h2>
+          <div class="drop" style="padding:20px">Drop or <b>browse</b></div>
+        </div>
+        <div class="card">
+          <h2>2 · Options</h2>
+          <div class="field"><label>Material</label><select><option>Clear acrylic — 3mm</option></select></div>
+          <div class="field adv">
+            <label class="lab">Quality <b>Standard</b></label>
+            <div class="seg"><button class="on">Standard</button><button>Fine</button></div>
+          </div>
+          <div class="field"><label>Quantity</label><input type="number" value="1"></div>
+          <div class="contact-wrap">
+            <input type="text" placeholder="Your name">
+            <input type="email" placeholder="Your email">
+          </div>
+          <button class="btn-t cyan">Send for review</button>
+          <div class="sendstat" id="layout-stat"></div>
+        </div>
+      </div>
+      <div class="preview-col">
+        <div class="card">
+          <h2>Preview</h2>
+          <div class="stage"><div class="stage-empty">Preview appears here once a file is loaded</div></div>
+          <div class="stats">
+            <div class="stat"><div class="k">Width</div><div class="v">— <small>mm</small></div></div>
+            <div class="stat"><div class="k">Height</div><div class="v">— <small>mm</small></div></div>
+            <div class="stat"><div class="k">Cut length</div><div class="v">—</div></div>
+            <div class="stat"><div class="k">Contours</div><div class="v">—</div></div>
+          </div>
+          <div class="pricerow">
+            <span class="pl">Estimate</span>
+            <span class="pv">$—</span>
+          </div>
+          <div style="font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:4px">Add a file to see your price</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+<div id="site-footer"></div>
+<script>
+function setLayout(adv, btn) {
+  document.body.classList.toggle('adv-on', adv);
+  btn.closest('.seg').querySelectorAll('button').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+</script>
+<script src="site.js"></script>
+</body>
+</html>

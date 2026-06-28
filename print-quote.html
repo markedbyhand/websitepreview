@@ -3,69 +3,68 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D Print — Instant Quote · Marked By Hand</title>
+<title>3D Print — Marked By Hand</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
 <style>
+  .top-inner{padding:0 18px}  /* compact header — match homepage */
   :root{
-    --bg:#F5EFE7; --panel:#FCF8F2; --panel-2:#EAE0D4; --line:#D9CCBA;
-    --ink:#3B2F26; --lede:#5C4F44; --muted:#8E7D6B; --faint:#A99A88;
-    --amber:#A47864; --amber-soft:#8A5E4C; --btn-ink:#FFF7F0; --acc:#7A9A8B; --acc-ink:#0F241D;
-    --ok:#5E8C6A; --warn:#C8892F; --radius:14px;
-    --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
-    --sans:'Space Grotesk',system-ui,-apple-system,sans-serif;
-    --brand:'Bricolage Grotesque','Space Grotesk',sans-serif;
+    /* Aliases — map tool-internal names to canonical theme.css tokens */
+    --bg:var(--graphite); --panel-light:var(--graphite-2); --panel-2:var(--panel);
+    --ink:var(--bone); --acc:var(--cyan); --btn-ink:var(--primary-ink);
+    --acc-ink:var(--accent-ink); --radius:var(--r); --sans:var(--disp);
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45}
-  .wrap{max-width:1180px;margin:0 auto;padding:18px clamp(14px,3vw,28px) 60px}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45;display:flex;flex-direction:column;min-height:100vh}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 clamp(14px,3vw,28px)}
   a{color:var(--amber-soft)}
-  .home-brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);margin:2px 0 10px}
-  .home-brand svg{width:26px;height:26px;display:block;flex:none}
-  .home-brand b{font-family:var(--brand);font-weight:700;font-size:15px}
-  .home-brand small{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-left:3px}
-  header h1{font-family:var(--brand);font-size:20px;margin:0;font-weight:700;display:inline-block}
-  header .tag{font-family:var(--mono);font-size:11px;color:var(--amber);border:1px solid var(--panel-2);background:var(--panel-2);padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.08em;margin-left:10px}
-  header p{color:var(--lede);margin:6px 0 16px;font-size:13.5px;max-width:680px}
 
   .adv-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
   .adv-bar .advlab{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   body:not(.adv-on) .adv{display:none!important}
 
-  .grid{display:grid;grid-template-columns:332px 1fr;gap:16px;align-items:start}
+  .grid{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:start}
   @media(max-width:880px){.grid{grid-template-columns:1fr}.preview-col{position:static!important}}
-  .preview-col{position:sticky;top:10px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:10px;box-shadow:0 5px 14px rgba(59,47,38,.04)}
-  .card h2{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 12px;font-weight:600}
-  .field{margin-bottom:11px}.field:last-child{margin-bottom:0}
-  label.lab{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:var(--muted);margin-bottom:6px}
-  label.lab b{color:var(--ink);font-family:var(--mono);font-weight:500;font-size:12px}
+  .preview-col{position:sticky;top:72px;order:-1}
+  .card{background:var(--panel-light);border:1px solid var(--line);border-radius:var(--radius);padding:16px 16px 18px;margin-bottom:14px;box-shadow:0 5px 14px rgba(59,47,38,.04)}
+  .card h2{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin:0 0 12px;font-weight:500}
+  /* ===== HERO ===== */
+  .hero{padding:0 0 10px}
+  .hero h1{font-family:var(--brand);font-size:clamp(28px,5vw,46px);line-height:1.04;margin:0 0 12px;font-weight:700;letter-spacing:-.5px}
+  .hero h1 .ghost{color:var(--muted)}
+  .hero .lede{max-width:560px;color:var(--lede);font-size:16px;margin:0}
+  .field{margin-bottom:13px}.field:last-child{margin-bottom:0}
+  label.lab{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--muted);margin-bottom:6px;font-family:var(--mono);letter-spacing:.5px;text-transform:uppercase}
+  label.lab b{color:var(--ink);font-family:var(--mono);font-weight:500;font-size:13px}
   input[type=range]{width:100%;accent-color:var(--amber);height:22px}
-  input[type=text],input[type=number],input[type=email],select{width:100%;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:9px 10px;font:inherit;font-size:14px;font-family:var(--mono)}
+  input[type=text],input[type=number],input[type=email],select{width:100%;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:11px 12px;font:inherit;font-size:14px;font-family:var(--mono)}
   select{font-family:var(--sans);cursor:pointer}
   .row{display:flex;gap:8px}.row>*{flex:1}
-  .drop{border:1.5px dashed var(--line);border-radius:11px;padding:22px 14px;text-align:center;cursor:pointer;transition:.15s;color:var(--muted);font-size:13.5px;background:var(--panel-2)}
+  .drop{border:2px dashed var(--line);border-radius:12px;padding:32px 20px;text-align:center;cursor:pointer;transition:.15s;color:var(--muted);font-size:14px;background:var(--panel-2)}
   .drop:hover,.drop.over{border-color:var(--amber);background:#F3E9DE;color:var(--ink)}.drop b{color:var(--amber)}
   .seg{display:flex;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
   .seg button{flex:1;background:transparent;border:0;color:var(--muted);padding:7px 4px;border-radius:7px;font:inherit;font-size:12.5px;cursor:pointer}
   .seg button.on{background:var(--amber);color:var(--btn-ink);font-weight:600}
   .toggle{display:flex;align-items:center;gap:9px;cursor:pointer;font-size:13.5px;color:var(--ink);user-select:none}
   .toggle input{accent-color:var(--amber);width:16px;height:16px}
-  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--amber);color:var(--btn-ink);border:0;border-radius:10px;padding:12px;font:inherit;font-weight:650;font-size:14.5px;cursor:pointer;margin-top:10px}
-  .btn:disabled{opacity:.45;cursor:not-allowed}
-  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:500;margin-top:8px;padding:9px}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--amber);color:var(--btn-ink);border:0;border-radius:10px;padding:14px;font:inherit;font-weight:600;font-size:15px;cursor:pointer;margin-top:12px;transition:filter .15s ease}
+  .btn:hover{filter:brightness(1.06)}.btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:500;margin-top:10px;padding:11px}
   .hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
   .swatches{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
   .sw{width:26px;height:26px;border-radius:7px;border:2px solid transparent;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
   .sw.on{border-color:var(--amber)}
-  .pricerow{display:flex;justify-content:space-between;align-items:center;margin:8px 0 2px}
-  .pricerow .pl{font-size:13px;color:var(--muted)}
-  .pricerow .pv{font-family:var(--mono);font-weight:700;font-size:24px;color:var(--amber)}
+  .pricerow{display:flex;justify-content:space-between;align-items:baseline;margin:10px 0 4px}
+  .pricerow .pl{font-size:13px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.5px}
+  .pricerow .pv{font-family:var(--mono);font-weight:700;font-size:28px;color:var(--amber)}
 
   /* preview */
   #stage{width:100%;aspect-ratio:4/3;border-radius:12px;overflow:hidden;position:relative;
     background:radial-gradient(120% 100% at 50% 0%,#FBF6EE,#EFE5D6);border:1px solid var(--line)}
+  #stage.over{outline:2px dashed var(--amber);outline-offset:-6px}
   #stage canvas{display:block;width:100%;height:100%}
   .stage-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13.5px;text-align:center;padding:30px}
   .fitbadge{position:absolute;top:10px;left:10px;font-family:var(--mono);font-size:11px;padding:5px 9px;border-radius:7px;background:rgba(252,248,242,.9);border:1px solid var(--line);color:var(--ok)}
@@ -73,14 +72,14 @@
   .spinhint{position:absolute;bottom:10px;left:10px;font-family:var(--mono);font-size:10.5px;color:var(--faint)}
   .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
   .stat{background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:9px 11px}
-  .stat .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
-  .stat .v{font-family:var(--mono);font-size:15px;margin-top:2px}
+  .stat .k{font-family:var(--mono);font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+  .stat .v{font-family:var(--mono);font-size:18px;font-weight:500;color:var(--ink);margin-top:2px}
   .brk{margin-top:12px}
   .brk .li{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line);font-family:var(--mono);font-size:12.5px}
   .brk .li:last-child{border-bottom:none}
   .brk .li .k{color:var(--muted)}
-  .est{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
-  .est .pv{font-family:var(--mono);font-weight:700;font-size:26px;color:var(--amber)}
+  .est{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px}
+  .est .pv{font-family:var(--mono);font-weight:700;font-size:38px;color:var(--amber);letter-spacing:-1px}
   .sendstat{font-family:var(--mono);font-size:11px;text-align:center;margin-top:6px;min-height:1em}
   .sendstat.ok{color:var(--ok)}.sendstat.err{color:var(--warn)}
   .minirow{display:flex;gap:6px}
@@ -90,37 +89,43 @@
   .bulk{margin-top:10px;border:1px solid var(--line);border-radius:9px;overflow:hidden}
   .bulk .bhdr{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:6px 10px;background:var(--panel-2)}
   .bulk .brow{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;padding:6px 10px;border-top:1px solid var(--line)}
-  .bulk .brow.on{background:color-mix(in srgb,var(--amber) 12%,var(--panel));color:var(--ink);font-weight:600}
-  .warn{margin:0 0 10px;padding:9px 12px;border-radius:9px;font-size:12.5px;background:color-mix(in srgb,var(--warn) 13%,var(--panel));border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);color:#8a5a16}
+  .bulk .brow.on{background:color-mix(in srgb,var(--amber) 12%,var(--panel-light));color:var(--ink);font-weight:600}
+  .warn{margin:0 0 10px;padding:9px 12px;border-radius:9px;font-size:12.5px;background:color-mix(in srgb,var(--warn) 13%,var(--panel-light));border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);color:#8a5a16}
   .contact-wrap{margin-top:10px;display:flex;flex-direction:column;gap:7px}
   .contact-wrap input{background:var(--panel-2)}
-  .sent-box{display:none;background:color-mix(in srgb,var(--ok) 8%,var(--panel));border:1px solid color-mix(in srgb,var(--ok) 35%,transparent);border-radius:10px;padding:14px;margin-top:10px;font-size:13px}
+  .sent-box{display:none;background:color-mix(in srgb,var(--ok) 8%,var(--panel-light));border:1px solid color-mix(in srgb,var(--ok) 35%,transparent);border-radius:10px;padding:14px;margin-top:10px;font-size:13px}
   .sent-box b{color:var(--ok)}
   .sent-box pre{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:pre-wrap;margin:8px 0 0;background:var(--panel-2);padding:10px;border-radius:8px;border:1px solid var(--line)}
+  /* ===== empty-stage artwork — MBH built up in print layers (echoes the laser-bed MBH) ===== */
+  .print-art{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:repeating-linear-gradient(0deg,transparent 0 23px,var(--grid) 23px 24px),repeating-linear-gradient(90deg,transparent 0 23px,var(--grid) 23px 24px),radial-gradient(120% 100% at 50% 0%,#FBF6EE,#EFE5D6)}
+  .print-art .corner{position:absolute;font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:1px}
+  .print-art .corner.tl{top:10px;left:12px}.print-art .corner.tr{top:10px;right:12px}
+  .print-art .cap{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-family:var(--mono);font-size:11.5px;color:var(--muted);padding:0 28px;line-height:1.5}
+  #printAnim{width:74%;max-width:330px;height:auto;margin-bottom:16px}
+  #pNozzle{filter:drop-shadow(0 0 4px var(--cyan))}
+  @media (prefers-reduced-motion: reduce){#pNozzle{display:none}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <a href="index.html" class="home-brand">
-      <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="7" y="7" width="50" height="50" rx="13" fill="none" stroke="#A47864" stroke-width="2.5"/><path d="M18 28 V18 H28" fill="none" stroke="#A47864" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 30 V34 M40 46 V50 M30 40 H34 M46 40 H50" fill="none" stroke="#A47864" stroke-width="1.8" stroke-linecap="round"/><path d="M40 33 L42.24 37.76 L47 40 L42.24 42.24 L40 47 L37.76 42.24 L33 40 L37.76 37.76 Z" fill="#7A9A8B"/></svg>
-      <span><b>Marked By Hand</b> <small>home</small></span>
-    </a>
-    <div><h1>3D Print · Instant Quote</h1><span class="tag">Bambu A1 · PLA · alpha</span></div>
-    <p>Drop an STL — we render it on the build plate, check it fits, and estimate filament weight, print time and price. Everything's a fast ballpark; we confirm exact figures when we slice it.</p>
-  </header>
-
-  <div class="adv-bar">
-    <span class="advlab">View</span>
-    <div class="seg" id="viewSeg" style="max-width:230px">
-      <button data-v="simple" class="on">Simple</button>
-      <button data-v="adv">Advanced</button>
-    </div>
-  </div>
+<div id="site-header"></div>
+<main class="wrap" style="padding-top:28px;padding-bottom:60px;flex:1 0 auto">
+  <section class="hero">
+    <p class="eyebrow">3D printing · Bambu A1 · PLA</p>
+    <h1>Drop an STL.<br><span class="ghost">Get a price in seconds.</span></h1>
+    <p class="lede">Upload your STL — we render it on the Bambu A1 build plate, check it fits, and estimate filament, print time and price on the spot. We confirm exact figures when we slice it before printing.</p>
+  </section>
 
   <div class="grid">
     <!-- ===== CONTROLS ===== -->
     <div>
+      <div class="adv-bar">
+        <span class="advlab">View</span>
+        <div class="seg" id="viewSeg" style="max-width:230px">
+          <button data-v="simple" class="on">Simple</button>
+          <button data-v="adv">Advanced</button>
+        </div>
+      </div>
       <div class="card">
         <h2>1 · Model</h2>
         <div class="field">
@@ -194,9 +199,27 @@
     <!-- ===== PREVIEW ===== -->
     <div class="preview-col">
       <div class="card">
-        <h2 style="margin-bottom:10px">Preview</h2>
+        <h2 style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">Preview <button id="startOver" class="btn ghost" style="display:none;width:auto;margin:0;padding:5px 11px;font-size:12px">Start over</button></h2>
         <div id="stage">
-          <div class="stage-empty" id="stageEmpty">Drop an STL, or tap "Try a sample model", to see it on the build plate.</div>
+          <div class="print-art" id="printArt">
+            <span class="corner tl">PLATE 0,0</span>
+            <span class="corner tr" id="plateDim">256 × 256 mm</span>
+            <svg id="printAnim" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+              <defs>
+                <clipPath id="mbhText"><text x="200" y="152" text-anchor="middle" font-family="'Bricolage Grotesque',var(--brand)" font-weight="800" font-size="150" letter-spacing="-8">MBH</text></clipPath>
+                <pattern id="pLayers" width="9" height="7" patternUnits="userSpaceOnUse"><rect width="9" height="7" fill="var(--amber)"/><rect width="9" height="1.1" y="5.9" fill="rgba(0,0,0,.12)"/></pattern>
+              </defs>
+              <g clip-path="url(#mbhText)">
+                <rect x="0" y="0" width="400" height="200" fill="var(--line)" opacity="0.32"/>
+                <rect id="pBuild" x="0" y="200" width="400" height="0" fill="url(#pLayers)"/>
+              </g>
+              <g id="pGantry">
+                <line x1="36" y1="200" x2="364" y2="200" stroke="var(--cyan)" stroke-width="1.4" opacity="0.5"/>
+                <path id="pNozzle" d="M200 194 l5 -9 h-10 z" fill="var(--cyan)"/>
+              </g>
+            </svg>
+            <span class="cap" id="stageEmpty">Drop an STL, or tap &ldquo;Try a sample model&rdquo;, to see it on the build plate.</span>
+          </div>
           <div class="fitbadge" id="fitBadge" style="display:none"></div>
           <div class="spinhint" id="spinHint" style="display:none">drag to rotate · scroll to zoom</div>
         </div>
@@ -213,7 +236,8 @@
       </div>
     </div>
   </div>
-</div>
+</main>
+<div id="site-footer"></div>
 
 <script src="three.min.js"></script>
 <script>
@@ -407,7 +431,7 @@ function updateAll(){
 }
 
 /* ================= 3D viewer ================= */
-let VIEWER=null,MODEL=null,CURSPEED='std';
+let VIEWER=null,MODEL=null,CURSPEED='std',RAWFILE=null;
 let ORIENT=null,SCALE=1;
 function defaultOrient(){return new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0),-Math.PI/2);}
 function makeViewer(){
@@ -415,7 +439,7 @@ function makeViewer(){
   const stage=$('stage');const w=stage.clientWidth||640,h=stage.clientHeight||480;
   const scene=new THREE.Scene();
   const camera=new THREE.PerspectiveCamera(38,w/h,1,5000);
-  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(w,h);
   stage.appendChild(renderer.domElement);
   scene.add(new THREE.AmbientLight(0xffffff,0.62));
@@ -453,7 +477,20 @@ function makeViewer(){
       target.set(0,size.y*0.45,0);radius=Math.max(size.x,size.y,size.z,60)*2.1;applyCam();return size;
     },
     setColour(hex){mat.color=new THREE.Color(hex);},
-    setOverflow(o){mat.color=new THREE.Color(o?'#c25e6e':(CURMAT&&CURMAT.hex)||'#888888');}
+    setOverflow(o){mat.color=new THREE.Color(o?'#c25e6e':(CURMAT&&CURMAT.hex)||'#888888');},
+    snapshot(){
+      renderer.render(scene,camera);
+      const src=renderer.domElement,maxW=360,maxH=270;
+      const ratio=Math.min(maxW/src.width,maxH/src.height,1);
+      const w=Math.round(src.width*ratio),h=Math.round(src.height*ratio);
+      const cv=document.createElement('canvas');cv.width=w;cv.height=h;
+      const ctx=cv.getContext('2d');
+      ctx.fillStyle='#EFE5D6';
+      ctx.fillRect(0,0,w,h);
+      ctx.drawImage(src,0,0,w,h);
+      /* compact JPEG so it inlines (<45k chars) and always shows on the review page */
+      return cv.toDataURL('image/jpeg',0.62);
+    }
   };
 }
 
@@ -463,7 +500,7 @@ function ingest(pos){
   MODEL={pos,info,size:info.size,scale:1};
   SCALE=1;$('scaleVal').value=100;$('scaleOut').textContent='100%';
   if(typeof THREE!=='undefined')ORIENT=defaultOrient();
-  $('stageEmpty').style.display='none';$('spinHint').style.display='block';$('orientCard').style.display='block';
+  $('printArt').style.display='none';$('spinHint').style.display='block';$('orientCard').style.display='block';$('startOver').style.display='inline-flex';
   if(!VIEWER)VIEWER=makeViewer();
   if(VIEWER){const sz=VIEWER.rebuild(pos,ORIENT,SCALE);if(sz)MODEL.size=sz;}
   else MODEL.size=info.size;
@@ -494,8 +531,9 @@ function loadBuffer(buf){
   try{const pos=parseSTL(buf);if(!pos.length)throw new Error('No triangles');ingest(pos);}
   catch(e){const uw=$('unitWarn');uw.style.display='block';uw.textContent='Could not read that STL: '+e.message;}
 }
-function loadFile(f){if(!f)return;const r=new FileReader();r.onload=()=>loadBuffer(r.result);r.readAsArrayBuffer(f);}
+function loadFile(f){if(!f)return;RAWFILE=f;const r=new FileReader();r.onload=()=>loadBuffer(r.result);r.readAsArrayBuffer(f);}
 function loadSample(){
+  RAWFILE=null;
   let pos;
   if(typeof THREE!=='undefined'){const g=new THREE.TorusKnotGeometry(15,5,160,22).toNonIndexed();pos=Float32Array.from(g.attributes.position.array);}
   else{const c=[[0,0,0],[40,0,0],[40,40,0],[0,40,0],[0,0,45],[40,0,45],[40,40,45],[0,40,45]];const faces=[[0,1,2],[0,2,3],[4,6,5],[4,7,6],[0,4,5],[0,5,1],[1,5,6],[1,6,2],[2,6,7],[2,7,3],[3,7,4],[3,4,0]];pos=new Float32Array(faces.length*9);let p=0;faces.forEach(f=>f.forEach(i=>{pos[p++]=c[i][0];pos[p++]=c[i][1];pos[p++]=c[i][2];}));}
@@ -509,7 +547,28 @@ drop.addEventListener('click',()=>$('file').click());
 ['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
 ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
 drop.addEventListener('drop',e=>loadFile(e.dataTransfer.files[0]));
+/* drop an STL straight onto the 3D preview, not just the drop zone */
+const stageEl=$('stage');
+['dragover','dragenter'].forEach(ev=>stageEl.addEventListener(ev,e=>{e.preventDefault();stageEl.classList.add('over');}));
+['dragleave','drop'].forEach(ev=>stageEl.addEventListener(ev,e=>{e.preventDefault();stageEl.classList.remove('over');}));
+stageEl.addEventListener('drop',e=>{e.preventDefault();loadFile(e.dataTransfer.files[0]);});
 $('sample').addEventListener('click',loadSample);
+$('startOver').addEventListener('click',resetAll3D);
+function resetAll3D(){
+  MODEL=null;RAWFILE=null;
+  $('printArt').style.display='';$('spinHint').style.display='none';$('orientCard').style.display='none';
+  var fb=$('fitBadge');if(fb)fb.style.display='none';
+  $('file').value='';
+  ['sSize','sVol','sWeight','sTime'].forEach(function(i){$(i).textContent='—';});
+  $('priceEach').textContent='$—';$('priceTotal').textContent='$—';
+  $('brk').innerHTML='';$('bulk').innerHTML='';$('leadLine').textContent='';
+  var sent=$('sent');if(sent)sent.style.display='none';
+  var ss=$('sendstat');if(ss){ss.textContent='';ss.className='sendstat';}
+  var uw=$('unitWarn');if(uw)uw.style.display='none';
+  setSend(false);
+  $('startOver').style.display='none';
+  if(window._restartPrintArt)window._restartPrintArt();
+}
 
 ['infill','layer','qty','supports','priority','useCase','suit'].forEach(id=>['input','change'].forEach(ev=>$(id).addEventListener(ev,()=>{
   $('infillOut').textContent=$('infill').value+'%';
@@ -534,6 +593,8 @@ document.querySelectorAll('#viewSeg button').forEach(b=>b.addEventListener('clic
 setView(false);
 
 /* ================= Quote submission ================= */
+var SCRIPT_URL='https://script.google.com/macros/s/AKfycbz02fhIttHEOjcmG6mUIGym-wB-vYvCMFNjHc8w2DigSV6J3oQIJrEiuVyD8TzGe3VQ/exec';
+
 $('send').addEventListener('click',function(){
   const r=compute();if(!r)return;
   const name=($('sendName').value||'').trim();
@@ -541,9 +602,10 @@ $('send').addEventListener('click',function(){
   const st=$('sendstat');
   if(!email||email.indexOf('@')<1){st.className='sendstat err';st.textContent='Please add your email so we can reply.';return;}
   const mat=CURMAT?(CURMAT.name+' — '+CURMAT.colour):'Unknown';
+  const dims=r.size.x.toFixed(0)+'×'+r.size.z.toFixed(0)+'×'+r.size.y.toFixed(0)+' mm';
   const txt='MARKED BY HAND — 3D print quote\n'+
     'Name:        '+(name||'(not given)')+'\n'+'Email:       '+email+'\n'+
-    'Model size:  '+r.size.x.toFixed(0)+'×'+r.size.z.toFixed(0)+'×'+r.size.y.toFixed(0)+' mm\n'+
+    'Model size:  '+dims+'\n'+
     'Volume:      '+r.solid_cm3.toFixed(1)+' cm³\n'+
     'Material:    '+mat+'\n'+
     'Weight:      ≈ '+r.weight.toFixed(0)+' g\n'+
@@ -552,34 +614,47 @@ $('send').addEventListener('click',function(){
     'Turnaround:  '+(r.pr.label||'')+'\n'+
     'Quantity:    '+r.qty+'\n'+
     'ESTIMATE:    $'+r.total.toFixed(2)+' (inc GST, incl '+CONFIG.pricing.safetyPct+'% buffer)';
-  const url=(CONFIG.business&&CONFIG.business.formUrl)||'';
-  const key=(CONFIG.business&&CONFIG.business.formKey)||'';
-  function showSuccess(){
-    $('sentText').textContent=txt;$('sent').style.display='block';
-    $('sent').scrollIntoView({behavior:'smooth',block:'nearest'});
-  }
-  if(!url){showSuccess();return;}
   const btn=this;btn.disabled=true;st.className='sendstat';st.textContent='Sending…';
+  const snapshot=VIEWER?VIEWER.snapshot():null;
   const fd=new FormData();
-  fd.append('name',name||'(not given)');fd.append('email',email);
-  fd.append('subject','Marked By Hand — 3D print quote: '+mat+', qty '+r.qty);
-  fd.append('message',txt);
-  fd.append('size_mm',r.size.x.toFixed(0)+'×'+r.size.z.toFixed(0)+'×'+r.size.y.toFixed(0));
-  fd.append('volume_cm3',r.solid_cm3.toFixed(2));
-  fd.append('weight_g',r.weight.toFixed(1));
-  fd.append('print_time_min',(r.time_h*60).toFixed(0));
-  fd.append('material',mat);fd.append('supports',r.supportsOn?'yes':'no');
-  fd.append('turnaround',r.pr.label||'');fd.append('quantity',String(r.qty));
+  fd.append('name',name||'(not given)');
+  fd.append('email',email);
+  fd.append('order_type','3D Print');
+  fd.append('material',mat);
+  fd.append('quantity',String(r.qty));
   fd.append('displayed_estimate','$'+r.total.toFixed(2));
-  if(key)fd.append('access_key',key);
-  fetch(url,{method:'POST',headers:{Accept:'application/json'},body:fd})
-    .then(res=>res.json().catch(()=>({ok:res.ok})))
-    .then(d=>{
-      if(d&&(d.success||d.ok||d.next)){
-        showSuccess();st.className='sendstat ok';st.textContent='Sent — we’ll be in touch shortly.';
+  /* inputs for server-side price verification (geometry from the uploaded STL + chosen settings) */
+  fd.append('vol_mm3',(r.A.volMM3||0).toFixed(2));
+  fd.append('area_mm2',(r.A.areaMM2||0).toFixed(2));
+  fd.append('scale',String((MODEL&&MODEL.scale)||1));
+  fd.append('infill_pct',$('infill').value);
+  fd.append('supports',$('supports').checked?'1':'0');
+  fd.append('speed',CURSPEED);
+  fd.append('priority',$('priority').value);
+  if(CURMAT){fd.append('mat_density',String(CURMAT.density));fd.append('mat_pricekg',String(CURMAT.pricePerKg));}
+  fd.append('dimensions',dims);
+  fd.append('message',txt);
+  fd.append('token','mbh-2026-laser');
+  if(snapshot)fd.append('snapshot',snapshot);
+  function fire(){
+    fetch(SCRIPT_URL,{method:'POST',body:fd,mode:'no-cors'})
+      .then(function(){
+        $('sentText').textContent=txt;$('sent').style.display='block';
+        $('sent').scrollIntoView({behavior:'smooth',block:'nearest'});
+        st.className='sendstat ok';st.textContent="Sent — we'll be in touch shortly.";
         $('sendName').value='';$('sendEmail').value='';
-      }else{st.className='sendstat err';st.textContent='Couldn’t send — please try again shortly.';btn.disabled=false;}
-    }).catch(()=>{st.className='sendstat err';st.textContent='Couldn’t send — please try again shortly.';btn.disabled=false;});
+      }).catch(function(){
+        st.className='sendstat err';st.textContent="Couldn't send — please try again shortly.";
+        btn.disabled=false;
+      });
+  }
+  /* attach the raw STL (base64) so it lands in the Drive order folder; skip if huge */
+  if(RAWFILE&&RAWFILE.size&&RAWFILE.size<12*1024*1024){
+    var fr=new FileReader();
+    fr.onload=function(){fd.append('stl_b64',fr.result);fd.append('stl_filename',RAWFILE.name||'model.stl');fire();};
+    fr.onerror=fire;
+    fr.readAsDataURL(RAWFILE);
+  }else{fire();}
 });
 
 /* ================= Load config from JSON ================= */
@@ -587,6 +662,32 @@ fetch('print-quote-config.json',{cache:'no-store'})
   .then(r=>{if(!r.ok)throw 0;return r.json();})
   .then(j=>{applyConfig(j);console.info('[MBH] loaded print-quote-config.json');})
   .catch(()=>{buildMaterialUI();console.info('[MBH] print-quote-config.json not found — using defaults');});
+
+/* ================= empty-stage artwork: MBH printed layer-by-layer ================= */
+(function(){
+  var build=$('pBuild'),gantry=$('pGantry'),nozzle=$('pNozzle'),art=$('printArt'),dim=$('plateDim');
+  if(dim&&CONFIG.build)dim.textContent=CONFIG.build.x+' × '+CONFIG.build.y+' mm';
+  if(!build||!gantry||!nozzle)return;
+  var base=153,topEnd=42;                  // MBH letters span y≈44–152; print base→top
+  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(reduce){build.setAttribute('y',topEnd);build.setAttribute('height',200-topEnd);return;}
+  var t=0,run=true;
+  function frame(){
+    if(!run)return;
+    if(art&&art.style.display==='none'){run=false;return;}   // model loaded — stop
+    t+=0.0042; if(t>1.25)t=-0.15;
+    var p=Math.max(0,Math.min(1,t)),top=base-(base-topEnd)*p;
+    build.setAttribute('y',top);build.setAttribute('height',200-top);
+    gantry.setAttribute('transform','translate(0,'+(top-200)+')');
+    var nx=200+150*Math.sin(t*23);
+    nozzle.setAttribute('transform','translate('+(nx-200)+',0)');
+    nozzle.style.opacity=(p>0&&p<1)?1:0;
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  window._restartPrintArt=function(){if(!run){run=true;t=0;requestAnimationFrame(frame);}};
+})();
 </script>
+<script src="site.js"></script>
 </body>
 </html>
